@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>爱车后台管理</title>
+    <link rel="stylesheet" href="__ADMIN__/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="__ADMIN__/css/public.css" media="all">
+    <style>
+        .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+            height: 34px;
+            line-height: 34px;
+            padding: 0 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <blockquote class="layui-elem-quote">
+            Layui的树形表格treeTable，支持异步加载(懒加载)、复选框联动、折叠状态记忆。<br>
+            <a href="https://gitee.com/whvse/treetable-lay" target="_blank" class="layui-btn layui-btn-danger">treetable-lay</a>
+        </blockquote>
+        <div>
+            <div class="layui-btn-group">
+                <button class="layui-btn" id="btn-expand">全部展开</button>
+                <button class="layui-btn layui-btn-normal" id="btn-fold">全部折叠</button>
+            </div>
+            <div class="layui-btn-group">
+                <button type="button" class="layui-btn layui-btn-normal" id="btn-addnode"><i class="layui-icon"></i>添加</button>
+            </div>
+            <table id="munu-table" class="layui-table" lay-filter="munu-table"></table>
+        </div>
+    </div>
+</div>
+<!-- 操作列 -->
+<script type="text/html" id="auth-state">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="add">添加下级</a>
+    <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="__ADMIN__/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="__ADMIN__/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    function renderTable() {
+        layui.use(['treetable'], function () {
+            var treetable = layui.treetable;
+            // 渲染表格
+            layer.load(2);
+            treetable.render({
+                treeColIndex: 0,//折叠箭头显示在第几列上面
+                treeSpid: 0,//顶级节点的pid
+                treeIdName: 'node_id',
+                treePidName: 'pid',
+                elem: '#munu-table',
+                url: '{:url("Systemnode/index")}',
+                page: false,
+                cols: [[
+                    // {type: 'checkbox'},
+                    {field: 'title', minWidth: 200, title: '节点名称'},
+                    {field: 'auth_tag', title: '权限标识'},
+                    // {field: 'menuUrl', title: '菜单url'},
+                    // {field: 'orderNumber', width: 80, align: 'center', title: '排序号'},
+                    {
+                        field: 'is_menu', width: 150, align: 'center', templet: function (d) {
+                            if (d.is_menu == 1) {
+                                return '<span class="layui-badge layui-bg-gray">是</span>';
+                            } else {
+                                return '<span class="layui-badge-rim">否</span>';
+                            }
+
+                        }, title: '是否菜单'
+                    },
+                    {templet: '#auth-state', width: 200, align: 'center', title: '操作'}
+                ]],
+                done: function () {
+                    console.log(1);
+                    layer.closeAll('loading');
+                }
+            });
+        })
+    }
+    renderTable();
+    layui.use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+        //展开和收起
+        $('#btn-expand').click(function () {
+            treetable.expandAll('#munu-table');
+        });
+
+        $('#btn-fold').click(function () {
+            treetable.foldAll('#munu-table');
+        });
+        //添加节点
+        $('#btn-addnode').click(function () {
+            var index = layer.open({
+                title: '添加节点',
+                type: 2,
+                shade: 0.3,//遮罩
+                maxmin:true,//最大化最小化
+                shadeClose: true,//点击遮罩是否关闭
+                area: ['80%', '80%'],
+                content: '{:url("Systemnode/add","",false)}/pid/0',
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
+        //监听工具条
+        table.on('tool(munu-table)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+
+            if (layEvent === 'del') {
+                var index = layer.confirm('您确定要删除该记录？', {
+                    title: '友情提示',
+                    icon: 3,
+                    btn: ['确定', '取消']
+                }, function(){
+                    $.getJSON("{:url('Systemnode/delete')}", {node_id:data.node_id}, function (res) {
+                        if(res.code == 20000) {
+                            layer.msg(res.msg);
+                            setTimeout(function () {
+                                renderTable();
+                            }, 200);
+                        } else {
+                            layer.alert(res.msg, {
+                                'title': '失败信息',
+                                'icon': 2
+                            });
+                        }
+                    }, 'json');
+                }, function(){
+
+                });
+            } else if (layEvent === 'edit') {
+                var index = layer.open({
+                    title: '编辑节点',
+                    type: 2,
+                    shade: 0.3,//遮罩
+                    maxmin:true,//最大化最小化
+                    shadeClose: true,//点击遮罩是否关闭
+                    area: ['80%', '80%'],
+                    content: '{:url("Systemnode/edit","",false)}/node_id/'+data.node_id+'/pid/'+data.pid,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (layEvent === 'add') {
+                var index = layer.open({
+                    title: '编辑节点',
+                    type: 2,
+                    shade: 0.3,//遮罩
+                    maxmin:true,//最大化最小化
+                    shadeClose: true,//点击遮罩是否关闭
+                    area: ['80%', '80%'],
+                    content: '{:url("Systemnode/add","",false)}/pid/'+data.node_id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
