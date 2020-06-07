@@ -9,9 +9,7 @@
 namespace app\admin\model;
 
 
-use think\Model;
-
-class SystemNodeModel extends Model
+class SystemNodeModel extends BaseModel
 {
     /**
      * 获取菜单列表
@@ -29,7 +27,31 @@ class SystemNodeModel extends Model
         $menuList = self::buildMenuChild(0, $menuList);
         return $menuList;
     }
-
+    /**
+     * 递归获取子菜单
+     * @param $pid
+     * @param $menuList
+     * @return array
+     */
+    protected static function buildMenuChild($pid, $menuList){
+        $treeList = [];
+        foreach ($menuList as $v) {
+            if ($pid == $v['pid']) {
+                $node = $v;
+                $child = self::buildMenuChild($v['id'], $menuList);
+                if (!empty($child)) {
+                    $node['child'] = $child;
+                }
+                // 用户权限判断
+                if(session("admin_id") != 1 && !isset(self::getAdminAuthTags()[$node["id"]])){
+                    continue;
+                }
+                $node["href"] = !empty($node["href"])?request()->module()."/".$node["href"]:"";
+                $treeList[] = $node;
+            }
+        }
+        return $treeList;
+    }
     /**
      * 获取下拉框列表
      * @return array
@@ -77,25 +99,40 @@ class SystemNodeModel extends Model
         }
         return $newList;
     }
+
     /**
-     * 递归获取子菜单
-     * @param $pid
-     * @param $menuList
-     * @return array
+     * 获取系统所有的权限节点标识
      */
-    protected static function buildMenuChild($pid, $menuList){
-        $treeList = [];
-        foreach ($menuList as $v) {
-            if ($pid == $v['pid']) {
-                $node = $v;
-                $child = self::buildMenuChild($v['id'], $menuList);
-                if (!empty($child)) {
-                    $node['child'] = $child;
-                }
-                // todo 后续此处加上用户的权限判断
-                $treeList[] = $node;
-            }
+    public static function getAllAuthTags(){
+        $allAuthTags=cleanableCache("all_auth_tags");
+        if($allAuthTags === null){
+            $res=self::where("status","=",1)->column("auth_tag","node_id");
+            $allAuthTags=$res;
+            cleanableCache("all_auth_tags",$allAuthTags);
         }
-        return $treeList;
+        return $allAuthTags;
+    }
+
+    /**
+     * 获取管理员的权限节点标识
+     */
+    public static function getAdminAuthTags(){
+        $adminAuthTags=cleanableCache("admin_auth_tags");
+        if($adminAuthTags === null){
+            $admin = SystemAdminModel::find(session("admin_id"));
+            if(empty($admin["role_ids"])){
+                $adminAuthTags=[];
+            }else{
+                $node_ids=db("system_role_node")->where("role_id","in",$admin["role_ids"])->column("node_id");
+                if(empty($node_ids)){
+                    $adminAuthTags=[];
+                }else{
+                    $res=self::where("node_id","in",$node_ids)->where("status","=",1)->column("auth_tag","node_id");
+                    $adminAuthTags=$res;
+                }
+            }
+            cleanableCache("admin_auth_tags",$adminAuthTags);
+        }
+        return $adminAuthTags;
     }
 }

@@ -1,0 +1,45 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: tyong
+ * Date: 2020/6/7
+ * Time: 10:30
+ */
+
+namespace app\admin\controller;
+
+
+use app\admin\model\SystemAdminModel;
+use app\common\exception\ServiceException;
+use app\common\ServiceCode;
+use think\Controller;
+
+class BaseController extends Controller
+{
+    /**
+     * 控制器是否需要检测登陆
+     */
+    protected $isNeedLogin = true;
+    /**
+     * 控制器中不需要检测登陆的方法
+     */
+    protected $notNeedLoginFun = [];
+    /**
+     * 初始化
+     */
+    protected function initialize()
+    {
+        $controller = $this->request->controller();
+        $action = $this->request->action();
+        $authTag = strtolower($controller . '/' . $action);
+        if($this->isNeedLogin && !in_array($action,$this->notNeedLoginFun)){
+            //检测登陆
+            if(empty(session("admin_id"))){
+                throw new ServiceException("请先登陆",ServiceCode::NOT_LOGIN);
+            }
+            //检测权限
+            SystemAdminModel::checkAuth($authTag);
+        }
+    }
+
+}

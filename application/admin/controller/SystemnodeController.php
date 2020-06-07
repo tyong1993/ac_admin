@@ -10,9 +10,8 @@ namespace app\admin\controller;
 
 
 use app\admin\model\SystemNodeModel;
-use think\Controller;
 
-class SystemnodeController extends Controller
+class SystemnodeController extends BaseController
 {
     /**
      * 权限节点列表
@@ -30,7 +29,7 @@ class SystemnodeController extends Controller
      */
     function add(){
         if($this->request->isAjax()){
-            $param=$this->request->param();
+            $param=$this->request->post();
             db('system_node')->insert($param);
             return jsonSuccess();
         }
@@ -45,7 +44,7 @@ class SystemnodeController extends Controller
      */
     function edit(){
         if($this->request->isAjax()){
-            $param=$this->request->param();
+            $param=$this->request->post();
             db('system_node')->update($param);
             return jsonSuccess();
         }

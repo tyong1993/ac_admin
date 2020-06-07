@@ -58,11 +58,11 @@
                     <a href="javascript:;" data-check-screen="full"><i class="fa fa-arrows-alt"></i></a>
                 </li>
                 <li class="layui-nav-item layuimini-setting">
-                    <a href="javascript:;">admin</a>
+                    <a href="javascript:;">{:session("admin_username")}</a>
                     <dl class="layui-nav-child">
-                        <dd>
-                            <a href="javascript:;" layuimini-content-href="page/user-setting.html" data-title="基本资料" data-icon="fa fa-gears">基本资料<span class="layui-badge-dot"></span></a>
-                        </dd>
+                        <!--<dd>-->
+                            <!--<a href="javascript:;" layuimini-content-href="page/user-setting.html" data-title="基本资料" data-icon="fa fa-gears">基本资料<span class="layui-badge-dot"></span></a>-->
+                        <!--</dd>-->
                         <dd>
                             <a href="javascript:;" layuimini-content-href="page/user-password.html" data-title="修改密码" data-icon="fa fa-gears">修改密码</a>
                         </dd>
@@ -137,7 +137,7 @@
 
         var options = {
             iniUrl: "{:url('Index/getSystemInit')}",    // 初始化接口
-            clearUrl: "api/clear.json", // 缓存清理接口
+            clearUrl: "{:url('Index/cleanCache')}", // 缓存清理接口
             urlHashLocation: true,      // 是否打开hash定位
             bgColorDefault: false,      // 主题默认配置
             multiModule: false,          // 是否开启多模块
@@ -159,8 +159,14 @@
         // });
 
         $('.login-out').on("click", function () {
-            layer.msg('退出登录成功', function () {
-                window.location = 'page/login-1.html';
+            $.getJSON('{:url("Index/logout")}', function (res) {
+                if(res.code == 20000) {
+                    layer.msg('退出登录成功', function () {
+                        window.location = '/admin/Index/login';
+                    });
+                } else {
+                    layer.msg(res.msg, {anim: 6});
+                }
             });
         });
     });

@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>爱车后台管理</title>
-    <link rel="stylesheet" href="__ADMIN__/lib/layui-v2.5.5/css/layui.css" media="all">
-    <link rel="stylesheet" href="__ADMIN__/css/public.css" media="all">
-    <style>
-        .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
-            height: 34px;
-            line-height: 34px;
-            padding: 0 8px;
-        }
-    </style>
-</head>
+{include file="common/header" /}
+<style>
+    .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+        height: 34px;
+        line-height: 34px;
+        padding: 0 8px;
+    }
+</style>
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <blockquote class="layui-elem-quote">
-            Layui的树形表格treeTable，支持异步加载(懒加载)、复选框联动、折叠状态记忆。<br>
-            <a href="https://gitee.com/whvse/treetable-lay" target="_blank" class="layui-btn layui-btn-danger">treetable-lay</a>
-        </blockquote>
         <div>
             <div class="layui-btn-group">
                 <button class="layui-btn" id="btn-expand">全部展开</button>
@@ -38,15 +27,14 @@
     <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
-
-<script src="__ADMIN__/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
-<script src="__ADMIN__/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    function renderTable() {
-        layui.use(['treetable'], function () {
-            var treetable = layui.treetable;
+    layui.use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+        renderTreeTable = function(){
             // 渲染表格
-            layer.load(2);
+            layTool.loading();
             treetable.render({
                 treeColIndex: 0,//折叠箭头显示在第几列上面
                 treeSpid: 0,//顶级节点的pid
@@ -74,17 +62,11 @@
                     {templet: '#auth-state', width: 200, align: 'center', title: '操作'}
                 ]],
                 done: function () {
-                    console.log(1);
-                    layer.closeAll('loading');
+                    layTool.hideLoading()
                 }
             });
-        })
-    }
-    renderTable();
-    layui.use(['table', 'treetable'], function () {
-        var $ = layui.jquery;
-        var table = layui.table;
-        var treetable = layui.treetable;
+        };
+        renderTreeTable();
         //展开和收起
         $('#btn-expand').click(function () {
             treetable.expandAll('#munu-table');
@@ -93,20 +75,9 @@
         $('#btn-fold').click(function () {
             treetable.foldAll('#munu-table');
         });
-        //添加节点
+        //添加顶级节点
         $('#btn-addnode').click(function () {
-            var index = layer.open({
-                title: '添加节点',
-                type: 2,
-                shade: 0.3,//遮罩
-                maxmin:true,//最大化最小化
-                shadeClose: true,//点击遮罩是否关闭
-                area: ['80%', '80%'],
-                content: '{:url("Systemnode/add","",false)}/pid/0',
-            });
-            $(window).on("resize", function () {
-                layer.full(index);
-            });
+            layTool.open('{:url("Systemnode/add","",false)}/pid/0',"添加节点");
         });
         //监听工具条
         table.on('tool(munu-table)', function (obj) {
@@ -114,53 +85,22 @@
             var layEvent = obj.event;
 
             if (layEvent === 'del') {
-                var index = layer.confirm('您确定要删除该记录？', {
-                    title: '友情提示',
-                    icon: 3,
-                    btn: ['确定', '取消']
-                }, function(){
+                layTool.confirm("确定要删除该记录?",function () {
                     $.getJSON("{:url('Systemnode/delete')}", {node_id:data.node_id}, function (res) {
                         if(res.code == 20000) {
-                            layer.msg(res.msg);
+                            layTool.msg(res.msg);
                             setTimeout(function () {
-                                renderTable();
+                                renderTreeTable();
                             }, 200);
                         } else {
-                            layer.alert(res.msg, {
-                                'title': '失败信息',
-                                'icon': 2
-                            });
+                            layTool.alert(res.msg)
                         }
                     }, 'json');
-                }, function(){
-
-                });
+                })
             } else if (layEvent === 'edit') {
-                var index = layer.open({
-                    title: '编辑节点',
-                    type: 2,
-                    shade: 0.3,//遮罩
-                    maxmin:true,//最大化最小化
-                    shadeClose: true,//点击遮罩是否关闭
-                    area: ['80%', '80%'],
-                    content: '{:url("Systemnode/edit","",false)}/node_id/'+data.node_id+'/pid/'+data.pid,
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
+                layTool.open('{:url("Systemnode/edit","",false)}/node_id/'+data.node_id+'/pid/'+data.pid,"编辑节点")
             } else if (layEvent === 'add') {
-                var index = layer.open({
-                    title: '编辑节点',
-                    type: 2,
-                    shade: 0.3,//遮罩
-                    maxmin:true,//最大化最小化
-                    shadeClose: true,//点击遮罩是否关闭
-                    area: ['80%', '80%'],
-                    content: '{:url("Systemnode/add","",false)}/pid/'+data.node_id,
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
+                layTool.open('{:url("Systemnode/add","",false)}/pid/'+data.node_id,"添加节点")
             }
         });
     });
