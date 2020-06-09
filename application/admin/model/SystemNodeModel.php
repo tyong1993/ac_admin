@@ -19,7 +19,7 @@ class SystemNodeModel extends BaseModel
      * @throws \think\exception\DbException
      */
     public static function getMenuList(){
-        $menuList = self::field('node_id id,pid,title,icon,auth_tag href,target')
+        $menuList = self::field('id,pid,title,icon,auth_tag,target')
             ->where('status', 'eq',1)
             ->where('is_menu', 'eq',1)
             ->order('sort', 'desc')
@@ -41,12 +41,14 @@ class SystemNodeModel extends BaseModel
                 $child = self::buildMenuChild($v['id'], $menuList);
                 if (!empty($child)) {
                     $node['child'] = $child;
+                    $node["href"] = "";
+                }else{
+                    $node["href"] = "admin/".$node["auth_tag"];
                 }
                 // 用户权限判断
-                if(session("admin_id") != 1 && !isset(self::getAdminAuthTags()[$node["id"]])){
+                if(!checkAuth($node["auth_tag"])){
                     continue;
                 }
-                $node["href"] = !empty($node["href"])?request()->module()."/".$node["href"]:"";
                 $treeList[] = $node;
             }
         }
@@ -61,7 +63,7 @@ class SystemNodeModel extends BaseModel
      */
     public static function getSelectList()
     {
-        $list = self::field('node_id id,pid,title')
+        $list = self::field('id,pid,title')
             ->where("status","=",1)
             ->select()
             ->toArray();
@@ -106,7 +108,7 @@ class SystemNodeModel extends BaseModel
     public static function getAllAuthTags(){
         $allAuthTags=cleanableCache("all_auth_tags");
         if($allAuthTags === null){
-            $res=self::where("status","=",1)->column("auth_tag","node_id");
+            $res=self::where("status","=",1)->column("auth_tag","id");
             $allAuthTags=$res;
             cleanableCache("all_auth_tags",$allAuthTags);
         }
@@ -127,12 +129,56 @@ class SystemNodeModel extends BaseModel
                 if(empty($node_ids)){
                     $adminAuthTags=[];
                 }else{
-                    $res=self::where("node_id","in",$node_ids)->where("status","=",1)->column("auth_tag","node_id");
+                    $res=self::where("id","in",$node_ids)->where("status","=",1)->column("auth_tag","id");
                     $adminAuthTags=$res;
                 }
             }
             cleanableCache("admin_auth_tags",$adminAuthTags);
         }
         return $adminAuthTags;
+    }
+    /**
+     * 获取授权列表
+     * @return array|\PDOStatement|string|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    protected static $role_nodes=[];
+    public static function getAuthorizeList($role_id){
+        $authList = self::field('id,pid,title')
+            ->where('status', 'eq',1)
+            ->order('sort', 'desc')
+            ->select();
+        self::$role_nodes=db("system_role_node")->where("role_id","=",$role_id)->column("node_id");
+        $authList = self::buildAuthorizeChild(0, $authList);
+        return $authList;
+    }
+
+    /**
+     * 递归获取子节点
+     * @param $pid
+     * @param $authList
+     * @return array
+     */
+    protected static function buildAuthorizeChild($pid, $authList){
+        $treeList = [];
+        foreach ($authList as $v) {
+            if ($pid == $v['pid']) {
+                $node = $v;
+                $child = self::buildAuthorizeChild($v['id'], $authList);
+                if (!empty($child)) {
+                    $node['children'] = $child;
+                }
+                if(empty($node['children']) && in_array($node["id"],self::$role_nodes)){
+                    $node["checked"] = true;
+                }else{
+                    $node["checked"] = false;
+                }
+                $node["spread"] = true;
+                $treeList[] = $node;
+            }
+        }
+        return $treeList;
     }
 }

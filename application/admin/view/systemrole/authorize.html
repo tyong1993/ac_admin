@@ -1,0 +1,91 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <form id="app-form" class="layui-form layuimini-form">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">角色名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="role_name" readonly class="layui-input" value="{$row.role_name}">
+                <input type="text" name="id" value="{$row.id}" style="display: none">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">分配节点</label>
+            <div class="layui-input-block">
+                <div id="authorize_node_elem" class="demo-tree-more"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="saveBtn">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    layui.use(['tree', 'util','form'], function(){
+        var tree = layui.tree
+            ,form = layui.form
+            ,$ =layui.$;
+        $.getJSON("{:url('systemnode/getAuthorizeNodes',['role_id'=>$row['id']])}", {}, function (res) {
+            console.log(res.data);
+            if(res.code == 20000) {
+                tree.render({
+                    //绑定节点
+                    elem: '#authorize_node_elem'
+                    //tree实例id
+                    ,id: 'authorize_node_id'
+                    //数据
+                    ,data: res.data
+                    //是否显示复选框
+                    ,showCheckbox: true
+
+                    //,isJump: true //是否允许点击节点时弹出新窗口跳转
+                    // ,click: function(obj){
+                    //     var data = obj.data;  //获取当前点击的节点数据
+                    //     layer.msg('状态：'+ obj.state + '<br>节点数据：' + JSON.stringify(data));
+                    // }
+                });
+            } else {
+                layTool.alert(res.msg,2)
+            }
+        }, 'json');
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            //获取选中节点的数据
+            var checkedData = tree.getChecked('authorize_node_id');
+            //从选中节点数据中获取id字符串
+            var getCheckedDataIds = function (node_ids,checkedData) {
+                for(var index in checkedData){
+                    node_ids+=checkedData[index].id+",";
+                    if(checkedData[index].children){
+                        node_ids=getCheckedDataIds(node_ids,checkedData[index].children);
+                    }
+                }
+                return node_ids;
+            };
+            //待提交的数据
+            var submitData={};
+            submitData.role_id=data.field.id;
+            submitData.node_ids=getCheckedDataIds("",checkedData);
+            $.post("{:url('Systemrole/authorize')}", submitData, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+
+    });
+</script>
+</body>

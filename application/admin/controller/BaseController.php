@@ -25,6 +25,10 @@ class BaseController extends Controller
      */
     protected $notNeedLoginFun = [];
     /**
+     * 验证失败是否抛出异常
+     */
+    protected $failException = true;
+    /**
      * 初始化
      */
     protected function initialize()

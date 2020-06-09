@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 
 
+use app\admin\model\SystemAdminModel;
 use app\admin\model\SystemNodeModel;
 
 class IndexController extends BaseController
@@ -23,6 +24,9 @@ class IndexController extends BaseController
         return $this->fetch();
     }
 
+    /**
+     * 初始化数据
+     */
     function getSystemInit(){
         $initData=[
             "homeInfo"=>[
@@ -39,6 +43,9 @@ class IndexController extends BaseController
         return json($initData);
     }
 
+    /**
+     * 登录
+     */
     function login(){
         if($this->request->isPost()){
             $username=$this->request->param("username");
@@ -57,9 +64,11 @@ class IndexController extends BaseController
         return $this->fetch();
     }
 
+    /**
+     * 登出
+     */
     function logout(){
-        session("admin_id",null);
-        session("admin_username",null);
+        SystemAdminModel::loginOut();
         return jsonSuccess();
     }
 

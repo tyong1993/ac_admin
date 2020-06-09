@@ -7,7 +7,8 @@ LayTool.prototype.layerIndex = null;
 // iframe 弹层
 LayTool.prototype.open = function (url, title, width, height) {
     layui.use('layer', function () {
-        var layer = layui.layer;
+        var layer = layui.layer,
+            $ = layui.$;
 
         if (!width) {
             width = '80%';
@@ -18,7 +19,7 @@ LayTool.prototype.open = function (url, title, width, height) {
         }
 
         layer.ready(function () {
-            layer.open({
+            var index = layer.open({
                 type: 2,
                 title: title,
                 shade: 0.3,//遮罩透明度
@@ -26,6 +27,9 @@ LayTool.prototype.open = function (url, title, width, height) {
                 shadeClose: true,//点击遮罩是否关闭
                 area: [width, height],
                 content: url
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
             });
         });
     });
@@ -120,49 +124,6 @@ LayTool.prototype.hideLoading = function () {
             layer.close(layTool.layerIndex);
         });
     }, 100);
-};
-
-// 数据表格
-LayTool.prototype.table = function (dom, url, cols, limit) {
-
-    layui.use('table', function(){
-        var table = layui.table;
-
-        if (!limit) {
-            limit = 10;
-        }
-
-        table.render({
-            elem: dom
-            ,limit: limit
-            ,height: 'full-200'
-            ,url: url
-            ,page: true
-            ,cols: cols
-        });
-    });
-};
-
-// 日历
-LayTool.prototype.layDate = function (dom, type, range) {
-
-    if (!type) {
-        type = 'date';
-    }
-
-    if (!range) {
-        range = false;
-    }
-
-    layui.use('laydate', function(){
-        var laydate = layui.laydate;
-
-        laydate.render({
-            elem: dom,
-            type: type,
-            range: range
-        });
-    });
 };
 
 layTool = new LayTool();

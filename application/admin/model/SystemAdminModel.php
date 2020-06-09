@@ -28,5 +28,12 @@ class SystemAdminModel extends BaseModel
             }
         }
     }
+    /**
+     * 退出登录
+     */
+    public static function loginOut(){
+        session("admin_id",null);
+        session("admin_username",null);
+    }
 
 }

@@ -10,11 +10,12 @@ namespace app\admin\controller;
 
 
 use app\admin\model\SystemNodeModel;
+use app\admin\villdate\SystemNodeVilldate;
 
 class SystemnodeController extends BaseController
 {
     /**
-     * 权限节点列表
+     * 列表
      */
     function index(){
         if($this->request->isAjax()){
@@ -25,11 +26,12 @@ class SystemnodeController extends BaseController
     }
 
     /**
-     * 添加节点
+     * 添加
      */
     function add(){
         if($this->request->isAjax()){
             $param=$this->request->post();
+            $this->validate($param,SystemNodeVilldate::class);
             db('system_node')->insert($param);
             return jsonSuccess();
         }
@@ -40,27 +42,39 @@ class SystemnodeController extends BaseController
         return $this->fetch();
     }
     /**
-     * 编辑节点
+     * 编辑
      */
     function edit(){
         if($this->request->isAjax()){
             $param=$this->request->post();
+            $this->validate($param,"app\admin\\villdate\SystemNodeVilldate");
             db('system_node')->update($param);
             return jsonSuccess();
         }
-        $id=$this->request->param('node_id');
-        $node=db("system_node")->find($id);
+        $id=$this->request->param('id');
+        $row=db("system_node")->find($id);
         $selectList=SystemNodeModel::getSelectList();
-        $this->assign("row",$node);
+        $this->assign("row",$row);
         $this->assign("selectList",$selectList);
         return $this->fetch();
     }
     /**
-     * 删除节点
+     * 删除
      */
     function delete(){
-        $id=$this->request->param('node_id');
+        $id=$this->request->param('id');
+        if(db('system_node')->where("pid","=",$id)->count()){
+            return jsonFail("该节点存在子节点,不可以删除");
+        }
         db('system_node')->delete($id);
         return jsonSuccess();
+    }
+    /**
+     * 获取节点数据供授权使用
+     */
+    function getAuthorizeNodes(){
+        $role_id=$this->request->param("role_id");
+        $res=SystemNodeModel::getAuthorizeList($role_id);
+        return jsonSuccess($res);
     }
 }

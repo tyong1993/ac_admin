@@ -2,7 +2,7 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <form class="layui-form" action="">
+        <form class="layui-form layuimini-form" action="">
             <div class="layui-form-item">
                 <label class="layui-form-label">上级节点</label>
                 <div class="layui-input-block">
@@ -15,16 +15,17 @@
             </div>
 
             <div class="layui-form-item">
-                <label class="layui-form-label">节点名称</label>
+                <label class="layui-form-label required">节点名称</label>
                 <div class="layui-input-block">
                     <input type="text" name="title" value="" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item">
-                <label class="layui-form-label">权限标识</label>
+                <label class="layui-form-label required">权限标识</label>
                 <div class="layui-input-block">
-                    <input type="text" name="auth_tag" value="" placeholder="菜单目录不填,请求为全小写的controller/action" autocomplete="off" class="layui-input">
+                    <input type="text" name="auth_tag" value="" placeholder="" autocomplete="off" class="layui-input">
+                    <tip>不可重复,对应请求则为全小写的controller/action</tip>
                 </div>
             </div>
 
@@ -89,7 +90,7 @@
                         parent.renderTreeTable();
                     }, 200);
                 } else {
-                    layTool.alert(res.msg)
+                    layTool.alert(res.msg,2)
                 }
             }, 'json');
             return false;

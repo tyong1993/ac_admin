@@ -9,7 +9,7 @@
 namespace app\common;
 
 /**
- * 业务码
+ * 业务状态码
  * Class ServiceCode
  * @package app\common
  */

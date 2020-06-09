@@ -38,7 +38,7 @@
             treetable.render({
                 treeColIndex: 0,//折叠箭头显示在第几列上面
                 treeSpid: 0,//顶级节点的pid
-                treeIdName: 'node_id',
+                treeIdName: 'id',
                 treePidName: 'pid',
                 elem: '#munu-table',
                 url: '{:url("Systemnode/index")}',
@@ -47,14 +47,22 @@
                     // {type: 'checkbox'},
                     {field: 'title', minWidth: 200, title: '节点名称'},
                     {field: 'auth_tag', title: '权限标识'},
-                    // {field: 'menuUrl', title: '菜单url'},
-                    // {field: 'orderNumber', width: 80, align: 'center', title: '排序号'},
                     {
                         field: 'is_menu', width: 150, align: 'center', templet: function (d) {
                             if (d.is_menu == 1) {
                                 return '<span class="layui-badge layui-bg-gray">是</span>';
                             } else {
                                 return '<span class="layui-badge-rim">否</span>';
+                            }
+
+                        }, title: '是否菜单'
+                    },
+                    {
+                        field: 'status', width: 150, align: 'center', templet: function (d) {
+                            if (d.status == 1) {
+                                return '<span class="layui-badge layui-bg-gray">正常</span>';
+                            } else {
+                                return '<span class="layui-badge-rim">禁用</span>';
                             }
 
                         }, title: '是否菜单'
@@ -86,21 +94,21 @@
 
             if (layEvent === 'del') {
                 layTool.confirm("确定要删除该记录?",function () {
-                    $.getJSON("{:url('Systemnode/delete')}", {node_id:data.node_id}, function (res) {
+                    $.getJSON("{:url('Systemnode/delete')}", {id:data.id}, function (res) {
                         if(res.code == 20000) {
                             layTool.msg(res.msg);
                             setTimeout(function () {
                                 renderTreeTable();
                             }, 200);
                         } else {
-                            layTool.alert(res.msg)
+                            layTool.alert(res.msg,2)
                         }
                     }, 'json');
                 })
             } else if (layEvent === 'edit') {
-                layTool.open('{:url("Systemnode/edit","",false)}/node_id/'+data.node_id+'/pid/'+data.pid,"编辑节点")
+                layTool.open('{:url("Systemnode/edit","",false)}/id/'+data.id+'/pid/'+data.pid,"编辑节点")
             } else if (layEvent === 'add') {
-                layTool.open('{:url("Systemnode/add","",false)}/pid/'+data.node_id,"添加节点")
+                layTool.open('{:url("Systemnode/add","",false)}/pid/'+data.id,"添加节点")
             }
         });
     });
