@@ -54,6 +54,9 @@ class IndexController extends BaseController
             if(empty($admin)){
                 return jsonFail("账号或密码错误");
             }
+            if(!$admin["status"]){
+                return jsonFail("账户已被禁用");
+            }
             if(!checkPassword($password,$admin["password"],$admin["salt"])){
                 return jsonFail("账号或密码错误");
             }

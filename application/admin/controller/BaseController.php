@@ -33,12 +33,13 @@ class BaseController extends Controller
      */
     protected function initialize()
     {
-        $controller = $this->request->controller();
-        $action = $this->request->action();
-        $authTag = strtolower($controller . '/' . $action);
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+        $authTag = $controller . '/' . $action;;
         if($this->isNeedLogin && !in_array($action,$this->notNeedLoginFun)){
             //检测登陆
             if(empty(session("admin_id"))){
+//                $this->redirect(url("Index/login"));
                 throw new ServiceException("请先登陆",ServiceCode::NOT_LOGIN);
             }
             //检测权限
