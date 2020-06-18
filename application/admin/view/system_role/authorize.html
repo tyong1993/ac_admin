@@ -31,7 +31,7 @@
         var tree = layui.tree
             ,form = layui.form
             ,$ =layui.$;
-        $.getJSON("{:url('systemnode/getAuthorizeNodes',['role_id'=>$row['id']])}", {}, function (res) {
+        $.getJSON("{:url('SystemNode/getAuthorizeNodes',['role_id'=>$row['id']])}", {}, function (res) {
             console.log(res.data);
             if(res.code == 20000) {
                 tree.render({
@@ -72,7 +72,7 @@
             var submitData={};
             submitData.role_id=data.field.id;
             submitData.node_ids=getCheckedDataIds("",checkedData);
-            $.post("{:url('Systemrole/authorize')}", submitData, function (res) {
+            $.post("{:url('authorize')}", submitData, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

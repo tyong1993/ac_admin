@@ -13,7 +13,7 @@ use app\admin\model\SystemAdminModel;
 use app\admin\villdate\SystemAdminVilldate;
 use app\common\exception\ServiceException;
 
-class SystemadminController extends BaseController
+class SystemAdminController extends BaseController
 {
     /**
      * 列表

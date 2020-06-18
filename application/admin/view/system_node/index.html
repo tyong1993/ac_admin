@@ -41,7 +41,7 @@
                 treeIdName: 'id',
                 treePidName: 'pid',
                 elem: '#munu-table',
-                url: '{:url("Systemnode/index")}',
+                url: '{:url("index")}',
                 page: false,
                 cols: [[
                     // {type: 'checkbox'},
@@ -85,7 +85,7 @@
         });
         //添加顶级节点
         $('#btn-addnode').click(function () {
-            layTool.open('{:url("Systemnode/add","",false)}/pid/0',"添加节点");
+            layTool.open('{:url("add","",false)}/pid/0',"添加节点");
         });
         //监听工具条
         table.on('tool(munu-table)', function (obj) {
@@ -94,7 +94,7 @@
 
             if (layEvent === 'del') {
                 layTool.confirm("确定要删除该记录?",function () {
-                    $.getJSON("{:url('Systemnode/delete')}", {id:data.id}, function (res) {
+                    $.getJSON("{:url('delete')}", {id:data.id}, function (res) {
                         if(res.code == 20000) {
                             layTool.msg(res.msg);
                             setTimeout(function () {
@@ -106,9 +106,9 @@
                     }, 'json');
                 })
             } else if (layEvent === 'edit') {
-                layTool.open('{:url("Systemnode/edit","",false)}/id/'+data.id+'/pid/'+data.pid,"编辑节点")
+                layTool.open('{:url("edit","",false)}/id/'+data.id+'/pid/'+data.pid,"编辑节点")
             } else if (layEvent === 'add') {
-                layTool.open('{:url("Systemnode/add","",false)}/pid/'+data.id,"添加节点")
+                layTool.open('{:url("add","",false)}/pid/'+data.id,"添加节点")
             }
         });
     });

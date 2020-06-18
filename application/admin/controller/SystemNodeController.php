@@ -12,7 +12,7 @@ namespace app\admin\controller;
 use app\admin\model\SystemNodeModel;
 use app\admin\villdate\SystemNodeVilldate;
 
-class SystemnodeController extends BaseController
+class SystemNodeController extends BaseController
 {
     /**
      * 列表
@@ -66,7 +66,11 @@ class SystemnodeController extends BaseController
         if(db('system_node')->where("pid","=",$id)->count()){
             return jsonFail("该节点存在子节点,不可以删除");
         }
+        //删除节点同时删除节点权限数据
+        db()->startTrans();
+        db('system_role_node')->where("node_id","=",$id)->delete();
         db('system_node')->delete($id);
+        db()->commit();
         return jsonSuccess();
     }
     /**

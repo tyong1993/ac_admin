@@ -11,7 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\villdate\SystemRoleVilldate;
 
-class SystemroleController extends BaseController
+class SystemRoleController extends BaseController
 {
     /**
      * 列表
@@ -69,7 +69,11 @@ class SystemroleController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
+        //删除角色同时删除角色权限数据
+        db()->startTrans();
+        db('system_role_node')->where("role_id","in",$id_arr)->delete();
         db('system_role')->where("id","in",$id_arr)->delete();
+        db()->commit();
         return jsonSuccess();
     }
     /**

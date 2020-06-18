@@ -58,7 +58,7 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            $.post("{:url('Systemadmin/edit')}", data.field, function (res) {
+            $.post("{:url('edit')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

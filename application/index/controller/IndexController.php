@@ -1,11 +1,14 @@
 <?php
 namespace app\index\controller;
 
+use think\Request;
+
 class IndexController
 {
-    public function index()
+    public function index(Request $request)
     {
-        return "hello word";
+        return $request->controller()."/".$request->action();
     }
+
 
 }

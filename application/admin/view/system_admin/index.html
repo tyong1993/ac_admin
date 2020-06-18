@@ -46,7 +46,7 @@
         //初始化表格
         table.render({
             elem: '#currentTableId',
-            url: '{:url("systemadmin/index")}',
+            url: '{:url("index")}',
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
@@ -90,7 +90,7 @@
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'add') {
-                layTool.open('{:url("systemadmin/add")}','添加');
+                layTool.open('{:url("add")}','添加');
             } else if (obj.event === 'delete') {
                 var checkStatus = table.checkStatus('currentTableId')
                     , data = checkStatus.data;
@@ -110,7 +110,7 @@
         table.on('tool(currentTableFilter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') {
-                layTool.open('{:url("systemadmin/edit","",false)}/id/'+data.id,'编辑');
+                layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
             } else if (obj.event === 'delete') {
                 layTool.confirm("确定要删除该记录?",function () {
                     doDelete(data.id);
@@ -119,7 +119,7 @@
         });
         //执行删除操作
         var doDelete = function (ids) {
-            $.getJSON("{:url('systemadmin/delete')}", {id:ids}, function (res) {
+            $.getJSON("{:url('delete')}", {id:ids}, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

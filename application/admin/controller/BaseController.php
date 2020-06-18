@@ -33,14 +33,18 @@ class BaseController extends Controller
      */
     protected function initialize()
     {
-        $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
+        $controller = $this->request->controller();
+        $action = $this->request->action();
         $authTag = $controller . '/' . $action;;
-        if($this->isNeedLogin && !in_array($action,$this->notNeedLoginFun)){
+        $notNeedLoginFun = array_map("strtolower",$this->notNeedLoginFun);
+        if($this->isNeedLogin && !in_array(strtolower($action),$notNeedLoginFun)){
             //检测登陆
             if(empty(session("admin_id"))){
-//                $this->redirect(url("Index/login"));
-                throw new ServiceException("请先登陆",ServiceCode::NOT_LOGIN);
+                if($this->request->isAjax()){
+                    throw new ServiceException("请先登陆",ServiceCode::NOT_LOGIN);
+                }else{
+                    $this->redirect(url("Index/login"));
+                }
             }
             //检测权限
             SystemAdminModel::checkAuth($authTag);

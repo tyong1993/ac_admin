@@ -7,31 +7,10 @@
 <body>
 <div class="layui-form layuimini-form">
     <div class="layui-form-item">
-        <label class="layui-form-label required">用户名</label>
+        <label class="layui-form-label required">角色名称</label>
         <div class="layui-input-block">
-            <input type="text" name="username" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" value="" class="layui-input">
-            <tip>登录账号,不可重复</tip>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label required">密码</label>
-        <div class="layui-input-block">
-            <input type="password" name="password" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入密码" value="" class="layui-input">
-            <tip>不少于6个字符</tip>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label required">确认密码</label>
-        <div class="layui-input-block">
-            <input type="password" name="re_password" lay-verify="required" lay-reqtext="确认密码不能为空" placeholder="" value="" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">角色</label>
-        <div class="layui-input-block">
-            {foreach name="$roles" item="role"}
-            <input type="checkbox" name="role_ids[]" value="{$role.id}" title="{$role.role_name}">
-            {/foreach}
+            <input type="text" name="role_name" lay-verify="required" lay-reqtext="角色名称不能为空" autocomplete="off" placeholder="请输入角色名称" value="" class="layui-input">
+            <tip>不可重复,角色作为权限的载体,一个管理员可以扮演多种角色</tip>
         </div>
     </div>
     <div class="layui-form-item">
@@ -54,7 +33,7 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            $.post("{:url('Systemadmin/add')}", data.field, function (res) {
+            $.post("{:url('add')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

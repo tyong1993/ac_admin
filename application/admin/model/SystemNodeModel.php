@@ -109,7 +109,7 @@ class SystemNodeModel extends BaseModel
         $allAuthTags=cleanableCache("all_auth_tags");
         if($allAuthTags === null){
             $res=self::where("status","=",1)->column("auth_tag","id");
-            $allAuthTags=$res;
+            $allAuthTags=array_map("strtolower",$res);
             cleanableCache("all_auth_tags",$allAuthTags);
         }
         return $allAuthTags;
@@ -130,7 +130,7 @@ class SystemNodeModel extends BaseModel
                     $adminAuthTags=[];
                 }else{
                     $res=self::where("id","in",$node_ids)->where("status","=",1)->column("auth_tag","id");
-                    $adminAuthTags=$res;
+                    $adminAuthTags=array_map("strtolower",$res);;
                 }
             }
             cleanableCache("admin_auth_tags",$adminAuthTags);

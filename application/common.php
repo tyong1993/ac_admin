@@ -97,7 +97,7 @@ function cleanableCache($key,$data=null){
     if(empty($key)){
         throw new \think\Exception("不合法的缓存键");
     }
-    $cleanableCacheData = cache("cleanable_ache");
+    $cleanableCacheData = cache("cleanable_cache");
     if(empty($cleanableCacheData)){
         $cleanableCacheData=[];
     }
@@ -107,5 +107,5 @@ function cleanableCache($key,$data=null){
     }
     //存数据
     $cleanableCacheData[$key]=$data;
-    cache("cleanable_ache",$cleanableCacheData);
+    cache("cleanable_cache",$cleanableCacheData);
 }

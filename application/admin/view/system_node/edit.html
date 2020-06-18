@@ -3,12 +3,13 @@
 <div class="layuimini-container">
     <div class="layuimini-main">
         <form class="layui-form layuimini-form" action="">
+            <input type="text" name="id" value="{$row.id}" style="display: none">
             <div class="layui-form-item">
                 <label class="layui-form-label">上级节点</label>
                 <div class="layui-input-block">
                     <select name="pid">
                         {foreach $selectList as $vo}
-                        <option value="{$vo.id}" {if $pid==$vo.id}selected=""{/if}>{$vo.title|raw}</option>
+                        <option value="{$vo.id}" {if $row.pid==$vo.id}selected=""{/if}>{$vo.title|raw}</option>
                         {/foreach}
                     </select>
                 </div>
@@ -17,51 +18,51 @@
             <div class="layui-form-item">
                 <label class="layui-form-label required">节点名称</label>
                 <div class="layui-input-block">
-                    <input type="text" name="title" value="" autocomplete="off" class="layui-input">
+                    <input type="text" name="title" value="{$row.title}" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label required">权限标识</label>
                 <div class="layui-input-block">
-                    <input type="text" name="auth_tag" value="" placeholder="" autocomplete="off" class="layui-input">
-                    <tip>不可重复,对应请求则为全小写的controller/action</tip>
+                    <input type="text" name="auth_tag" value="{$row.auth_tag}" placeholder="" autocomplete="off" class="layui-input">
+                    <tip>不可重复,对应请求则为Controller/Action</tip>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">是否菜单</label>
                 <div class="layui-input-block">
-                    <input type="radio" name="is_menu" value="1" title="是" checked>
-                    <input type="radio" name="is_menu" value="0" title="否">
+                    <input type="radio" name="is_menu" value="1" title="是" {if $row.is_menu==1}checked{/if}>
+                    <input type="radio" name="is_menu" value="0" title="否" {if $row.is_menu==0}checked{/if}>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">菜单图标</label>
                 <div class="layui-input-block">
-                    <input type="text" name="icon" value="" autocomplete="off" class="layui-input">
+                    <input type="text" name="icon" value="{$row.icon}" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">打开方式</label>
                 <div class="layui-input-block">
-                    <input type="radio" name="target" value="_self" title="当前窗口" checked>
-                    <input type="radio" name="target" value="_blank" title="新窗口">
+                    <input type="radio" name="target" value="_self" title="当前窗口" {if $row.target=='_self'}checked{/if}>
+                    <input type="radio" name="target" value="_blank" title="新窗口" {if $row.target=='_blank'}checked{/if}>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
-                    <input type="radio" name="status" value="1" title="正常" checked>
-                    <input type="radio" name="status" value="0" title="禁用">
+                    <input type="radio" name="status" value="1" title="正常" {if $row.status==1}checked{/if}>
+                    <input type="radio" name="status" value="0" title="禁用" {if $row.status==0}checked{/if}>
                 </div>
             </div>
             <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">备注</label>
                 <div class="layui-input-block">
-                    <textarea placeholder="请输入内容" class="layui-textarea" name="remark"></textarea>
+                    <textarea placeholder="请输入内容" class="layui-textarea" name="remark">{$row.remark}</textarea>
                 </div>
             </div>
 
@@ -81,7 +82,7 @@
             $ = layui.$;
         //监听提交
         form.on('submit(form-element1)', function (data) {
-            $.post("{:url('Systemnode/add')}", data.field, function (res) {
+            $.post("{:url('edit')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {
@@ -90,7 +91,7 @@
                         parent.renderTreeTable();
                     }, 200);
                 } else {
-                    layTool.alert(res.msg,2)
+                    layTool.alert(res.msg,2);
                 }
             }, 'json');
             return false;

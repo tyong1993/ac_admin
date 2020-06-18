@@ -79,7 +79,7 @@ class IndexController extends BaseController
      * 清理服务端缓存
      */
     function cleanCache(){
-        cache('cleanable_ache',[]);
+        cache('cleanable_cache',[]);
         return jsonSuccess([],"服务端缓存已清除",1);
     }
 }
