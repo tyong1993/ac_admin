@@ -9,9 +9,9 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">用户名</label>
+                            <label class="layui-form-label">抬头</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                                <input type="text" name="title" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -25,7 +25,7 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加管理员 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加开票信息 </button>
             </div>
         </script>
 
@@ -46,26 +46,19 @@
         //初始化表格
         table.render({
             elem: '#currentTableId',
-            url: '{:url("index")}',
+            url: '{:url("index","c_s_id=".$c_s_id)}',
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 80, title: 'ID'},
-                {field: 'name', width: 80, title: '姓名'},
-                {field: 'username', title: '用户名'},
-                {
-                    field: 'status', width: 150, align: 'center', templet: function (d) {
-                        if (d.status == 1) {
-                            return '<span class="layui-badge layui-bg-gray">正常</span>';
-                        } else {
-                            return '<span class="layui-badge-rim">禁用</span>';
-                        }
-
-                    }, title: '状态'
-                },
-                {field: 'create_time', title: '创建时间'},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {field: 'title', title: '抬头'},
+                {field: 'tax_num', title: '税号'},
+                {field: 'address', title: '地址'},
+                {field: 'phone', title: '电话'},
+                {field: 'bank_account', title: '银行账号'},
+                {field: 'bank_name', title: '银行名称'},
+                {title: '操作', minWidth: 300, toolbar: '#currentTableBar', align: "center"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -91,7 +84,7 @@
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'add') {
-                layTool.open('{:url("add")}','添加');
+                layTool.open('{:url("add","c_s_id=".$c_s_id)}','添加');
             } else if (obj.event === 'delete') {
                 var checkStatus = table.checkStatus('currentTableId')
                     , data = checkStatus.data;

@@ -1,0 +1,154 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input name="id" value="{$row['id']}" style="display: none"/>
+    <input name="periods" value="{$row['periods']}" style="display: none"/>
+    <input name="collection_amount" value="{$row['collection_amount']}" style="display: none"/>
+    <input name="contract_id" value="{$contract['id']}" style="display: none"/>
+    <input name="contract_name" value="{$contract['contract_name']}" style="display: none"/>
+    <input name="is_contain_tax" value="{$contract['is_contain_tax']}" style="display: none"/>
+    <input name="tax_rate" value="{$contract['tax_rate']}" style="display: none"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开票金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="invoice_amount" autocomplete="off" placeholder="请输入开票金额" class="layui-input">
+        </div>
+    </div>
+    <input style="display: none" id="title" name="title"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">抬头</label>
+        <div class="layui-input-block">
+            <select lay-filter="title_select" name="">
+                <option value="">请选择开票抬头</option>
+                {foreach $invoices as $invoice}
+                <option value="{$invoice['title']}|-|{$invoice['tax_num']}|-|{$invoice['bank_name']}|-|{$invoice['bank_account']}">{$invoice["title"]}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">税号</label>
+        <div class="layui-input-block">
+            <input type="text" name="tax_num" id="tax_num" autocomplete="off" placeholder="请输入税号" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开户行</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_name" id="bank_name" autocomplete="off" placeholder="请输入开户行" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账号</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_account" id="bank_account" autocomplete="off" placeholder="请输入账号" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_1">确认</button>
+        </div>
+    </div>
+</div>
+</div>
+<!--确认实际收款弹层-->
+<div class="layui-form layuimini-form" id="confirm_collection_div" style="display: none;padding-right: 10%;padding-top: 10px;padding-bottom: 10px">
+    <div class="layui-form-item">
+        <label class="layui-form-label">确定实际收款</label>
+        <div class="layui-input-block">
+            <input type="text" name="" id="confirm_collection" autocomplete="off" readonly value="" class="layui-input"><br>
+            <span style="color: red">本期待收款:<span id="to_be_collected"></span></span>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_2">取消</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_2">确认</button>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //确认实际收款索引
+        var confirm_collection_layer_index = 0;
+        //待提交的表单数据
+        var form_data = null;
+        //监听确认1
+        form.on('submit(saveBtn_1)', function (data) {
+            form_data = data;
+            if(!data.field.invoice_amount){
+                layTool.alert("请输入开票金额",2);return false;
+            }
+            if(!data.field.title){
+                layTool.alert("请选择开票抬头",2);return false;
+            }
+            $("#confirm_collection").val(data.field.invoice_amount);
+            $("#to_be_collected").html(data.field.collection_amount-data.field.invoice_amount);
+            confirm_collection_layer_index = layer.open({
+                type: 1,
+                title: '确认收款',
+                area: ['80%', '80%'],
+                content: $("#confirm_collection_div")
+            });
+        });
+        //监听取消1
+        form.on('submit(cancel_1)', function (data) {
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload();
+        });
+        //监听确认2
+        form.on('submit(saveBtn_2)', function (data) {
+            data = form_data;
+            $.post("{:url('status1')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.location.reload();
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //监听取消2
+        form.on('submit(cancel_2)', function (data) {
+            layer.close(confirm_collection_layer_index);
+        });
+        //抬头选择
+        form.on('select(title_select)', function(obj){
+            var val = obj.value;
+            var title = "";
+            var tax_num = "";
+            var bank_name = "";
+            var bank_account = "";
+            if(val){
+                var arr=val.split('|-|');
+                title = arr[0];
+                tax_num = arr[1];
+                bank_name = arr[2];
+                bank_account = arr[3];
+            }
+            $("#title").val(title);
+            $("#tax_num").val(tax_num);
+            $("#bank_name").val(bank_name);
+            $("#bank_account").val(bank_account);
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input name="id" value="{$row['id']}" style="display: none"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="contract_name" autocomplete="off" placeholder="请输入合同名称" value="{$row['contract_name']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">客户单位</label>
+        <input style="display: none" id="customer_name" name="customer_name" value="{$row["customer_name"]}"/>
+        <div class="layui-input-block">
+            <select lay-filter="customer_select" name="" lay-search>
+                <option value="">请选择客户单位</option>
+                {foreach $customers as $customer}
+                <option value="{$customer['company_name']}|-|{$customer['business_contact']}|-|{$customer['project_contact']}" {if $customer['company_name'] == $row["customer_name"]}selected{/if}>{$customer['company_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">签订日期</label>
+        <div class="layui-input-block">
+            <input type="text" name="sign_date" value="{$row['sign_date']}" class="layui-input" id="date_time_sign_date" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同内容</label>
+        <div class="layui-input-block">
+            <textarea name="content" placeholder="请输入合同内容" class="layui-textarea">{$row['content']}</textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">公司合同编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_identifier" value="{$row['company_identifier']}" autocomplete="off" placeholder="请输入公司合同编号" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">客户合同编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="customer_identifier" value="{$row['customer_identifier']}" autocomplete="off" placeholder="请输入客户合同编号" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商务联系人</label>
+        <div class="layui-input-block">
+            <input type="text" id="business_contact" name="business_contact" value="{$row['business_contact']}" autocomplete="off" placeholder="请输入商务联系人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">项目联系人</label>
+        <div class="layui-input-block">
+            <input type="text" id="project_contact" name="project_contact" value="{$row['project_contact']}" autocomplete="off" placeholder="请输入项目联系人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商务负责人</label>
+        <div class="layui-input-block">
+            <input type="text" name="business_leader" value="{$row['business_leader']}" autocomplete="off" placeholder="请输入商务负责人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">项目负责人</label>
+        <div class="layui-input-block">
+            <input type="text" name="project_leader" value="{$row['project_leader']}" autocomplete="off" placeholder="请输入项目负责人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同金额(元)</label>
+        <div class="layui-input-block">
+            <input type="text" name="contract_amount" value="{$row['contract_amount']}" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否含税</label>
+        <div class="layui-input-block">
+            <input type="radio" name="is_contain_tax" value="1" title="含税" {if $row["is_contain_tax"] == 1}checked{/if}>
+            <input type="radio" name="is_contain_tax" value="0" title="不含税" {if $row["is_contain_tax"] == 0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">税率(%)</label>
+        <div class="layui-input-block">
+            <input type="text" name="tax_rate" autocomplete="off" placeholder="请输入税率" value="{$row['tax_rate']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">账期(天)</label>
+        <div class="layui-input-block">
+            <input type="text" name="payment_days" value="{$row['payment_days']}" autocomplete="off" placeholder="请输入账期" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同开始时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="start_time" class="layui-input" id="date_time_start_time" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同结束时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="end_time" class="layui-input" id="date_time_end_time" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('edit')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+
+        //客户单位选择
+        form.on('select(customer_select)', function(obj){
+            var val = obj.value;
+            var customer_name = "";
+            var business_contact = "";
+            var project_contact = "";
+            if(val){
+                var arr=val.split('|-|');
+                customer_name = arr[0];
+                business_contact = arr[1];
+                project_contact = arr[2];
+            }
+            $("#customer_name").val(customer_name);
+            $("#business_contact").val(business_contact);
+            $("#project_contact").val(project_contact);
+        });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_sign_date'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_start_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_end_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+    });
+</script>
+</body>
+</html>

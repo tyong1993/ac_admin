@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\model\SystemNodeModel;
 use app\admin\villdate\SystemNodeVilldate;
+use think\Db;
 
 class SystemNodeController extends BaseController
 {
@@ -67,10 +68,10 @@ class SystemNodeController extends BaseController
             return jsonFail("该节点存在子节点,不可以删除");
         }
         //删除节点同时删除节点权限数据
-        db()->startTrans();
-        db('system_role_node')->where("node_id","=",$id)->delete();
-        db('system_node')->delete($id);
-        db()->commit();
+        Db::startTrans();
+        Db::name('system_role_node')->where("node_id","=",$id)->delete();
+        Db::name('system_node')->delete($id);
+        Db::commit();
         return jsonSuccess();
     }
     /**

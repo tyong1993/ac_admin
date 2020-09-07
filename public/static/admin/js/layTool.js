@@ -40,17 +40,20 @@ LayTool.prototype.open = function (url, title, width, height) {
  * icon:0感叹号,1勾,2叉,3问号,4锁,5哭,6笑
  */
 LayTool.prototype.confirm = function (title,confirm,cancel,icon) {
-    if(!title){
-        title = '确定要执行该操作?';
-    }
-    if(typeof icon == 'undefined'){
-        icon = 3;
-    }
-    layer.confirm(title, {
-        title: '友情提示',
-        icon: icon,
-        btn: ['确定', '取消']
-    },confirm ,cancel);
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        if(!title){
+            title = '确定要执行该操作?';
+        }
+        if(typeof icon == 'undefined'){
+            icon = 3;
+        }
+        layer.confirm(title, {
+            title: '友情提示',
+            icon: icon,
+            btn: ['确定', '取消']
+        },confirm ,cancel);
+    });
 };
 
 /**

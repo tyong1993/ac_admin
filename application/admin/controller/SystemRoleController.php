@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 
 use app\admin\villdate\SystemRoleVilldate;
+use think\Db;
 
 class SystemRoleController extends BaseController
 {
@@ -70,10 +71,10 @@ class SystemRoleController extends BaseController
             return jsonFail("未找到需要删除的对象");
         }
         //删除角色同时删除角色权限数据
-        db()->startTrans();
-        db('system_role_node')->where("role_id","in",$id_arr)->delete();
-        db('system_role')->where("id","in",$id_arr)->delete();
-        db()->commit();
+        Db::startTrans();
+        Db::name('system_role_node')->where("role_id","in",$id_arr)->delete();
+        Db::name('system_role')->where("id","in",$id_arr)->delete();
+        Db::commit();
         return jsonSuccess();
     }
     /**

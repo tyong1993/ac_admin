@@ -6,61 +6,61 @@
 </style>
 <body>
 <div class="layui-form layuimini-form">
+    <input name="id" value="{$row['id']}" style="display: none"/>
+    <input name="c_s_id" value="{$row['c_s_id']}" style="display: none"/>
     <div class="layui-form-item">
-        <label class="layui-form-label required">姓名</label>
+        <label class="layui-form-label">抬头</label>
         <div class="layui-input-block">
-            <input type="text" name="name" lay-verify="required" lay-reqtext="姓名不能为空" placeholder="请输入姓名" value="" class="layui-input">
+            <input type="text" name="title" autocomplete="off" placeholder="请输入抬头" value="{$row['title']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label required">用户名</label>
+        <label class="layui-form-label">税号</label>
         <div class="layui-input-block">
-            <input type="text" name="username" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" value="" class="layui-input">
-            <tip>登录账号,不可重复</tip>
+            <input type="text" name="tax_num" autocomplete="off" placeholder="请输入税号" value="{$row['tax_num']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label required">密码</label>
+        <label class="layui-form-label">地址</label>
         <div class="layui-input-block">
-            <input type="password" name="password" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入密码" value="" class="layui-input">
-            <tip>不少于6个字符</tip>
+            <input type="text" name="address" autocomplete="off" placeholder="请输入地址" value="{$row['address']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label required">确认密码</label>
+        <label class="layui-form-label">电话</label>
         <div class="layui-input-block">
-            <input type="password" name="re_password" lay-verify="required" lay-reqtext="确认密码不能为空" placeholder="" value="" class="layui-input">
+            <input type="text" name="phone" autocomplete="off" placeholder="请输入电话" value="{$row['phone']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">角色</label>
+        <label class="layui-form-label">银行账号</label>
         <div class="layui-input-block">
-            {foreach name="$roles" item="role"}
-            <input type="checkbox" name="role_ids[]" value="{$role.id}" title="{$role.role_name}">
-            {/foreach}
+            <input type="text" name="bank_account" autocomplete="off" placeholder="请输入账号" value="{$row['bank_account']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">状态</label>
+        <label class="layui-form-label">银行名称</label>
         <div class="layui-input-block">
-            <input type="radio" name="status" value="1" title="正常" checked>
-            <input type="radio" name="status" value="0" title="禁用">
+            <input type="text" name="bank_name" autocomplete="off" placeholder="请输入银行名称" value="{$row['bank_name']}" class="layui-input">
         </div>
     </div>
+
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
         </div>
     </div>
 </div>
+</div>
 <script>
     layui.use(['form'], function () {
         var form = layui.form,
+            layer = layui.layer,
             $ = layui.$;
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            $.post("{:url('add')}", data.field, function (res) {
+            $.post("{:url('edit')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

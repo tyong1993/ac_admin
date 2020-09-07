@@ -1,0 +1,60 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input type="text" name="c_s_id" style="display: none" value="{$c_s_id}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">收款人</label>
+        <div class="layui-input-block">
+            <input type="text" name="payee" autocomplete="off" placeholder="请输入收款人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行账号</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_account" autocomplete="off" placeholder="请输入银行账号" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">银行名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="bank_name" autocomplete="off" placeholder="请输入银行名称" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('add')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

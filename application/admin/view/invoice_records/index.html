@@ -1,0 +1,128 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <!--<legend>搜索信息</legend>-->
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">申请人</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sq_people" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="export"> 导出数据 </button>
+            </div>
+        </script>
+        <script type="text/html" id="colletionStatusTpl">
+            {{#  if(d.colletion_status == 1){ }}
+            <button class="layui-btn layui-btn-success layui-btn-xs">已收款</button>
+            {{#  } else { }}
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doCollection({{ d.id }})">未收款</button>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="invoiceStatusTpl">
+            {{#  if(d.invoice_status == 1){ }}
+            <button class="layui-btn layui-btn-success layui-btn-xs">已开票</button>
+            {{#  } else { }}
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doInvoice({{ d.id }})">未开票</button>
+            {{#  } }}
+        </script>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+        </script>
+
+    </div>
+</div>
+<script>
+    var $;
+    layui.use(['form', 'table'], function () {
+            $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        //初始化表格
+        table.render({
+            elem: '#currentTableId',
+            url: '{:url("index")}',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: [],
+            cols: [[
+                {field: 'id', width: 80, title: 'ID'},
+                {field: 'create_time', title: '申请日期'},
+                {field: 'contract_name', title: '合同名称'},
+                {field: 'periods', title: '期数'},
+                {field: 'title', title: '抬头'},
+                {field: 'sq_people', title: '申请人'},
+                {field: 'invoice_amount', title: '申请金额'},
+                {field: 'tax_rate', title: '税率%'},
+                {field: 'surplus_amount', title: '余额'},
+                {field: 'invoice_time', title: '开票时间'},
+                {field: 'invoice_status', title: '开票状态',templet:'#invoiceStatusTpl'},
+                {field: 'colletion_status', title: '收款状态',templet:'#colletionStatusTpl'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'line'
+        });
+
+        /**
+         * 搜索
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            var where = data.field;
+            //重载表格
+            table.reload('currentTableId', {
+                page: {curr: 1},
+                where: where
+            }, 'data');
+            return false;
+        });
+
+        /**
+         * 全局操作
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'export') {
+                layTool.alert("开发中..................")
+            }
+        });
+
+    });
+    //开票
+    function doInvoice(id) {
+        layTool.open('{:url("doInvoice","",false)}/id/'+id,'待开票');
+    }
+    //收款
+    function doCollection(id) {
+        layTool.confirm("确认已收款?",function () {
+            $.post("{:url('doCollection')}", {id:id}, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        })
+    }
+</script>
+
+</body>
+</html>

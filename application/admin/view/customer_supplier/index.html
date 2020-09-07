@@ -9,9 +9,9 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">用户名</label>
+                            <label class="layui-form-label">公司名称</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                                <input type="text" name="company_name" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -25,13 +25,15 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加管理员 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加客户/供应商 </button>
             </div>
         </script>
 
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="accounts">账号信息</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="invoice">开票信息</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -52,20 +54,17 @@
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 80, title: 'ID'},
-                {field: 'name', width: 80, title: '姓名'},
-                {field: 'username', title: '用户名'},
-                {
-                    field: 'status', width: 150, align: 'center', templet: function (d) {
-                        if (d.status == 1) {
-                            return '<span class="layui-badge layui-bg-gray">正常</span>';
-                        } else {
-                            return '<span class="layui-badge-rim">禁用</span>';
-                        }
-
-                    }, title: '状态'
-                },
+                {field: 'company_name', title: '公司名称'},
+                {field: 'company_region', title: '地区'},
+                {field: 'company_address', title: '地址'},
+                {field: 'business_profile', title: '业务简介'},
+                {field: 'business_contact', title: '商务联系人'},
+                {field: 'project_contact', title: '项目联系人'},
+                {field: 'type', title: '身份标识'},
+                {field: 'company_belong', title: '所属公司'},
+                {field: 'remarks', title: '备注'},
                 {field: 'create_time', title: '创建时间'},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', minWidth: 300, toolbar: '#currentTableBar', align: "center"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -116,6 +115,10 @@
                 layTool.confirm("确定要删除该记录?",function () {
                     doDelete(data.id);
                 })
+            }else if (obj.event === 'accounts') {
+                layTool.open('{:url("SupplierAccounts/index","",false)}/id/'+data.id,'账号信息');
+            }else if (obj.event === 'invoice') {
+                layTool.open('{:url("CustomersInvoice/index","",false)}/id/'+data.id,'开票信息');
             }
         });
         //执行删除操作

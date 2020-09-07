@@ -34,7 +34,7 @@ class IndexController extends BaseController
                 "href"=>"admin/Index/welcome",
             ],
             "logoInfo"=>[
-                "title"=>"AC Admin",
+                "title"=>"爱车商务管理",
                 "image"=>"/static/admin/images/logo.png",
                 "href"=>"",
             ],
