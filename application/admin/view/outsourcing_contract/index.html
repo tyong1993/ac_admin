@@ -32,7 +32,7 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="collection">收款计划</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="payment">付款计划</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -53,11 +53,13 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: 'left'},
                 {field: 'id', width: 80, title: 'ID', fixed: 'left'},
+                {field: 'sales_contract_name', width: 150, title: '销售合同'},
+                {field: 'sales_company_identifier', width: 150, title: '销售合同编号'},
                 {field: 'contract_name', width: 150, title: '合同名称'},
-                {field: 'customer_name', width: 150, title: '客户单位'},
+                {field: 'supplier_name', width: 150, title: '供应商单位'},
                 {field: 'sign_date', width: 150, title: '签订日期'},
                 {field: 'company_identifier', width: 150, title: '公司合同编号'},
-                {field: 'customer_identifier', width: 150, title: '客户合同编号'},
+                {field: 'supplier_identifier', width: 150, title: '供应商合同编号'},
                 {field: 'business_contact', width: 150, title: '商务联系人'},
                 {field: 'project_contact', width: 150, title: '项目联系人'},
                 {field: 'business_leader', width: 150, title: '商务负责人'},
@@ -117,8 +119,8 @@
                 layTool.confirm("确定要删除该记录?",function () {
                     doDelete(data.id);
                 })
-            }else if (obj.event === 'collection') {
-                layTool.open('{:url("SalesCollection/index","",false)}/id/'+data.id,'收款计划');
+            }else if (obj.event === 'payment') {
+                layTool.open('{:url("OutsourcingPayment/index","",false)}/id/'+data.id,'付款计划');
             }
         });
         //执行删除操作

@@ -8,21 +8,32 @@
 <div class="layui-form layuimini-form">
     <input type="text" name="contract_id" style="display: none" value="{$contract_id}">
     <div class="layui-form-item">
+        <label class="layui-form-label">收款期数</label>
+        <div class="layui-input-block">
+            <select name="sales_collection_id" lay-search>
+                <option value="">请选择收款期数</option>
+                {foreach $sales_collections as $sales_collection}
+                <option value="{$sales_collection['id']}">{$sales_collection['periods']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">期数</label>
         <div class="layui-input-block">
             <input type="text" name="periods" autocomplete="off" placeholder="请输入期数" value="{$maybe}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">收款金额(元)</label>
+        <label class="layui-form-label">付款金额(元)</label>
         <div class="layui-input-block">
-            <input type="text" name="collection_amount" autocomplete="off" placeholder="请输入收款金额" value="" class="layui-input">
+            <input type="text" name="pay_amount" autocomplete="off" placeholder="请输入付款金额" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">比例%</label>
         <div class="layui-input-block">
-            <input type="text" name="ratio" autocomplete="off" placeholder="请输入收款比例1-100" value="" class="layui-input">
+            <input type="text" name="ratio" autocomplete="off" placeholder="请输入付款比例1-100" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">

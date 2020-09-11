@@ -7,12 +7,12 @@
  */
 
 namespace app\admin\controller;
-use app\admin\villdate\SalesContractVilldate;
+use app\admin\villdate\OutsourcingContractVilldate;
 
 /**
- * 销售合同
+ * 外包合同
  */
-class SalesContractController extends BaseController
+class OutsourcingContractController extends BaseController
 {
     /**
      * 列表
@@ -21,7 +21,7 @@ class SalesContractController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $contract_name=$this->request->param("contract_name");
-            $db=db('sales_contract');
+            $db=db('outsourcing_contract');
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
             }
@@ -40,7 +40,7 @@ class SalesContractController extends BaseController
     function add(){
         if($this->request->isAjax()){
             $param=$this->request->post();
-            $this->validate($param,SalesContractVilldate::class);
+            $this->validate($param,OutsourcingContractVilldate::class);
             $param["create_time"] = time();
             //总金额
             if($param["is_contain_tax"] == 1){
@@ -49,20 +49,23 @@ class SalesContractController extends BaseController
                 $param["all_amount"] = $param["contract_amount"]*(1+((int)$param["tax_rate"]/100));
             }
             //公司合同编号是否已存在
-            if(db('sales_contract')->where(["company_identifier"=>$param["company_identifier"]])->count()){
+            if(db('outsourcing_contract')->where(["company_identifier"=>$param["company_identifier"]])->count()){
                 return jsonFail("公司合同编号已存在,请修改后再提交");
             }
-            db('sales_contract')->insert($param);
+            db('outsourcing_contract')->insert($param);
             return jsonSuccess();
         }
         //公司合同编号
         $company_identifier = "AC_".date("Ymd");
-        $max_id = db('sales_contract')->max("id");
+        $max_id = db('outsourcing_contract')->max("id");
         $company_identifier = $company_identifier."_".($max_id+1);
         $this->assign("company_identifier",$company_identifier);
-        //客户单位数据
-        $res = db('customer_supplier')->where("type","in",[1,3])->select();
-        $this->assign("customers",$res);
+        //供应商单位数据
+        $res = db('customer_supplier')->where("type","in",[2,3])->select();
+        $this->assign("suppliers",$res);
+        //销售合同数据
+        $res = db('sales_contract')->order("id desc")->select();
+        $this->assign("sales_contracts",$res);
         return $this->fetch();
     }
     /**
@@ -71,7 +74,7 @@ class SalesContractController extends BaseController
     function edit(){
         if($this->request->isAjax()){
             $param=$this->request->post();
-            $this->validate($param,SalesContractVilldate::class);
+            $this->validate($param,OutsourcingContractVilldate::class);
             //总金额
             if($param["is_contain_tax"] == 1){
                 $param["all_amount"] = $param["contract_amount"];
@@ -79,18 +82,21 @@ class SalesContractController extends BaseController
                 $param["all_amount"] = $param["contract_amount"]*(1+((int)$param["tax_rate"]/100));
             }
             //公司合同编号是否已存在
-            if(db('sales_contract')->where(["company_identifier"=>$param["company_identifier"]])->where("id","neq",$param["id"])->count()){
+            if(db('outsourcing_contract')->where(["company_identifier"=>$param["company_identifier"]])->where("id","neq",$param["id"])->count()){
                 return jsonFail("公司合同编号已存在,请修改后再提交");
             }
-            db('sales_contract')->update($param);
+            db('outsourcing_contract')->update($param);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
-        $row=db("sales_contract")->find($id);
+        $row=db("outsourcing_contract")->find($id);
         $this->assign("row",$row);
-        //客户单位数据
-        $res = db('customer_supplier')->where("type","in",[1,3])->select();
-        $this->assign("customers",$res);
+        //供应商单位数据
+        $res = db('customer_supplier')->where("type","in",[2,3])->select();
+        $this->assign("suppliers",$res);
+        //销售合同数据
+        $res = db('sales_contract')->order("id desc")->select();
+        $this->assign("sales_contracts",$res);
         return $this->fetch();
     }
     /**
@@ -103,7 +109,7 @@ class SalesContractController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('sales_contract')->where("id","in",$id_arr)->delete();
+        db('outsourcing_contract')->where("id","in",$id_arr)->delete();
         return jsonSuccess();
     }
 }

@@ -28,17 +28,17 @@
             </div>
         </script>
         <script type="text/html" id="colletionStatusTpl">
-            {{#  if(d.colletion_status == 1){ }}
-            <button class="layui-btn layui-btn-success layui-btn-xs">已收款</button>
+            {{#  if(d.pay_status == 1){ }}
+            <button class="layui-btn layui-btn-success layui-btn-xs">已付款</button>
             {{#  } else { }}
-            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doCollection({{ d.id }})">未收款</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doPayment({{ d.id }})">未付款</button>
             {{#  } }}
         </script>
         <script type="text/html" id="invoiceStatusTpl">
             {{#  if(d.invoice_status == 1){ }}
-            <button class="layui-btn layui-btn-success layui-btn-xs">已开票</button>
+            <button class="layui-btn layui-btn-success layui-btn-xs">已收票</button>
             {{#  } else { }}
-            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doInvoice({{ d.id }})">未开票</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doCollection({{ d.id }})">未收票</button>
             {{#  } }}
         </script>
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
@@ -65,15 +65,15 @@
                 {field: 'create_time', width: 150, title: '申请日期'},
                 {field: 'contract_name', width: 200, title: '合同名称'},
                 {field: 'periods', width: 150, title: '期数'},
-                {field: 'title', width: 150, title: '抬头'},
+                {field: 'payee', width: 150, title: '收款人'},
                 {field: 'sq_people', width: 150, title: '申请人'},
-                {field: 'invoice_amount', width: 150, title: '申请金额'},
+                {field: 'pay_amount', width: 150, title: '申请金额'},
                 {field: 'tax_rate', width: 150, title: '税率%'},
                 {field: 'surplus_amount', width: 150, title: '余额'},
-                {field: 'invoice_time', width: 150, title: '开票时间'},
-                {field: 'colletion_time', width: 150, title: '收款时间'},
-                {field: 'invoice_status', width: 100, title: '开票状态',templet:'#invoiceStatusTpl', fixed: 'right'},
-                {field: 'colletion_status', width: 100, title: '收款状态',templet:'#colletionStatusTpl', fixed: 'right'}
+                {field: 'invoice_time', width: 150, title: '收票时间'},
+                {field: 'pay_time', width: 150, title: '付款时间'},
+                {field: 'invoice_status', width: 100, title: '收票状态',templet:'#invoiceStatusTpl', fixed: 'right'},
+                {field: 'pay_status', width: 100, title: '付款状态',templet:'#colletionStatusTpl', fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -104,13 +104,9 @@
         });
 
     });
-    //开票
-    function doInvoice(id) {
-        layTool.open('{:url("doInvoice","",false)}/id/'+id,'待开票');
-    }
-    //收款
+    //收票
     function doCollection(id) {
-        layTool.confirm("确认已收款?",function () {
+        layTool.confirm("确认已收票?",function () {
             $.post("{:url('doCollection')}", {id:id}, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
@@ -122,6 +118,10 @@
                 }
             }, 'json');
         })
+    }
+    //收款
+    function doPayment(id) {
+        layTool.open('{:url("doPayment","",false)}/id/'+id,'待开票');
     }
 </script>
 

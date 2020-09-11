@@ -8,33 +8,27 @@
 <div class="layui-form layuimini-form">
     <input name="id" value="{$row['id']}" style="display: none"/>
     <input name="periods" value="{$row['periods']}" style="display: none"/>
-    <input name="collection_amount" value="{$row['collection_amount']}" style="display: none"/>
+    <input name="all_pay_amount" value="{$row['pay_amount']}" style="display: none"/>
     <input name="contract_id" value="{$contract['id']}" style="display: none"/>
     <input name="contract_name" value="{$contract['contract_name']}" style="display: none"/>
     <input name="is_contain_tax" value="{$contract['is_contain_tax']}" style="display: none"/>
     <input name="tax_rate" value="{$contract['tax_rate']}" style="display: none"/>
     <div class="layui-form-item">
-        <label class="layui-form-label">开票金额</label>
+        <label class="layui-form-label">付款金额</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_amount" autocomplete="off" placeholder="请输入开票金额" class="layui-input">
+            <input type="text" name="pay_amount" autocomplete="off" placeholder="请输入付款金额" class="layui-input">
         </div>
     </div>
-    <input style="display: none" id="title" name="title"/>
+    <input style="display: none" id="payee" name="payee"/>
     <div class="layui-form-item">
-        <label class="layui-form-label">抬头</label>
+        <label class="layui-form-label">收款人</label>
         <div class="layui-input-block">
-            <select lay-filter="title_select" name="">
-                <option value="">请选择开票抬头</option>
-                {foreach $invoices as $invoice}
-                <option value="{$invoice['title']}|-|{$invoice['tax_num']}|-|{$invoice['bank_name']}|-|{$invoice['bank_account']}|-|{$invoice['address']}|-|{$invoice['phone']}">{$invoice["title"]}</option>
+            <select lay-filter="payee_select" name="">
+                <option value="">请选择收款人</option>
+                {foreach $accounts as $account}
+                <option value="{$account['payee']}|-|{$account['bank_name']}|-|{$account['bank_account']}">{$account["payee"]}</option>
                 {/foreach}
             </select>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">税号</label>
-        <div class="layui-input-block">
-            <input type="text" name="tax_num" id="tax_num" autocomplete="off" placeholder="请输入税号" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -50,18 +44,6 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">地址</label>
-        <div class="layui-input-block">
-            <input type="text" name="address" id="address" autocomplete="off" placeholder="请输入地址" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">电话</label>
-        <div class="layui-input-block">
-            <input type="text" name="phone" id="phone" autocomplete="off" placeholder="请输入电话" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_1">确认</button>
@@ -72,10 +54,10 @@
 <!--确认实际收款弹层-->
 <div class="layui-form layuimini-form" id="confirm_collection_div" style="display: none;padding-right: 10%;padding-top: 10px;padding-bottom: 10px">
     <div class="layui-form-item">
-        <label class="layui-form-label">确定实际收款</label>
+        <label class="layui-form-label">确定实际付款</label>
         <div class="layui-input-block">
-            <input type="text" name="" id="confirm_collection" autocomplete="off" readonly value="" class="layui-input"><br>
-            <span style="color: red">本期待收款:<span id="to_be_collected"></span></span>
+            <input type="text" name="" id="confirm_payment" autocomplete="off" readonly value="" class="layui-input"><br>
+            <span style="color: red">本期待付款:<span id="to_be_payed"></span></span>
         </div>
     </div>
     <div class="layui-form-item">
@@ -92,21 +74,21 @@
             $ = layui.$;
 
         //确认实际收款索引
-        var confirm_collection_layer_index = 0;
+        var confirm_payment_layer_index = 0;
         //待提交的表单数据
         var form_data = null;
         //监听确认1
         form.on('submit(saveBtn_1)', function (data) {
             form_data = data;
-            if(!data.field.invoice_amount){
-                layTool.alert("请输入开票金额",2);return false;
+            if(!data.field.pay_amount){
+                layTool.alert("请输入付款金额",2);return false;
             }
-            if(!data.field.title){
-                layTool.alert("请选择开票抬头",2);return false;
+            if(!data.field.payee){
+                layTool.alert("请选择收款人",2);return false;
             }
-            $("#confirm_collection").val(data.field.invoice_amount);
-            $("#to_be_collected").html(data.field.collection_amount-data.field.invoice_amount);
-            confirm_collection_layer_index = layer.open({
+            $("#confirm_payment").val(data.field.pay_amount);
+            $("#to_be_payed").html(data.field.all_pay_amount-data.field.pay_amount);
+            confirm_payment_layer_index = layer.open({
                 type: 1,
                 title: '确认收款',
                 area: ['80%', '80%'],
@@ -138,32 +120,23 @@
         });
         //监听取消2
         form.on('submit(cancel_2)', function (data) {
-            layer.close(confirm_collection_layer_index);
+            layer.close(confirm_payment_layer_index);
         });
-        //抬头选择
-        form.on('select(title_select)', function(obj){
+        //收款人选择
+        form.on('select(payee_select)', function(obj){
             var val = obj.value;
-            var title = "";
-            var tax_num = "";
+            var payee = "";
             var bank_name = "";
             var bank_account = "";
-            var address = "";
-            var phone = "";
             if(val){
                 var arr=val.split('|-|');
-                title = arr[0];
-                tax_num = arr[1];
-                bank_name = arr[2];
-                bank_account = arr[3];
-                address = arr[4];
-                phone = arr[5];
+                payee = arr[0];
+                bank_name = arr[1];
+                bank_account = arr[2];
             }
-            $("#title").val(title);
-            $("#tax_num").val(tax_num);
+            $("#payee").val(payee);
             $("#bank_name").val(bank_name);
             $("#bank_account").val(bank_account);
-            $("#address").val(address);
-            $("#phone").val(phone);
         });
 
     });

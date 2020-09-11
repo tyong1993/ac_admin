@@ -30,6 +30,13 @@ class CustomerSupplierController extends BaseController
             $res = $db->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
+                switch ($val["type"]){
+                    case 1:$val["type_name"]="客户";break;
+                    case 2:$val["type_name"]="供应商";break;
+                    case 3:$val["type_name"]="客户/供应商";break;
+                    default:$val["type_name"]="无效身份";
+                }
+
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }

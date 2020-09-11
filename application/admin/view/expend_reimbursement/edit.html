@@ -1,0 +1,133 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input style="display: none" name="id" value="{$row['id']}"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联销售合同</label>
+        <input style="display: none" id="sales_contract_id" name="contract_id" value="{$row['contract_id']}"/>
+        <input style="display: none" id="sales_contract_name" name="contract_name" value="{$row['contract_name']}"/>
+        <div class="layui-input-block">
+            <select lay-filter="sales_contract_select" name="" lay-search>
+                <option value="">请选择销售合同</option>
+                {foreach $sales_contracts as $contract}
+                <option value="{$contract['id']}|-|{$contract['contract_name']}" {if $row["contract_id"] == $contract['id']}selected{/if}>{$contract['contract_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联收款期数</label>
+        <input style="display: none" id="collection_id" name="collection_id" value="{$row['collection_id']}"/>
+        <input style="display: none" id="periods" name="periods" value="{$row['periods']}"/>
+        <div class="layui-input-block">
+            <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
+                <option value="">请选择收款期数</option>
+                {foreach sales_collections as $collection}
+                <option value="{$collection['id']}|-|{$collection['periods']}" {if $row["collection_id"] == $collection['id']}selected{/if}>{$collection['periods']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">费用类型</label>
+        <div class="layui-input-block">
+            <input type="text" name="type" autocomplete="off" placeholder="请输入费用类型" value="{$row['type']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">报销人</label>
+        <div class="layui-input-block">
+            <input type="text" name="bx_people" autocomplete="off" placeholder="请输入报销人" value="{$row['bx_people']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门</label>
+        <div class="layui-input-block">
+            <input type="text" name="department" autocomplete="off" placeholder="请输入部门" value="{$row['department']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">报销金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="amount" autocomplete="off" placeholder="请输入报销金额" value="{$row['amount']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">费用说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="remark" autocomplete="off" placeholder="请输入费用说明" value="{$row['remark']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('edit')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //销售合同选择
+        form.on('select(sales_contract_select)', function(obj){
+            var val = obj.value;
+            var sales_contract_id = "";
+            var sales_contract_name = "";
+            if(val){
+                var arr=val.split('|-|');
+                sales_contract_id = arr[0];
+                sales_contract_name = arr[1];
+            }
+            $("#sales_contract_id").val(sales_contract_id);
+            $("#sales_contract_name").val(sales_contract_name);
+            //获取收款期数
+            $.get("{:url('getSalesCollections')}", {contract_id:sales_contract_id}, function (res) {
+                if(res.code == 20000) {
+                    $("#sales_collection_select").html(res.data);
+                    form.render();
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        });
+        //收款期数选择
+        form.on('select(sales_collection_select)', function(obj){
+            var val = obj.value;
+            var collection_id = "";
+            var periods = "";
+            if(val){
+                var arr=val.split('|-|');
+                collection_id = arr[0];
+                periods = arr[1];
+            }
+            $("#collection_id").val(collection_id);
+            $("#periods").val(periods);
+        });
+
+    });
+
+</script>
+</body>
+</html>

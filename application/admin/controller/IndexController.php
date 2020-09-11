@@ -11,6 +11,7 @@ namespace app\admin\controller;
 
 use app\admin\model\SystemAdminModel;
 use app\admin\model\SystemNodeModel;
+use think\facade\App;
 
 class IndexController extends BaseController
 {
@@ -21,6 +22,18 @@ class IndexController extends BaseController
     }
 
     function welcome(){
+        $conn = mysqli_connect(
+            config('database.hostname') . ":" . config('database.hostport'),
+            config('database.username'),
+            config('database.password'),
+            config('database.database')
+        );
+        $this->assign(
+            [
+                "tp_version"=>App::version(),
+                "mysql_version"=>mysqli_get_server_info($conn),
+            ]
+        );
         return $this->fetch();
     }
 
@@ -34,7 +47,7 @@ class IndexController extends BaseController
                 "href"=>"admin/Index/welcome",
             ],
             "logoInfo"=>[
-                "title"=>"爱车商务管理",
+                "title"=>"爱车合同管理",
                 "image"=>"/static/admin/images/logo.png",
                 "href"=>"",
             ],

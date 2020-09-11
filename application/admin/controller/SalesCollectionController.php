@@ -37,8 +37,7 @@ class SalesCollectionController extends BaseController
         foreach ($res as &$val){
             $val["tax_rate"] = $tax_rate;
             $val["check_time"] = $val["check_time"]?date("Y-m-d",$val["check_time"]):"---";
-            $val["collection_time"] = $val["collection_time"]?date("Y-m-d",$val["collection_time"]):"---";
-            $val["status_name"] = $this->getStatusName($val["status"]);
+            $val["status_name"] = self::getStatusName($val["status"]);
             $others["skjehj"] += $val["collection_amount"];
             $others["se"] += $row["is_contain_tax"]==1?0:$val["collection_amount"]*($row["tax_rate"]/100);
         }
@@ -60,6 +59,14 @@ class SalesCollectionController extends BaseController
         }
         $contract_id = $this->request->param("contract_id");
         $this->assign("contract_id",$contract_id);
+        //期数预测
+        $before = db('sales_collection')->where("contract_id","=",$contract_id)->order("id desc")->find();
+        if(empty($before)){
+            $maybe = "第一期";
+        }else{
+            $maybe = self::getPeriodsForSelect($before["periods"]);
+        }
+        $this->assign("maybe",$maybe);
         return $this->fetch();
     }
     /**
@@ -124,6 +131,7 @@ class SalesCollectionController extends BaseController
             //申请开票
             $sales_collection["id"] = $param["id"];
             $sales_collection["status"] = 2;
+            $sales_collection["collected"] = $param["invoice_amount"];
             $res1 = Db::name('sales_collection')->update($sales_collection);
             //添加待开票记录
             $admin = SystemAdminModel::find(session("admin_id"));
@@ -138,6 +146,8 @@ class SalesCollectionController extends BaseController
             $data["tax_num"] = $param["tax_num"];
             $data["bank_name"] = $param["bank_name"];
             $data["bank_account"] = $param["bank_account"];
+            $data["address"] = $param["address"];
+            $data["phone"] = $param["phone"];
             $data["tax_rate"] = $param["is_contain_tax"]?0:$param["tax_rate"];
             $data["create_time"] = time();
             $res2 = Db::name("invoice_records")->insert($data);
@@ -162,14 +172,60 @@ class SalesCollectionController extends BaseController
     /**
      * 获取收款计划状态名称
      */
-    private function getStatusName($status){
+    public static function getStatusName($status){
         switch ($status){
             case 0:return "待验收";
             case 1:return "可开票";
-            case 2:return "申请开票";
+            case 2:return "待开票";
             case 3:return "已开票";
             default:return "---";
         }
     }
-
+    /**
+     * 计划期数
+     */
+    public static function getPeriodsForSelect($now_periods){
+        $map = [
+            "1"=>"一",
+            "2"=>"二",
+            "3"=>"三",
+            "4"=>"四",
+            "5"=>"五",
+            "6"=>"六",
+            "7"=>"七",
+            "8"=>"八",
+            "9"=>"九",
+            "10"=>"十",
+            "20"=>"二十",
+            "30"=>"三十",
+            "40"=>"四十",
+            "50"=>"五十",
+            "60"=>"六十",
+            "70"=>"七十",
+            "80"=>"八十",
+            "90"=>"九十",
+            "100"=>"一百",
+        ];
+        $before = 0;
+        for ($i = 1;$i <= 100;$i++){
+            $temp = "";
+            if(isset($map[$i])){
+                $temp = "第".$map[$i]."期";
+            }else{
+                $ii = str_split($i);
+                if($ii[0] == 1){
+                    $temp = "第"."十".$map[$ii[1]]."期";
+                }else{
+                    $temp = "第".$map[$ii[0]]."十".$map[$ii[1]]."期";
+                }
+            }
+            if($before == 1){
+                return $temp;
+            }
+            if($temp == $now_periods){
+                $before = 1;
+            }
+        }
+        return "";
+    }
 }

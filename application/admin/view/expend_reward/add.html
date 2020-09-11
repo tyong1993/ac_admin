@@ -1,0 +1,218 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联销售合同</label>
+        <input style="display: none" id="sales_contract_id" name="contract_id"/>
+        <input style="display: none" id="sales_contract_name" name="contract_name"/>
+        <div class="layui-input-block">
+            <select lay-filter="sales_contract_select" name="" lay-search>
+                <option value="">请选择销售合同</option>
+                {foreach $sales_contracts as $contract}
+                <option value="{$contract['id']}|-|{$contract['contract_name']}|-|{$contract['contract_amount']}">{$contract['contract_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">合同金额</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联收款期数</label>
+        <input style="display: none" id="collection_id" name="collection_id"/>
+        <input style="display: none" id="periods" name="periods"/>
+        <div class="layui-input-block">
+            <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
+
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">当前收款金额</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="collection_amount" autocomplete="off" placeholder="请输入当前收款金额" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">扣除报销</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="deduct_reimbursement" autocomplete="off" placeholder="请输入扣除报销" value="0" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">扣除外包</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="deduct_outsource" autocomplete="off" placeholder="请输入扣除外包" value="0" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">扣除商务</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="deduct_business" autocomplete="off" placeholder="请输入扣除商务" value="0" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">剩余金额</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="surplus_amount" readonly autocomplete="off" placeholder="" value="0" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">付款比例%</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入付款比例" value="0" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">应付金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_amount" readonly autocomplete="off" placeholder="" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">领取人</label>
+        <div class="layui-input-block">
+            <input type="text" name="receiver" autocomplete="off" placeholder="请输入领取人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="__ADMIN__/js/computer.js"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('add')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //销售合同选择
+        form.on('select(sales_contract_select)', function(obj){
+            var val = obj.value;
+            var sales_contract_id = "";
+            var sales_contract_name = "";
+            var contract_amount = 0;
+            if(val){
+                var arr=val.split('|-|');
+                sales_contract_id = arr[0];
+                sales_contract_name = arr[1];
+                contract_amount = arr[2];
+            }
+            $("#sales_contract_id").val(sales_contract_id);
+            $("#sales_contract_name").val(sales_contract_name);
+            $("#contract_amount").val(contract_amount);
+            //获取收款期数
+            $.get("{:url('getSalesCollections')}", {contract_id:sales_contract_id}, function (res) {
+                if(res.code == 20000) {
+                    $("#sales_collection_select").html(res.data);
+                    form.render();
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        });
+        //收款期数选择
+        form.on('select(sales_collection_select)', function(obj){
+            var val = obj.value;
+            var collection_id = "";
+            var periods = "";
+            var collection_amount = 0;
+            if(val){
+                var arr=val.split('|-|');
+                collection_id = arr[0];
+                periods = arr[1];
+                collection_amount = arr[2];
+            }
+            $("#collection_id").val(collection_id);
+            $("#periods").val(periods);
+            $("input[name='collection_amount']").val(collection_amount);
+            doCompute();
+        });
+
+        //监听收款金额
+        $("input[name='collection_amount']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听扣除报销
+        $("input[name='deduct_reimbursement']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听扣除外包
+        $("input[name='deduct_outsource']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听扣除商务
+        $("input[name='deduct_business']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听付款比率
+        $("input[name='pay_ratio']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听应付金额
+        $("input[name='pay_amount']").bind('input propertychange', function() {
+            doCompute();
+        });
+
+        //数据关联计算
+        var doCompute = function () {
+            //收款金额
+            var collection_amount = $("input[name='collection_amount']").val();
+            //扣除报销
+            var deduct_reimbursement = $("input[name='deduct_reimbursement']").val();
+            if(!deduct_reimbursement){
+                deduct_reimbursement = 0;
+            }
+            //扣除外包
+            var deduct_outsource = $("input[name='deduct_outsource']").val();
+            if(!deduct_outsource){
+                deduct_outsource = 0;
+            }
+            //扣除商务
+            var deduct_business = $("input[name='deduct_business']").val();
+            if(!deduct_business){
+                deduct_business = 0;
+            }
+            //剩余金额
+            var surplus_amount = accAdd(accAdd(collection_amount,-deduct_reimbursement),-accAdd(deduct_outsource,deduct_business));
+            $("input[name='surplus_amount']").val(surplus_amount);
+            //付款比例
+            var pay_ratio = $("input[name='pay_ratio']").val();
+            if(!parseInt(pay_ratio)){
+                pay_ratio = 0;
+            }
+            //实付金额
+            var pay_amount = accDiv(accMul(surplus_amount,pay_ratio),100);
+            $("input[name='pay_amount']").val(pay_amount);
+        }
+    });
+
+</script>
+</body>
+</html>

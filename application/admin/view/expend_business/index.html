@@ -9,9 +9,9 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">合同名称</label>
+                            <label class="layui-form-label">商务联系人</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="contract_name" autocomplete="off" class="layui-input">
+                                <input type="text" name="business_contact" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -25,14 +25,13 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 新增合同 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 新增商务支出 </button>
             </div>
         </script>
 
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="collection">收款计划</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -51,22 +50,19 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
-                {type: "checkbox", width: 50, fixed: 'left'},
-                {field: 'id', width: 80, title: 'ID', fixed: 'left'},
-                {field: 'contract_name', width: 150, title: '合同名称'},
-                {field: 'customer_name', width: 150, title: '客户单位'},
-                {field: 'sign_date', width: 150, title: '签订日期'},
-                {field: 'company_identifier', width: 150, title: '公司合同编号'},
-                {field: 'customer_identifier', width: 150, title: '客户合同编号'},
-                {field: 'business_contact', width: 150, title: '商务联系人'},
-                {field: 'project_contact', width: 150, title: '项目联系人'},
-                {field: 'business_leader', width: 150, title: '商务负责人'},
-                {field: 'project_leader', width: 150, title: '项目负责人'},
-                {field: 'contract_amount', width: 150, title: '合同金额'},
-                {field: 'all_amount', width: 150, title: '总金额'},
-                {field: 'payment_days', width: 150, title: '账期'},
-                {field: 'create_time', width: 150, title: '创建时间'},
-                {title: '操作', minWidth: 200, toolbar: '#currentTableBar', align: "center",fixed: 'right'}
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 80, title: 'ID'},
+                {field: 'contract_name', width: 150, title: '销售合同'},
+                {field: 'periods', title: '期数'},
+                {field: 'collection_amount', title: '当前收款金额'},
+                {field: 'pay_ratio', title: '应付%'},
+                {field: 'pay_amount_need', title: '应付金额'},
+                {field: 'tax_rate', title: '扣税比例%'},
+                {field: 'pay_amount_true', title: '实付金额'},
+                {field: 'business_contact', title: '商务联系人'},
+                {field: 'remark', title: '付款说明'},
+                {field: 'create_time', title: '创建时间'},
+                {title: '操作', minWidth: 200, toolbar: '#currentTableBar', align: "center"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -117,8 +113,6 @@
                 layTool.confirm("确定要删除该记录?",function () {
                     doDelete(data.id);
                 })
-            }else if (obj.event === 'collection') {
-                layTool.open('{:url("SalesCollection/index","",false)}/id/'+data.id,'收款计划');
             }
         });
         //执行删除操作

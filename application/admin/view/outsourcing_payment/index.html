@@ -4,10 +4,10 @@
     <div class="layuimini-main">
 
         <div class="layui-btn-container">
-            <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" id="add_sales_collection"> 添加收款计划 </button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" id="add_outsourcing_payment"> 添加付款计划 </button>
         </div>
         <div style="padding-left: 50%;">
-            <span>收款金额合计:{$others["skjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>税额:{$others["se"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span {if $others["hjzje"] != $others["htzje"]}style="color: red"{/if}>合计总金额:{$others["hjzje"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
+            <span>付款金额合计:{$others["skjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>税额:{$others["se"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span {if $others["hjzje"] != $others["htzje"]}style="color: red"{/if}>合计总金额:{$others["hjzje"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
         </div>
         <table class="layui-table">
             <colgroup>
@@ -20,10 +20,9 @@
                 <th>ID</th>
                 <th>期数</th>
                 <th>验收时间</th>
-                <th>收款金额(元)</th>
-                <th>未收金额(元)</th>
+                <th>付款金额(元)</th>
                 <th>税率%</th>
-                <th>收款比例%</th>
+                <th>付款比例%</th>
                 <th>状态</th>
                 <th>操作</th>
             </tr>
@@ -34,8 +33,7 @@
                 <td>{$row["id"]}</td>
                 <td>{$row["periods"]}</td>
                 <td>{$row["check_time"]}</td>
-                <td>{$row["collection_amount"]}</td>
-                <td>{$row["collection_amount"]-$row["collected"]}</td>
+                <td>{$row["pay_amount"]}</td>
                 <td>{$row["tax_rate"]}</td>
                 <td>{$row["ratio"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
@@ -53,7 +51,7 @@
     var $;
     layui.use(['jquery'], function () {
         $ = layui.jquery;
-        $("#add_sales_collection").click(function (e) {
+        $("#add_outsourcing_payment").click(function (e) {
             layTool.open('{:url("add","contract_id=".$others["htid"])}','添加');
         });
     });
@@ -83,11 +81,11 @@
         if(status == 0){
             layTool.open('{:url("status0","",false)}/id/'+id,'待验收','50%','50%');
         }
-        //可开票
+        //可收款
         if(status == 1){
-            layTool.open('{:url("status1","",false)}/id/'+id,'可开票','50%','50%');
+            layTool.open('{:url("status1","",false)}/id/'+id,'可收款','50%','50%');
         }
-        //申请开票
+        //申请收款
         if(status == 2){
             layTool.alert("请等待财务操作",6);
         }

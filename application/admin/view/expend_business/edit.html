@@ -1,0 +1,196 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input style="display: none" name="id" value="{$row['id']}"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联销售合同</label>
+        <input style="display: none" id="sales_contract_id" name="contract_id" value="{$row['contract_id']}"/>
+        <input style="display: none" id="sales_contract_name" name="contract_name" value="{$row['contract_name']}"/>
+        <div class="layui-input-block">
+            <select lay-filter="sales_contract_select" name="" lay-search>
+                <option value="">请选择销售合同</option>
+                {foreach $sales_contracts as $contract}
+                <option value="{$contract['id']}|-|{$contract['contract_name']}" {if $row["contract_id"] == $contract['id']}selected{/if}>{$contract['contract_name']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">关联收款期数</label>
+        <input style="display: none" id="collection_id" name="collection_id" value="{$row['collection_id']}"/>
+        <input style="display: none" id="periods" name="periods" value="{$row['periods']}"/>
+        <div class="layui-input-block">
+            <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
+                <option value="">请选择收款期数</option>
+                {foreach sales_collections as $collection}
+                <option value="{$collection['id']}|-|{$collection['periods']}|-|{$collection['collection_amount']}" {if $row["collection_id"] == $collection['id']}selected{/if}>{$collection['periods']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">当前收款金额</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="collection_amount" autocomplete="off" placeholder="请输入当前收款金额" value="{$row['collection_amount']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">应付比例%</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入应付比例" value="{$row['pay_ratio']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">应付金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_amount_need" readonly autocomplete="off" placeholder="" value="{$row['pay_amount_need']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否扣税</label>
+        <div class="layui-input-block">
+            <input type="radio" lay-filter="is_need_tax" name="is_need_tax" value="1" title="是" {if $row["is_need_tax"] == 1}checked{/if}>
+            <input type="radio" lay-filter="is_need_tax" name="is_need_tax" value="0" title="否" {if $row["is_need_tax"] == 0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">扣税比例%</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="number" name="tax_rate" autocomplete="off" placeholder="请输入扣税比例" value="{$row['tax_rate']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">实付金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_amount_true" readonly autocomplete="off" placeholder="" value="{$row['pay_amount_true']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商务联系人</label>
+        <div class="layui-input-block">
+            <input type="text" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="{$row['business_contact']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">付款说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="remark" autocomplete="off" placeholder="请输入付款说明" value="{$row['remark']}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="__ADMIN__/js/computer.js"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('edit')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //销售合同选择
+        form.on('select(sales_contract_select)', function(obj){
+            var val = obj.value;
+            var sales_contract_id = "";
+            var sales_contract_name = "";
+            if(val){
+                var arr=val.split('|-|');
+                sales_contract_id = arr[0];
+                sales_contract_name = arr[1];
+            }
+            $("#sales_contract_id").val(sales_contract_id);
+            $("#sales_contract_name").val(sales_contract_name);
+            //获取收款期数
+            $.get("{:url('getSalesCollections')}", {contract_id:sales_contract_id}, function (res) {
+                if(res.code == 20000) {
+                    $("#sales_collection_select").html(res.data);
+                    form.render();
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        });
+        //收款期数选择
+        form.on('select(sales_collection_select)', function(obj){
+            var val = obj.value;
+            var collection_id = "";
+            var periods = "";
+            var collection_amount = 0;
+            if(val){
+                var arr=val.split('|-|');
+                collection_id = arr[0];
+                periods = arr[1];
+                collection_amount = arr[2];
+            }
+            $("#collection_id").val(collection_id);
+            $("#periods").val(periods);
+            $("input[name='collection_amount']").val(collection_amount);
+            doCompute();
+        });
+        //监听付款比例
+        $("input[name='pay_ratio']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听收款金额
+        $("input[name='collection_amount']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //监听是否扣税
+        form.on('radio(is_need_tax)',function () {
+            doCompute();
+        });
+        //监听扣税比例
+        $("input[name='tax_rate']").bind('input propertychange', function() {
+            doCompute();
+        });
+        //数据关联计算
+        var doCompute = function () {
+            //收款金额
+            var collection_amount = $("input[name='collection_amount']").val();
+            //付款比例
+            var pay_ratio = $("input[name='pay_ratio']").val();
+            if(!pay_ratio){
+                pay_ratio = 0;
+            }
+            //应付金额
+            var pay_amount_need = accDiv(accMul(collection_amount,pay_ratio),100);
+            $("input[name='pay_amount_need']").val(pay_amount_need);
+            //是否扣税
+            var is_need_tax = $("input[name='is_need_tax']:checked").val();
+            //扣税比例
+            var tax_rate = $("input[name='tax_rate']").val();
+            if(!parseInt(is_need_tax) || !parseInt(tax_rate)){
+                tax_rate = 0;
+            }
+            //实付金额
+            var pay_amount_true = accAdd(pay_amount_need,-(accMul(pay_amount_need,tax_rate)/100));
+            $("input[name='pay_amount_true']").val(pay_amount_true);
+        }
+
+    });
+
+</script>
+</body>
+</html>
