@@ -26,22 +26,25 @@ class SalesCollectionController extends BaseController
         $res = $db->select();
         //合同税率
         $row = db('sales_contract')->find($contract_id);
-        $tax_rate = $row["is_contain_tax"] == 1?"---":$row["tax_rate"];
         //收款金额合计,税额,合同总金额,合同ID
         $others=[
             "skjehj"=>0.00,
-            "se"=>0.00,
-            "htzje"=>$row["all_amount"],
+            "htje"=>$row["contract_amount"],
             "htid"=>$row["id"],
+            "is_contain_tax"=>$row["is_contain_tax"]?"含税":"不含税"
         ];
         foreach ($res as &$val){
-            $val["tax_rate"] = $tax_rate;
+            $val["expect_check_time"] = $val["expect_check_time"]?date("Y-m-d",$val["expect_check_time"]):"---";
+            $val["expect_invoice_time"] = $val["expect_invoice_time"]?date("Y-m-d",$val["expect_invoice_time"]):"---";
+            $val["expect_colletion_time"] = $val["expect_colletion_time"]?date("Y-m-d",$val["expect_colletion_time"]):"---";
             $val["check_time"] = $val["check_time"]?date("Y-m-d",$val["check_time"]):"---";
             $val["status_name"] = self::getStatusName($val["status"]);
+            $val["collection_amount_format"] = amount_format($val["collection_amount"]);
+            $val["uncollection_amount_format"] = amount_format($val["collection_amount"]-$val["collected"]);
             $others["skjehj"] += $val["collection_amount"];
-            $others["se"] += $row["is_contain_tax"]==1?0:$val["collection_amount"]*($row["tax_rate"]/100);
         }
-        $others["hjzje"] = $others["skjehj"] + $others["se"];
+        $others["skjehj"] = amount_format($others["skjehj"]);
+        $others["htje"] = amount_format($others["htje"]);
         $this->assign("res",$res);
         $this->assign("others",$others);
         return $this->fetch();
@@ -54,6 +57,9 @@ class SalesCollectionController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,SalesCollectionVilldate::class);
+            $param["expect_check_time"] = !empty($param["expect_check_time"])?strtotime($param["expect_check_time"]):0;
+            $param["expect_invoice_time"] = !empty($param["expect_invoice_time"])?strtotime($param["expect_invoice_time"]):0;
+            $param["expect_colletion_time"] = !empty($param["expect_colletion_time"])?strtotime($param["expect_colletion_time"]):0;
             db('sales_collection')->insert($param);
             return jsonSuccess();
         }
@@ -76,15 +82,19 @@ class SalesCollectionController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,SalesCollectionVilldate::class);
+            $param["expect_check_time"] = !empty($param["expect_check_time"])?strtotime($param["expect_check_time"]):0;
+            $param["expect_invoice_time"] = !empty($param["expect_invoice_time"])?strtotime($param["expect_invoice_time"]):0;
+            $param["expect_colletion_time"] = !empty($param["expect_colletion_time"])?strtotime($param["expect_colletion_time"]):0;
             $param["check_time"] = !empty($param["check_time"])?strtotime($param["check_time"]):0;
-            $param["collection_time"] = !empty($param["collection_time"])?strtotime($param["collection_time"]):0;
             db('sales_collection')->update($param);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
         $row=db("sales_collection")->find($id);
+        $row["expect_check_time"] = !empty($row["expect_check_time"])?date("Y-m-d",$row["expect_check_time"]):"";
+        $row["expect_invoice_time"] = !empty($row["expect_invoice_time"])?date("Y-m-d",$row["expect_invoice_time"]):"";
+        $row["expect_colletion_time"] = !empty($row["expect_colletion_time"])?date("Y-m-d",$row["expect_colletion_time"]):"";
         $row["check_time"] = !empty($row["check_time"])?date("Y-m-d",$row["check_time"]):"";
-        $row["collection_time"] = !empty($row["collection_time"])?date("Y-m-d",$row["collection_time"]):"";
         $this->assign("row",$row);
         return $this->fetch();
     }
@@ -148,7 +158,6 @@ class SalesCollectionController extends BaseController
             $data["bank_account"] = $param["bank_account"];
             $data["address"] = $param["address"];
             $data["phone"] = $param["phone"];
-            $data["tax_rate"] = $param["is_contain_tax"]?0:$param["tax_rate"];
             $data["create_time"] = time();
             $res2 = Db::name("invoice_records")->insert($data);
             if(!$res1 || !$res2){

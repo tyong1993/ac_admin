@@ -22,14 +22,14 @@
     <div class="layui-form-item">
         <label class="layui-form-label required">密码</label>
         <div class="layui-input-block">
-            <input type="password" name="password" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入密码" value="" class="layui-input">
+            <input type="text" name="password" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入密码" value="" class="layui-input">
             <tip>不少于6个字符</tip>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label required">确认密码</label>
         <div class="layui-input-block">
-            <input type="password" name="re_password" lay-verify="required" lay-reqtext="确认密码不能为空" placeholder="" value="" class="layui-input">
+            <input type="text" name="re_password" lay-verify="required" lay-reqtext="确认密码不能为空" placeholder="" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -38,6 +38,13 @@
             {foreach name="$roles" item="role"}
             <input type="checkbox" name="role_ids[]" value="{$role.id}" title="{$role.role_name}">
             {/foreach}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">数据权限</label>
+        <div class="layui-input-block">
+            <input type="radio" name="data_power" value="1" title="全部" checked>
+            <input type="radio" name="data_power" value="0" title="仅自己相关">
         </div>
     </div>
     <div class="layui-form-item">

@@ -6,108 +6,139 @@
 </style>
 <body>
 <div class="layui-form layuimini-form">
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md10">
         <label class="layui-form-label">合同名称</label>
         <div class="layui-input-block">
             <input type="text" name="contract_name" autocomplete="off" placeholder="请输入合同名称" value="" class="layui-input">
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">客户单位</label>
-        <input style="display: none" id="customer_name" name="customer_name"/>
-        <input style="display: none" id="c_s_id" name="c_s_id"/>
-        <div class="layui-input-block">
-            <select lay-filter="customer_select" name="" lay-search>
-                <option value="">请选择客户单位</option>
-                {foreach $customers as $customer}
+    <div class="layui-form-item layui-col-md10">
+        <div class="layui-inline">
+            <label class="layui-form-label">客户单位</label>
+            <input style="display: none" id="customer_name" name="customer_name"/>
+            <input style="display: none" id="c_s_id" name="c_s_id"/>
+            <div class="layui-input-inline">
+                <select lay-filter="customer_select" name="" lay-search>
+                    <option value="">请选择客户单位</option>
+                    {foreach $customers as $customer}
                     <option value="{$customer['company_name']}|-|{$customer['business_contact']}|-|{$customer['project_contact']}|-|{$customer['id']}">{$customer['company_name']}</option>
-                {/foreach}
-            </select>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">签约单位</label>
+            <div class="layui-input-inline">
+                <select name="g_c_id" lay-search>
+                    <option value="">请选择签约单位</option>
+                    {foreach $group_companys as $group_company}
+                    <option value="{$group_company.id}">{$group_company.name}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">签订日期</label>
-        <div class="layui-input-block">
-            <input type="text" name="sign_date" class="layui-input" id="date_time_sign_date" autocomplete="off">
+        <div class="layui-inline">
+            <label class="layui-form-label">签订日期</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sign_date" class="layui-input" id="date_time_sign_date" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">合同开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="start_time" class="layui-input" id="date_time_start_time" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">合同结束时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="end_time" class="layui-input" id="date_time_end_time" autocomplete="off">
+            </div>
         </div>
     </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md10">
         <label class="layui-form-label">合同内容</label>
         <div class="layui-input-block">
             <textarea name="content" placeholder="请输入合同内容" class="layui-textarea"></textarea>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">公司合同编号</label>
-        <div class="layui-input-block">
-            <input type="text" name="company_identifier" autocomplete="off" placeholder="请输入公司合同编号" value="{$company_identifier}" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">公司合同编号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company_identifier" autocomplete="off" placeholder="请输入公司合同编号" value="{$company_identifier}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">客户合同编号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="customer_identifier" autocomplete="off" placeholder="请输入客户合同编号" value="" class="layui-input">
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">客户合同编号</label>
-        <div class="layui-input-block">
-            <input type="text" name="customer_identifier" autocomplete="off" placeholder="请输入客户合同编号" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">商务联系人</label>
+            <div class="layui-input-inline">
+                <select id="business_contact_select" name="business_contact" lay-search>
+
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">项目联系人</label>
+            <div class="layui-input-inline">
+                <select id="project_contact_select" name="project_contact" lay-search>
+
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">商务联系人</label>
-        <div class="layui-input-block">
-            <input type="text" id="business_contact" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">商务负责人</label>
+            <div class="layui-input-inline">
+                <select name="b_l_id" lay-search>
+                    <option value="">请选择商务负责人</option>
+                    {foreach $business_leaders as $business_leader}
+                    <option value="{$business_leader.id}"{if $business_leader['id'] == session("admin_id")}selected{/if}>{$business_leader.name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">项目负责人</label>
+            <div class="layui-input-inline">
+                <select name="p_l_id" lay-search>
+                    <option value="">请选择项目负责人</option>
+                    {foreach $project_leaders as $project_leader}
+                    <option value="{$project_leader.id}">{$project_leader.name}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">项目联系人</label>
-        <div class="layui-input-block">
-            <input type="text" id="project_contact" name="project_contact" autocomplete="off" placeholder="请输入项目联系人" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">合同金额(元)</label>
+            <div class="layui-input-inline">
+                <input type="text" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">商务负责人</label>
-        <div class="layui-input-block">
-            <input type="text" name="business_leader" autocomplete="off" placeholder="请输入商务负责人" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">是否含税</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="is_contain_tax" value="1" title="含税" checked>
+                <input type="radio" name="is_contain_tax" value="0" title="不含税">
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">项目负责人</label>
-        <div class="layui-input-block">
-            <input type="text" name="project_leader" autocomplete="off" placeholder="请输入项目负责人" value="" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">合同金额(元)</label>
-        <div class="layui-input-block">
-            <input type="text" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">是否含税</label>
-        <div class="layui-input-block">
-            <input type="radio" name="is_contain_tax" value="1" title="含税" checked>
-            <input type="radio" name="is_contain_tax" value="0" title="不含税">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">税率(%)</label>
-        <div class="layui-input-block">
-            <input type="text" name="tax_rate" autocomplete="off" placeholder="请输入税率" value="6" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">账期(天)</label>
-        <div class="layui-input-block">
-            <input type="text" name="payment_days" autocomplete="off" placeholder="请输入账期" value="" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">合同开始时间</label>
-        <div class="layui-input-block">
-            <input type="text" name="start_time" class="layui-input" id="date_time_start_time" autocomplete="off">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">合同结束时间</label>
-        <div class="layui-input-block">
-            <input type="text" name="end_time" class="layui-input" id="date_time_end_time" autocomplete="off">
+        <div class="layui-inline">
+            <label class="layui-form-label">账期(天)</label>
+            <div class="layui-input-inline">
+                <input type="text" name="payment_days" autocomplete="off" placeholder="请输入账期" value="" class="layui-input">
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
@@ -152,9 +183,34 @@
                 c_s_id = arr[3];
             }
             $("#customer_name").val(customer_name);
-            $("#business_contact").val(business_contact);
-            $("#project_contact").val(project_contact);
             $("#c_s_id").val(c_s_id);
+            //商务联系人
+            business_contact_array=[];
+            if(business_contact){
+                business_contact_array=business_contact.split(",");
+            }
+            var business_contact_options = "";
+            business_contact_options += '<option value="">请选择商务联系人</option>';
+            for (var i=0;i<business_contact_array.length ;i++ )
+            {
+                var temp = business_contact_array[i].split("|--|");
+                business_contact_options += '<option value="'+temp[0]+'">'+temp[1]+'</option>';
+            }
+            $("#business_contact_select").html(business_contact_options);
+            //项目联系人
+            project_contact_array=[];
+            if(project_contact){
+                project_contact_array=project_contact.split(",");
+            }
+            var project_contact_options = "";
+            project_contact_options += '<option value="">请选择项目联系人</option>';
+            for (var i=0;i<project_contact_array.length ;i++ )
+            {
+                var temp = project_contact_array[i].split("|--|");
+                project_contact_options += '<option value="'+temp[0]+'">'+temp[1]+'</option>';
+            }
+            $("#project_contact_select").html(project_contact_options);
+            form.render();
         });
 
     });

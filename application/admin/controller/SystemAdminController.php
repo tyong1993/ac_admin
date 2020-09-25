@@ -119,7 +119,7 @@ class SystemAdminController extends BaseController
     }
 
     /**
-     * 添加和删除需要关联的数据
+     * 添加和编辑需要关联的数据
      */
     private function assign2AddAndEdit($param=[]){
         $roles=db("system_role")->where("status","=",1)->select();

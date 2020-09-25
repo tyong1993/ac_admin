@@ -1,0 +1,102 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">公司名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_name" autocomplete="off" placeholder="请输入公司名称" value="" class="layui-input">
+            <tip>输入客户公司名称，字数50字以内</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">地区</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_region" autocomplete="off" placeholder="请输入地区" value="" class="layui-input">
+            <tip>公司属于什么省份</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_address" autocomplete="off" placeholder="请输入地址" value="" class="layui-input">
+            <tip>客户公司详细地址</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">业务简介</label>
+        <div class="layui-input-block">
+            <textarea placeholder="请输入业务简介" class="layui-textarea" name="business_profile"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商务联系人</label>
+        <div class="layui-input-block">
+            <input type="text" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">项目联系人</label>
+        <div class="layui-input-block">
+            <input type="text" name="project_contact" autocomplete="off" placeholder="请输入项目联系人" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">身份标签</label>
+        <div class="layui-input-block">
+            <select name="type">
+                <option value="1">客户</option>
+                <option value="2">供应商</option>
+                <option value="3">客户/供应商</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属公司</label>
+        <div class="layui-input-block">
+            <input type="text" name="company_belong" autocomplete="off" placeholder="请输入所属公司" value="" class="layui-input">
+            <tip>是属于我们哪家公司</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input type="text" name="remarks" autocomplete="off" placeholder="请输入备注" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('add')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

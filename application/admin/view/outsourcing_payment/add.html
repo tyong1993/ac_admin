@@ -31,9 +31,15 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">比例%</label>
+        <label class="layui-form-label">税率%</label>
         <div class="layui-input-block">
-            <input type="text" name="ratio" autocomplete="off" placeholder="请输入付款比例1-100" value="" class="layui-input">
+            <input type="text" name="tax_rate" readonly autocomplete="off" placeholder="请输入税率" value="{$tax_rate}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">总付款金额(元)</label>
+        <div class="layui-input-block">
+            <input type="text" name="all_pay_amount" readonly autocomplete="off" placeholder="请输入总付款金额" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -42,6 +48,7 @@
         </div>
     </div>
 </div>
+<script src="__ADMIN__/js/computer.js"></script>
 <script>
     layui.use(['form'], function () {
         var form = layui.form,
@@ -63,6 +70,24 @@
             }, 'json');
             return false;
         });
+        //监听付款金额
+        $("input[name='pay_amount']").bind('input propertychange', function() {
+            doCompute();
+        });
+
+        //数据关联计算
+        var doCompute = function () {
+            //付款金额
+            var pay_amount = $("input[name='pay_amount']").val();
+            //税率
+            var tax_rate = $("input[name='tax_rate']").val();
+            if(tax_rate=="---"){
+                tax_rate = 0;
+            }
+            //总付款金额
+            var all_pay_amount = accMul(pay_amount,accAdd(1,accDiv(tax_rate,100)));
+            $("input[name='all_pay_amount']").val(all_pay_amount);
+        }
 
     });
 </script>

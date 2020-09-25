@@ -21,14 +21,22 @@ class ExpendBusinessController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $business_contact=$this->request->param("business_contact");
+            $contract_name=$this->request->param("contract_name");
             $db=db('expend_business');
             if(!empty($business_contact)){
                 $db->where("business_contact","like","%$business_contact%");
             }
-            $res = $db->paginate($limit)->toArray();
+            if(!empty($contract_name)){
+                $db->where("contract_name","like","%$contract_name%");
+            }
+            $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["tax_rate"] = $val["is_need_tax"]?$val["tax_rate"]:"---";
+                $val["pay_status"] = $val["pay_status"]?"已付款":"未付款";
+                $val["collection_amount"] = amount_format($val["collection_amount"]);
+                $val["pay_amount_need"] = amount_format($val["pay_amount_need"]);
+                $val["pay_amount_true"] = amount_format($val["pay_amount_true"]);
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -71,6 +79,9 @@ class ExpendBusinessController extends BaseController
         //收款期数数据
         $res = db('sales_collection')->where(["contract_id"=>$row["contract_id"]])->order("id desc")->select();
         $this->assign("sales_collections",$res);
+        //该期收款情况
+        $res = db('sales_collection a')->field("a.*,b.colletion_status")->leftJoin("invoice_records b","a.id = b.collection_id")->where("a.id","eq",$row["collection_id"])->find();
+        $this->assign("now_periods",$res);
         return $this->fetch();
     }
     /**

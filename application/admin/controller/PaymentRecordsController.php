@@ -22,22 +22,45 @@ class PaymentRecordsController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $sq_people=$this->request->param("sq_people");
+            $contract_name=$this->request->param("contract_name");
             $db=db('payment_records');
             if(!empty($sq_people)){
                 $db->where("sq_people","like","%$sq_people%");
             }
-            $res = $db->paginate($limit)->toArray();
+            if(!empty($contract_name)){
+                $db->where("contract_name","like","%$contract_name%");
+            }
+            $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                $val["invoice_time"] = !empty($val["invoice_time"])?date("Y-m-d H:i",$val["invoice_time"]):"---";
-                $val["pay_time"] = !empty($val["pay_time"])?date("Y-m-d H:i",$val["pay_time"]):"---";
+                $val["invoice_time"] = !empty($val["invoice_time"])?date("Y-m-d",$val["invoice_time"]):"---";
+                $val["pay_time"] = !empty($val["pay_time"])?date("Y-m-d",$val["pay_time"]):"---";
                 $val["tax_rate"] = !empty($val["tax_rate"])?$val["tax_rate"]:"---";
+                $val["pay_amount"] = amount_format($val["pay_amount"]);
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
         return $this->fetch();
     }
-
+    /**
+     * 编辑
+     */
+    function edit(){
+        if($this->request->isAjax()){
+            $param=$this->request->post();
+            $this->validate($param,PaymentRecordsVilldate::class);
+            $param["invoice_time"] = strtotime($param["invoice_time"]);
+            $param["pay_time"] = strtotime($param["pay_time"]);
+            db('payment_records')->update($param);
+            return jsonSuccess();
+        }
+        $id=$this->request->param('id');
+        $row=db("payment_records")->find($id);
+        $row["invoice_time"] = date("Y-m-d",$row["invoice_time"]);
+        $row["pay_time"] = date("Y-m-d",$row["pay_time"]);
+        $this->assign("row",$row);
+        return $this->fetch();
+    }
     /**
      * 确认付款
      */

@@ -22,7 +22,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label">合同金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
+            <input type="text" lay-verify="number" readonly id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -36,9 +36,9 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">当前收款金额</label>
+        <label class="layui-form-label">计划收款金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="collection_amount" autocomplete="off" placeholder="请输入当前收款金额" value="" class="layui-input">
+            <input type="text" lay-verify="number" readonly name="collection_amount" autocomplete="off" placeholder="请输入计划收款金额" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -62,26 +62,31 @@
     <div class="layui-form-item">
         <label class="layui-form-label">剩余金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="surplus_amount" readonly autocomplete="off" placeholder="" value="0" class="layui-input">
+            <input type="text" lay-verify="number" name="surplus_amount" autocomplete="off" placeholder="" value="0" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">付款比例%</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入付款比例" value="0" class="layui-input">
+            <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入付款比例" value="10" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">应付金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount" readonly autocomplete="off" placeholder="" value="" class="layui-input">
+            <input type="text" name="pay_amount" autocomplete="off" placeholder="" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">领取人</label>
         <div class="layui-input-block">
-            <input type="text" name="receiver" autocomplete="off" placeholder="请输入领取人" value="" class="layui-input">
+            <select name="receiver_id" lay-search>
+                <option value="">请选择领取人</option>
+                {foreach $receivers as $receiver}
+                <option value="{$receiver.id}">{$receiver.name}</option>
+                {/foreach}
+            </select>
         </div>
     </div>
     <div class="layui-form-item">
@@ -152,10 +157,26 @@
             $("#collection_id").val(collection_id);
             $("#periods").val(periods);
             $("input[name='collection_amount']").val(collection_amount);
+            //同步请求
+            $.ajaxSettings.async = false;
+            //获取收款期数
+            $.get("{:url('getExpends')}", {collection_id:collection_id}, function (res) {
+                if(res.code == 20000) {
+                    //报销
+                    $("input[name='deduct_reimbursement']").val(res.data.reimbursement_amount);
+                    //外包
+                    $("input[name='deduct_outsource']").val(res.data.outsourcing_pay_amount);
+                    //商务
+                    $("input[name='deduct_business']").val(res.data.business_pay_amount);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            $.ajaxSettings.async = true;
             doCompute();
         });
 
-        //监听收款金额
+        //监听计划收款金额
         $("input[name='collection_amount']").bind('input propertychange', function() {
             doCompute();
         });
@@ -171,18 +192,18 @@
         $("input[name='deduct_business']").bind('input propertychange', function() {
             doCompute();
         });
+        //监听剩余金额
+        $("input[name='surplus_amount']").bind('input propertychange', function() {
+            doCompute("surplus_amount");
+        });
         //监听付款比率
         $("input[name='pay_ratio']").bind('input propertychange', function() {
             doCompute();
         });
-        //监听应付金额
-        $("input[name='pay_amount']").bind('input propertychange', function() {
-            doCompute();
-        });
 
         //数据关联计算
-        var doCompute = function () {
-            //收款金额
+        var doCompute = function (source = null) {
+            //计划收款金额
             var collection_amount = $("input[name='collection_amount']").val();
             //扣除报销
             var deduct_reimbursement = $("input[name='deduct_reimbursement']").val();
@@ -200,14 +221,18 @@
                 deduct_business = 0;
             }
             //剩余金额
-            var surplus_amount = accAdd(accAdd(collection_amount,-deduct_reimbursement),-accAdd(deduct_outsource,deduct_business));
-            $("input[name='surplus_amount']").val(surplus_amount);
+            if(source == "surplus_amount"){
+                var surplus_amount = $("input[name='surplus_amount']").val();
+            }else{
+                var surplus_amount = accAdd(accAdd(collection_amount,-deduct_reimbursement),-accAdd(deduct_outsource,deduct_business));
+                $("input[name='surplus_amount']").val(surplus_amount);
+            }
             //付款比例
             var pay_ratio = $("input[name='pay_ratio']").val();
-            if(!parseInt(pay_ratio)){
+            if(!pay_ratio){
                 pay_ratio = 0;
             }
-            //实付金额
+            //应付金额
             var pay_amount = accDiv(accMul(surplus_amount,pay_ratio),100);
             $("input[name='pay_amount']").val(pay_amount);
         }

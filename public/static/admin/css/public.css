@@ -32,7 +32,9 @@ body {
 .layuimini-form > .layui-form-item > .layui-input-block {
     margin-left: 150px !important;
 }
-
+.layui-form-item .layui-inline label{
+    width: 120px;
+}
 .layuimini-form > .layui-form-item > .layui-input-block > tip {
     display: inline-block;
     margin-top: 10px;

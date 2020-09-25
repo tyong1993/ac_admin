@@ -23,14 +23,14 @@
     <div class="layui-form-item">
         <label class="layui-form-label">密码</label>
         <div class="layui-input-block">
-            <input type="password" name="password" placeholder="不填则不修改密码" value="" class="layui-input">
+            <input type="text" name="password" placeholder="不填则不修改密码" value="" class="layui-input">
             <tip>不少于6个字符</tip>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">确认密码</label>
         <div class="layui-input-block">
-            <input type="password" name="re_password" placeholder="" value="" class="layui-input">
+            <input type="text" name="re_password" placeholder="" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -42,13 +42,19 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">数据权限</label>
+        <div class="layui-input-block">
+            <input type="radio" name="data_power" value="1" title="全部" {if $row.data_power==1}checked{/if}>
+            <input type="radio" name="data_power" value="0" title="仅自己相关" {if $row.data_power==0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">状态</label>
         <div class="layui-input-block">
             <input type="radio" name="status" value="1" title="正常" {if $row.status==1}checked{/if}>
             <input type="radio" name="status" value="0" title="禁用" {if $row.status==0}checked{/if}>
         </div>
     </div>
-
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>

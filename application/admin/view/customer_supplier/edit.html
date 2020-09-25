@@ -7,7 +7,7 @@
 <body>
 <div class="layui-form layuimini-form">
     <input name="id" value="{$row['id']}" style="display: none"/>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md6">
         <label class="layui-form-label">公司名称</label>
         <div class="layui-input-block">
             <input type="text" name="company_name" autocomplete="off" placeholder="请输入公司名称" value="{$row['company_name']}" class="layui-input">
@@ -15,38 +15,42 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">地区</label>
-        <div class="layui-input-block">
-            <input type="text" name="company_region" autocomplete="off" placeholder="请输入地区" value="{$row['company_region']}" class="layui-input">
-            <tip>公司属于什么省份</tip>
+        <div class="layui-inline">
+            <label class="layui-form-label">省份</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company_region" autocomplete="off" placeholder="请输入省份" value="{$row['company_region']}" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">公司属于什么省份</div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">详细地址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company_address" autocomplete="off" placeholder="请输入详细地址" value="{$row['company_address']}" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">公司详细地址</div>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">地址</label>
-        <div class="layui-input-block">
-            <input type="text" name="company_address" autocomplete="off" placeholder="请输入地址" value="{$row['company_address']}" class="layui-input">
-            <tip>客户公司详细地址</tip>
-        </div>
-    </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md10">
         <label class="layui-form-label">业务简介</label>
         <div class="layui-input-block">
             <textarea placeholder="请输入业务简介" class="layui-textarea" name="business_profile">{$row['business_profile']}</textarea>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">商务联系人</label>
-        <div class="layui-input-block">
-            <input type="text" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="{$row['business_contact']}" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">项目联系人</label>
-        <div class="layui-input-block">
-            <input type="text" name="project_contact" autocomplete="off" placeholder="请输入项目联系人" value="{$row['project_contact']}" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
+    <!--<div class="layui-form-item layui-col-md10">-->
+        <!--<label class="layui-form-label">商务联系人</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="text" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="{$row['business_contact']}" class="layui-input">-->
+            <!--<tip>多个以逗号分隔</tip>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item layui-col-md10">-->
+        <!--<label class="layui-form-label">项目联系人</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="text" name="project_contact" autocomplete="off" placeholder="请输入项目联系人" value="{$row['project_contact']}" class="layui-input">-->
+            <!--<tip>多个以逗号分隔</tip>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="layui-form-item layui-col-md10">
         <label class="layui-form-label">身份标签</label>
         <div class="layui-input-block">
             <select name="type">
@@ -56,20 +60,12 @@
             </select>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">所属公司</label>
-        <div class="layui-input-block">
-            <input type="text" name="company_belong" autocomplete="off" placeholder="请输入所属公司" value="{$row['company_belong']}" class="layui-input">
-            <tip>是属于我们哪家公司</tip>
-        </div>
-    </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md10">
         <label class="layui-form-label">备注</label>
         <div class="layui-input-block">
             <input type="text" name="remarks" autocomplete="off" placeholder="请输入备注" value="{$row['remarks']}" class="layui-input">
         </div>
     </div>
-
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>

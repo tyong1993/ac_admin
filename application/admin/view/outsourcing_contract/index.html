@@ -15,6 +15,35 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">供应商单位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="supplier_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">签约单位</label>
+                            <div class="layui-input-inline">
+                                <select name="g_c_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $group_companys as $group_company}
+                                    <option value="{$group_company.id}">{$group_company.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目负责人</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="project_leader" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">签订日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sign_date" class="layui-input" id="date_time_sign_date" placeholder="日期范围">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -52,28 +81,31 @@
             defaultToolbar: [],
             cols: [[
                 {type: "checkbox", width: 50, fixed: 'left'},
-                {field: 'id', width: 80, title: 'ID', fixed: 'left'},
-                {field: 'sales_contract_name', width: 150, title: '销售合同'},
-                {field: 'sales_company_identifier', width: 150, title: '销售合同编号'},
+                {field: 'id', width: 50, title: 'ID', fixed: 'left'},
                 {field: 'contract_name', width: 150, title: '合同名称'},
                 {field: 'supplier_name', width: 150, title: '供应商单位'},
-                {field: 'sign_date', width: 150, title: '签订日期'},
+                {field: 'group_company_name', width: 150, title: '签约单位'},
+                {field: 'sales_contract_name', width: 150, title: '对应销售合同'},
+                {field: 'contract_amount', width: 120, align: "right", title: '合同金额'},
+                {field: 'tax_rate', width: 120, title: '税率'},
+                {field: 'all_amount', width: 120, align: "right", title: '总金额'},
+                {field: 'payment_days', width: 100, title: '账期'},
+                {field: 'sign_date', width: 100, title: '签订日期'},
+                {field: 'business_contact', width: 100, title: '商务联系人'},
+                {field: 'project_contact', width: 100, title: '项目联系人'},
+                {field: 'business_leader', width: 100, title: '商务负责人'},
+                {field: 'project_leader', width: 100, title: '项目负责人'},
                 {field: 'company_identifier', width: 150, title: '公司合同编号'},
+                {field: 'sales_company_identifier', width: 150, title: '销售合同编号'},
                 {field: 'supplier_identifier', width: 150, title: '供应商合同编号'},
-                {field: 'business_contact', width: 150, title: '商务联系人'},
-                {field: 'project_contact', width: 150, title: '项目联系人'},
-                {field: 'business_leader', width: 150, title: '商务负责人'},
-                {field: 'project_leader', width: 150, title: '项目负责人'},
-                {field: 'contract_amount', width: 150, title: '合同金额'},
-                {field: 'all_amount', width: 150, title: '总金额'},
-                {field: 'payment_days', width: 150, title: '账期'},
                 {field: 'create_time', width: 150, title: '创建时间'},
                 {title: '操作', minWidth: 200, toolbar: '#currentTableBar', align: "center",fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true,
-            skin: 'line'
+            skin: 'row,line',
+            size:"sm"
         });
 
         /**
@@ -139,6 +171,24 @@
         //监听表格复选框选择
         table.on('checkbox(currentTableFilter)', function (obj) {
             console.log(obj)
+        });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_sign_date'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+            ,range: '~'
         });
     });
 </script>

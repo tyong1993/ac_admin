@@ -1,0 +1,141 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <!--<legend>搜索信息</legend>-->
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">公司名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="company_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加联系人 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        //初始化表格
+        table.render({
+            elem: '#currentTableId',
+            url: '{:url("index")}',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: [],
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 50, title: 'ID'},
+                {field: 'name', width: 100, title: '姓名'},
+                {field: 'phone', width: 150, title: '手机号'},
+                {field: 'type', width: 150, title: '身份标签'},
+                {field: 'company_names', width: 300, title: '所属公司'},
+                {field: 'create_time', width: 150, title: '创建时间'},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "left"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'row,line',
+            size:"sm"
+        });
+
+        /**
+         * 搜索
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            var where = data.field;
+            //重载表格
+            table.reload('currentTableId', {
+                page: {curr: 1},
+                where: where
+            }, 'data');
+            return false;
+        });
+
+        /**
+         * 全局操作
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                layTool.open('{:url("add")}','添加');
+            } else if (obj.event === 'delete') {
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                var ids_str="";
+                for(var index in data){
+                    ids_str+=(","+data[index].id);
+                }
+                layTool.confirm("确定要删除所有选中记录?",function () {
+                    doDelete(ids_str);
+                })
+            }
+        });
+
+        /**
+         * 单一操作
+         */
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
+            } else if (obj.event === 'delete') {
+                layTool.confirm("确定要删除该记录?",function () {
+                    doDelete(data.id);
+                })
+            }
+        });
+        //执行删除操作
+        var doDelete = function (ids) {
+            $.getJSON("{:url('delete')}", {id:ids}, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        };
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+    });
+</script>
+
+</body>
+</html>

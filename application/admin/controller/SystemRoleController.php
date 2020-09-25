@@ -114,7 +114,7 @@ class SystemRoleController extends BaseController
         return $this->fetch();
     }
     /**
-     * 添加和删除需要关联的数据
+     * 添加和编辑需要关联的数据
      */
     private function assign2AddAndEdit($param=[]){
 

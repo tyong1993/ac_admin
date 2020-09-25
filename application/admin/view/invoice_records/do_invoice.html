@@ -11,56 +11,56 @@
     <div class="layui-form-item">
         <label class="layui-form-label">合同名称</label>
         <div class="layui-input-block">
-            <input type="text" name="contract_name" autocomplete="off" placeholder="请输入合同名称" value="{$row['contract_name']}" class="layui-input">
+            <input type="text" name="contract_name" readonly autocomplete="off" placeholder="请输入合同名称" value="{$row['contract_name']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">税号</label>
         <div class="layui-input-block">
-            <input type="text" name="tax_num" autocomplete="off" placeholder="请输入税号" value="{$row['tax_num']}" class="layui-input">
+            <input type="text" name="tax_num" readonly autocomplete="off" placeholder="请输入税号" value="{$row['tax_num']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">地址</label>
         <div class="layui-input-block">
-            <input type="text" name="address" autocomplete="off" placeholder="请输入地址" value="{$row['address']}" class="layui-input">
+            <input type="text" name="address" readonly autocomplete="off" placeholder="请输入地址" value="{$row['address']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">电话</label>
         <div class="layui-input-block">
-            <input type="text" name="phone" autocomplete="off" placeholder="请输入电话" value="{$row['phone']}" class="layui-input">
+            <input type="text" name="phone" readonly autocomplete="off" placeholder="请输入电话" value="{$row['phone']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">开户行</label>
         <div class="layui-input-block">
-            <input type="text" name="bank_name" autocomplete="off" placeholder="请输入开户行" value="{$row['bank_name']}" class="layui-input">
+            <input type="text" name="bank_name" readonly autocomplete="off" placeholder="请输入开户行" value="{$row['bank_name']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">账号</label>
         <div class="layui-input-block">
-            <input type="text" name="bank_account" autocomplete="off" placeholder="请输入账号" value="{$row['bank_account']}" class="layui-input">
+            <input type="text" name="bank_account" readonly autocomplete="off" placeholder="请输入账号" value="{$row['bank_account']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">发票号</label>
+        <label class="layui-form-label">待开票金额</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_num" autocomplete="off" placeholder="请输入发票号" value="{$row['invoice_num']}" class="layui-input">
+            <input type="text" name="invoice_amount" readonly autocomplete="off" placeholder="请输入金额" value="{$row['invoice_amount']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">金额</label>
+        <label class="layui-form-label">已开票金额</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_amount" autocomplete="off" placeholder="请输入金额" value="{$row['invoice_amount']}" class="layui-input">
+            <input type="text" name="invoice_num_amounts" readonly autocomplete="off" placeholder="已开票金额" value="{$invoice_num_amounts}" class="layui-input">
         </div>
     </div>
-
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancelBtn">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">开票</button>
+            <!--<button class="layui-btn layui-btn-normal" lay-submit lay-filter="addInvoiceNum">添加发票</button>-->
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancelBtn">取消</button>
         </div>
     </div>
 </div>
@@ -86,6 +86,21 @@
                 }
             }, 'json');
             return false;
+        });
+        //监听添加发票号
+        form.on('submit(addInvoiceNum)', function (data) {
+            layer.open({
+                type: 2,
+                title: "添加",
+                shade: 0.3,//遮罩透明度
+                maxmin:true,//最大化最小化
+                shadeClose: true,//点击遮罩是否关闭
+                area: ['80%', '80%'],
+                content: '{:url("InvoiceNums/index","",false)}/i_r_id/'+{$row['id']},
+                cancel: function(index, layero){
+                    window.location.reload();
+                }
+            });
         });
         //监听取消
         form.on('submit(cancelBtn)', function (data) {

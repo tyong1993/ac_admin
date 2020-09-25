@@ -6,24 +6,31 @@
         <div class="layui-btn-container">
             <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" id="add_sales_collection"> 添加收款计划 </button>
         </div>
-        <div style="padding-left: 50%;">
-            <span>收款金额合计:{$others["skjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>税额:{$others["se"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span {if $others["hjzje"] != $others["htzje"]}style="color: red"{/if}>合计总金额:{$others["hjzje"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
-        </div>
-        <table class="layui-table">
+        <table class="layui-table" lay-size="sm">
             <colgroup>
-                <col width="150">
-                <col width="200">
+                <col width="80">
+                <col width="80">
+                <col width="120">
+                <col width="120">
+                <col width="100">
+                <col width="100">
+                <col width="100">
+                <col width="100">
+                <col width="100">
+                <col width="100">
                 <col>
             </colgroup>
             <thead>
             <tr>
                 <th>ID</th>
                 <th>期数</th>
-                <th>验收时间</th>
                 <th>收款金额(元)</th>
                 <th>未收金额(元)</th>
-                <th>税率%</th>
                 <th>收款比例%</th>
+                <th>预验收时间</th>
+                <th>预开票时间</th>
+                <th>预收款时间</th>
+                <th>验收时间</th>
                 <th>状态</th>
                 <th>操作</th>
             </tr>
@@ -33,11 +40,13 @@
             <tr>
                 <td>{$row["id"]}</td>
                 <td>{$row["periods"]}</td>
+                <td align="right">{$row["collection_amount_format"]}</td>
+                <td align="right">{$row["uncollection_amount_format"]}</td>
+                <td>{:round(($row["collection_amount"]/$others["htje"])/100,2)}</td>
+                <td>{$row["expect_check_time"]}</td>
+                <td>{$row["expect_invoice_time"]}</td>
+                <td>{$row["expect_colletion_time"]}</td>
                 <td>{$row["check_time"]}</td>
-                <td>{$row["collection_amount"]}</td>
-                <td>{$row["collection_amount"]-$row["collected"]}</td>
-                <td>{$row["tax_rate"]}</td>
-                <td>{$row["ratio"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
                 <td>
                     <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="edit({$row['id']})">编辑</a>
@@ -47,6 +56,9 @@
             {/foreach}
             </tbody>
         </table>
+        <div style="padding-left: 30%;">
+            <span {if $others["skjehj"] != $others["htje"]}style="color: red"{/if}>收款金额合计:{$others["skjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同金额:{$others["htje"]}({$others["is_contain_tax"]})</span>
+        </div>
     </div>
 </div>
 <script>
@@ -85,7 +97,7 @@
         }
         //可开票
         if(status == 1){
-            layTool.open('{:url("status1","",false)}/id/'+id,'可开票','50%','50%');
+            layTool.open('{:url("status1","",false)}/id/'+id,'可开票','80%','80%');
         }
         //申请开票
         if(status == 2){

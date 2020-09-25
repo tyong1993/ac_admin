@@ -8,9 +8,9 @@
 <div class="layui-form layuimini-form">
     <input type="text" name="c_s_id" style="display: none" value="{$c_s_id}">
     <div class="layui-form-item">
-        <label class="layui-form-label">收款人</label>
+        <label class="layui-form-label">账户名</label>
         <div class="layui-input-block">
-            <input type="text" name="payee" autocomplete="off" placeholder="请输入收款人" value="" class="layui-input">
+            <input type="text" name="payee" autocomplete="off" placeholder="请输入账户名" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -25,7 +25,12 @@
             <input type="text" name="bank_name" autocomplete="off" placeholder="请输入银行名称" value="" class="layui-input">
         </div>
     </div>
-
+    <div class="layui-form-item">
+        <label class="layui-form-label">分行</label>
+        <div class="layui-input-block">
+            <input type="text" name="branch" autocomplete="off" placeholder="请输入分行" value="" class="layui-input">
+        </div>
+    </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>

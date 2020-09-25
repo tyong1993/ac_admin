@@ -29,8 +29,7 @@ class OutsourcingPaymentController extends BaseController
         $tax_rate = $row["is_contain_tax"] == 1?"---":$row["tax_rate"];
         //收款金额合计,税额,合同总金额,合同ID
         $others=[
-            "skjehj"=>0.00,
-            "se"=>0.00,
+            "skzjehj"=>0.00,
             "htzje"=>$row["all_amount"],
             "htid"=>$row["id"],
         ];
@@ -38,10 +37,13 @@ class OutsourcingPaymentController extends BaseController
             $val["tax_rate"] = $tax_rate;
             $val["check_time"] = $val["check_time"]?date("Y-m-d",$val["check_time"]):"---";
             $val["status_name"] = $this->getStatusName($val["status"]);
-            $others["skjehj"] += $val["pay_amount"];
-            $others["se"] += $row["is_contain_tax"]==1?0:$val["pay_amount"]*($row["tax_rate"]/100);
+            $val["pay_amount_format"] = amount_format($val["pay_amount"]);
+            $val["all_pay_amount_format"] = amount_format($val["all_pay_amount"]);
+            $val["unpay_amount"] = amount_format($val["all_pay_amount"]-$val["payed"]);
+            $others["skzjehj"] += $val["all_pay_amount"];
         }
-        $others["hjzje"] = $others["skjehj"] + $others["se"];
+        $others["htzje"] = amount_format($others["htzje"]);
+        $others["skzjehj"] = amount_format($others["skzjehj"]);
         $this->assign("res",$res);
         $this->assign("others",$others);
         return $this->fetch();
@@ -54,7 +56,8 @@ class OutsourcingPaymentController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,OutsourcingPaymentVilldate::class);
-            db('outsourcing_payment')->insert($param);
+            $param["sales_periods"] = db('sales_collection')->where("id","eq",$param["sales_collection_id"])->value("periods");
+            db('outsourcing_payment')->strict(false)->insert($param);
             return jsonSuccess();
         }
         $contract_id = $this->request->param("contract_id");
@@ -70,7 +73,10 @@ class OutsourcingPaymentController extends BaseController
         }else{
             $maybe = SalesCollectionController::getPeriodsForSelect($before["periods"]);
         }
+        //税率
+        $tax_rate = $outsourcing_contract["is_contain_tax"]?"---":$outsourcing_contract["tax_rate"];
         $this->assign("maybe",$maybe);
+        $this->assign("tax_rate",$tax_rate);
         return $this->fetch();
     }
     /**
@@ -80,9 +86,10 @@ class OutsourcingPaymentController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,OutsourcingPaymentVilldate::class);
+            $param["sales_periods"] = db('sales_collection')->where("id","eq",$param["sales_collection_id"])->value("periods");
             $param["check_time"] = !empty($param["check_time"])?strtotime($param["check_time"]):0;
             $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
-            db('outsourcing_payment')->update($param);
+            db('outsourcing_payment')->strict(false)->update($param);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -94,6 +101,9 @@ class OutsourcingPaymentController extends BaseController
         $outsourcing_contract = db("outsourcing_contract")->find($row["contract_id"]);
         $sales_collections = db("sales_collection")->where(["contract_id"=>$outsourcing_contract["sales_contract_id"]])->select();
         $this->assign("sales_collections",$sales_collections);
+        //税率
+        $tax_rate = $outsourcing_contract["is_contain_tax"]?"---":$outsourcing_contract["tax_rate"];
+        $this->assign("tax_rate",$tax_rate);
         return $this->fetch();
     }
     /**
@@ -139,8 +149,9 @@ class OutsourcingPaymentController extends BaseController
             //申请付款
             $outsourcing_payment["id"] = $param["id"];
             $outsourcing_payment["status"] = 2;
+            $outsourcing_payment["payed"] = $param["pay_amount"];
             $res1 = Db::name('outsourcing_payment')->update($outsourcing_payment);
-            //添加待开票记录
+            //添加待付款记录
             $admin = SystemAdminModel::find(session("admin_id"));
             $data["contract_id"] = $param["contract_id"];
             $data["payment_id"] = $param["id"];
@@ -152,7 +163,7 @@ class OutsourcingPaymentController extends BaseController
             $data["payee"] = $param["payee"];
             $data["bank_name"] = $param["bank_name"];
             $data["bank_account"] = $param["bank_account"];
-            $data["tax_rate"] = $param["is_contain_tax"]?0:$param["tax_rate"];
+            $data["branch"] = $param["branch"];
             $data["create_time"] = time();
             $res2 = Db::name("payment_records")->insert($data);
             if(!$res1 || !$res2){

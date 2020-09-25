@@ -17,14 +17,16 @@ class SalesContractVilldate extends Validate
     protected $rule =   [
         'contract_name'   => 'require',
         'contract_amount'   => 'require',
-        'tax_rate'   => 'require',
         'company_identifier'   => 'require',
+        'c_s_id'   => 'require',
+        'g_c_id'   => 'require',
     ];
 
     protected $message  =   [
         'contract_name.require' => '合同名称必填',
         'contract_amount.require' => '合同金额必填',
-        'tax_rate.require' => '税率必填',
         'company_identifier.require' => '公司合同编号必填',
+        'c_s_id.require' => '客户单位必选',
+        'g_c_id.require' => '签约单位必选',
     ];
 }

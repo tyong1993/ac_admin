@@ -10,13 +10,13 @@
     <div class="layui-form-item">
         <label class="layui-form-label">待付款金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount" autocomplete="off" readonly placeholder="请输入待付款金额" value="{$row['pay_amount']}" class="layui-input">
+            <input type="text" name="pay_amount" autocomplete="off" readonly placeholder="请输入待付款金额" value="{$row['all_pay_amount']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel">取消</button>
         </div>
     </div>
 </div>

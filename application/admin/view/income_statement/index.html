@@ -1,0 +1,170 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <!--<legend>搜索信息</legend>-->
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">合同名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="contract_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">签约单位</label>
+                            <div class="layui-input-inline">
+                                <select name="g_c_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $group_companys as $group_company}
+                                    <option value="{$group_company.id}">{$group_company.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">按年份筛选</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+
+        </script>
+
+    </div>
+</div>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        //初始化表格
+        table.render({
+            elem: '#currentTableId',
+            url: '{:url("index")}',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: [],
+            cols: [[
+                {field: 'id', width: 50, title: 'ID', fixed: 'left'},
+                {field: 'contract_name', width: 150, title: '合同名称'},
+                {field: 'contract_amount_format', width: 120, align: "right", title: '合同总金额'},
+                {field: 'collected_amount_format', width: 100, align: "right", title: '回款金额'},
+                {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用'},
+                {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用'},
+                {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
+                {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
+                {field: 'surplus_format', width: 120, align: "right", title: '盈余'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'row,line',
+            size:"sm"
+        });
+
+        /**
+         * 搜索
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            var where = data.field;
+            //重载表格
+            table.reload('currentTableId', {
+                page: {curr: 1},
+                where: where
+            }, 'data');
+            return false;
+        });
+
+        /**
+         * 全局操作
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                layTool.open('{:url("add")}','添加');
+            } else if (obj.event === 'delete') {
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                var ids_str="";
+                for(var index in data){
+                    ids_str+=(","+data[index].id);
+                }
+                layTool.confirm("确定要删除所有选中记录?",function () {
+                    doDelete(ids_str);
+                })
+            }
+        });
+
+        /**
+         * 单一操作
+         */
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
+            } else if (obj.event === 'delete') {
+                layTool.confirm("确定要删除该记录?",function () {
+                    doDelete(data.id);
+                })
+            }else if (obj.event === 'accounts') {
+                layTool.open('{:url("SupplierAccounts/index","",false)}/id/'+data.id,'账号信息');
+            }else if (obj.event === 'invoice') {
+                layTool.open('{:url("CustomersInvoice/index","",false)}/id/'+data.id,'开票信息');
+            }
+        });
+        //执行删除操作
+        var doDelete = function (ids) {
+            $.getJSON("{:url('delete')}", {id:ids}, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        };
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_select_by_year'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'year'
+        });
+    });
+</script>
+
+</body>
+</html>

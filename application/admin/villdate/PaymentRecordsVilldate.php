@@ -15,10 +15,10 @@ use think\Validate;
 class PaymentRecordsVilldate extends Validate
 {
     protected $rule =   [
-        'invoice_num'   => 'require',
+//        'invoice_num'   => 'require',
     ];
 
     protected $message  =   [
-        'invoice_num.require' => '发票号必填',
+//        'invoice_num.require' => '发票号必填',
     ];
 }

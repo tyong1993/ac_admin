@@ -23,7 +23,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label">合同金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="{$row["contract_amount"]}" class="layui-input">
+            <input type="text" lay-verify="number" readonly id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="{$row["contract_amount"]}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -40,9 +40,9 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">当前收款金额</label>
+        <label class="layui-form-label">计划收款金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="collection_amount" autocomplete="off" placeholder="请输入当前收款金额" value="{$row['collection_amount']}" class="layui-input">
+            <input type="text" lay-verify="number" readonly name="collection_amount" autocomplete="off" placeholder="请输入计划收款金额" value="{$row['collection_amount']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -66,7 +66,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label">剩余金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="surplus_amount" readonly autocomplete="off" placeholder="" value="{$row['surplus_amount']}" class="layui-input">
+            <input type="text" lay-verify="number" name="surplus_amount" autocomplete="off" placeholder="" value="{$row['surplus_amount']}" class="layui-input">
         </div>
     </div>
 
@@ -79,18 +79,26 @@
     <div class="layui-form-item">
         <label class="layui-form-label">应付金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount" readonly autocomplete="off" placeholder="" value="{$row['pay_amount']}" class="layui-input">
+            <input type="text" name="pay_amount" autocomplete="off" placeholder="" value="{$row['pay_amount']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">领取人</label>
         <div class="layui-input-block">
-            <input type="text" name="receiver" autocomplete="off" placeholder="请输入领取人" value="{$row['receiver']}" class="layui-input">
+            <select name="receiver_id" lay-search>
+                <option value="">请选择领取人</option>
+                {foreach $receivers as $receiver}
+                <option value="{$receiver.id}" {if $receiver['id'] == $row["receiver_id"]}selected{/if}>{$receiver.name}</option>
+                {/foreach}
+            </select>
         </div>
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            {if $now_periods["colletion_status"] == 1 and $row["pay_status"] == 0}
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="confirmPay">确认付款</button>
+            {/if}
         </div>
     </div>
 </div>
@@ -102,6 +110,23 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('edit')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //监听付款提交
+        form.on('submit(confirmPay)', function (data) {
+            data.field.pay_status = 1;
             $.post("{:url('edit')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
@@ -156,9 +181,25 @@
             $("#collection_id").val(collection_id);
             $("#periods").val(periods);
             $("input[name='collection_amount']").val(collection_amount);
+            //同步请求
+            $.ajaxSettings.async = false;
+            //获取该期支出数据
+            $.get("{:url('getExpends')}", {collection_id:collection_id}, function (res) {
+                if(res.code == 20000) {
+                    //报销
+                    $("input[name='deduct_reimbursement']").val(res.data.reimbursement_amount);
+                    //外包
+                    $("input[name='deduct_outsource']").val(res.data.outsourcing_pay_amount);
+                    //商务
+                    $("input[name='deduct_business']").val(res.data.business_pay_amount);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            $.ajaxSettings.async = true;
             doCompute();
         });
-        //监听收款金额
+        //监听计划收款金额
         $("input[name='collection_amount']").bind('input propertychange', function() {
             doCompute();
         });
@@ -174,17 +215,17 @@
         $("input[name='deduct_business']").bind('input propertychange', function() {
             doCompute();
         });
+        //监听剩余金额
+        $("input[name='surplus_amount']").bind('input propertychange', function() {
+            doCompute("surplus_amount");
+        });
         //监听付款比率
         $("input[name='pay_ratio']").bind('input propertychange', function() {
             doCompute();
         });
-        //监听应付金额
-        $("input[name='pay_amount']").bind('input propertychange', function() {
-            doCompute();
-        });
 
         //数据关联计算
-        var doCompute = function () {
+        var doCompute = function (source = null) {
             //收款金额
             var collection_amount = $("input[name='collection_amount']").val();
             //扣除报销
@@ -203,17 +244,86 @@
                 deduct_business = 0;
             }
             //剩余金额
-            var surplus_amount = accAdd(accAdd(collection_amount,-deduct_reimbursement),-accAdd(deduct_outsource,deduct_business));
-            $("input[name='surplus_amount']").val(surplus_amount);
+            if(source == "surplus_amount"){
+                var surplus_amount = $("input[name='surplus_amount']").val();
+            }else{
+                var surplus_amount = accAdd(accAdd(collection_amount,-deduct_reimbursement),-accAdd(deduct_outsource,deduct_business));
+                $("input[name='surplus_amount']").val(surplus_amount);
+            }
             //付款比例
             var pay_ratio = $("input[name='pay_ratio']").val();
-            if(!parseInt(pay_ratio)){
+            if(!pay_ratio){
                 pay_ratio = 0;
             }
-            //实付金额
+            //应付金额
             var pay_amount = accDiv(accMul(surplus_amount,pay_ratio),100);
             $("input[name='pay_amount']").val(pay_amount);
-        }
+        };
+        //关联计算数据变化提醒
+        var relationComputeChangeAlert = function () {
+            var old_collection_amount = {$row["collection_amount"]};
+            var now_collection_amount = {$now_periods["collection_amount"]};
+
+            var old_deduct_reimbursement = {$row["deduct_reimbursement"]};
+            var now_deduct_reimbursement = 0;
+
+            var old_deduct_outsource = {$row["deduct_outsource"]};
+            var now_deduct_outsource = 0;
+
+            var old_deduct_business = {$row["deduct_business"]};
+            var now_deduct_business = 0;
+            //同步请求
+            $.ajaxSettings.async = false;
+            //获取该期支出数据
+            var collection_id = {$row["collection_id"]};
+            $.get("{:url('getExpends')}", {collection_id:collection_id}, function (res) {
+                if(res.code == 20000) {
+                    //报销
+                    now_deduct_reimbursement = res.data.reimbursement_amount;
+                    //外包
+                    now_deduct_outsource = res.data.outsourcing_pay_amount;
+                    //商务
+                    now_deduct_business = res.data.business_pay_amount;
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            $.ajaxSettings.async = true;
+            var is_alert = 0;
+            var alert_str = "";
+            if(old_collection_amount != now_collection_amount){
+                var temp = "计划收款金额有变,原:"+old_collection_amount+">>>现:"+now_collection_amount;
+                alert_str = alert_str!= ""?alert_str+"<br>"+temp:temp;
+                is_alert = 1;
+            }
+            if(old_deduct_reimbursement != now_deduct_reimbursement){
+                var temp = "扣除报销金额有变,原:"+old_deduct_reimbursement+">>>现:"+now_deduct_reimbursement;
+                alert_str = alert_str!= ""?alert_str+"<br>"+temp:temp;
+                is_alert = 1;
+            }
+            if(old_deduct_outsource != now_deduct_outsource){
+                var temp = "扣除外包金额有变,原:"+old_deduct_outsource+">>>现:"+now_deduct_outsource;
+                alert_str = alert_str!= ""?alert_str+"<br>"+temp:temp;
+                is_alert = 1;
+            }
+            if(old_deduct_business != now_deduct_business){
+                var temp = "扣除商务金额有变,原:"+old_deduct_business+">>>现:"+now_deduct_business;
+                alert_str = alert_str!= ""?alert_str+"<br>"+temp:temp;
+                is_alert = 1;
+            }
+            if(is_alert){
+                alert_str = alert_str+"<br>点击'确定'可重新进行计算!";
+                layTool.confirm(alert_str,function (index) {
+                    $("input[name='collection_amount']").val(now_collection_amount);
+                    $("input[name='deduct_reimbursement']").val(now_deduct_reimbursement);
+                    $("input[name='deduct_outsource']").val(now_deduct_outsource);
+                    $("input[name='deduct_business']").val(now_deduct_business);
+                    doCompute();
+                    layer.close(index);
+                })
+            }
+        };
+        relationComputeChangeAlert();
 
     });
 

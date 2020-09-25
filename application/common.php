@@ -109,3 +109,27 @@ function cleanableCache($key,$data=null){
     $cleanableCacheData[$key]=$data;
     cache("cleanable_cache",$cleanableCacheData);
 }
+/**
+ * 金额格式处理
+ */
+function amount_format($amount){
+    $right = "00";
+    if(strpos($amount,".") !== false){
+        $l_f = explode(".",$amount);
+        $left = $l_f[0];
+        $right = $l_f[1];
+    }else{
+        $left = $amount;
+    }
+    $temp = [];
+    do{
+        $unit = substr($left,-4);
+        $left = substr($left,0,-(strlen($unit)));
+        $temp[]=$left?",".$unit:$unit;
+    }while($left);
+    $left = "";
+    foreach ($temp as $unit){
+        $left=$unit.$left;
+    }
+    return $left.".".$right;
+}

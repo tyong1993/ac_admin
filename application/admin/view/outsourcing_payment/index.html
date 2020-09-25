@@ -6,23 +6,31 @@
         <div class="layui-btn-container">
             <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" id="add_outsourcing_payment"> 添加付款计划 </button>
         </div>
-        <div style="padding-left: 50%;">
-            <span>付款金额合计:{$others["skjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>税额:{$others["se"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span {if $others["hjzje"] != $others["htzje"]}style="color: red"{/if}>合计总金额:{$others["hjzje"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
-        </div>
-        <table class="layui-table">
+        <table class="layui-table" lay-size="sm">
             <colgroup>
-                <col width="150">
-                <col width="200">
+                <col width="80">
+                <col width="80">
+                <col width="80">
+                <col width="100">
+                <col width="80">
+                <col width="100">
+                <col width="100">
+                <col width="80">
+                <col width="100">
+                <col width="80">
                 <col>
             </colgroup>
             <thead>
             <tr>
                 <th>ID</th>
                 <th>期数</th>
-                <th>验收时间</th>
+                <th>对应收款期数</th>
                 <th>付款金额(元)</th>
                 <th>税率%</th>
+                <th>总付款金额(元)</th>
+                <th>未付金额(元)</th>
                 <th>付款比例%</th>
+                <th>验收时间</th>
                 <th>状态</th>
                 <th>操作</th>
             </tr>
@@ -32,10 +40,13 @@
             <tr>
                 <td>{$row["id"]}</td>
                 <td>{$row["periods"]}</td>
-                <td>{$row["check_time"]}</td>
-                <td>{$row["pay_amount"]}</td>
+                <td>{$row["sales_periods"]}</td>
+                <td align="right">{$row["pay_amount_format"]}</td>
                 <td>{$row["tax_rate"]}</td>
-                <td>{$row["ratio"]}</td>
+                <td align="right">{$row["all_pay_amount_format"]}</td>
+                <td align="right">{$row["unpay_amount"]}</td>
+                <td>{:round(($row["all_pay_amount"]/$others["htzje"])/100,2)}</td>
+                <td>{$row["check_time"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
                 <td>
                     <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="edit({$row['id']})">编辑</a>
@@ -45,6 +56,9 @@
             {/foreach}
             </tbody>
         </table>
+        <div style="padding-left: 30%;">
+            <span {if $others["skzjehj"] != $others["htzje"]}style="color: red"{/if}>总付款金额合计:{$others["skzjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
+        </div>
     </div>
 </div>
 <script>
@@ -83,7 +97,7 @@
         }
         //可收款
         if(status == 1){
-            layTool.open('{:url("status1","",false)}/id/'+id,'可收款','50%','50%');
+            layTool.open('{:url("status1","",false)}/id/'+id,'可收款','80%','80%');
         }
         //申请收款
         if(status == 2){

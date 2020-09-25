@@ -50,6 +50,9 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,CustomerSupplierVilldate::class);
+//            //联系人处理
+//            $param["business_contact"] = str_replace(" ","",str_replace("，",",",$param["business_contact"]));
+//            $param["project_contact"] = str_replace(" ","",str_replace("，",",",$param["project_contact"]));
             $param["create_time"] = time();
             db('customer_supplier')->insert($param);
             return jsonSuccess();
@@ -63,6 +66,9 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,CustomerSupplierVilldate::class);
+//            //联系人处理
+//            $param["business_contact"] = str_replace(" ","",str_replace("，",",",$param["business_contact"]));
+//            $param["project_contact"] = str_replace(" ","",str_replace("，",",",$param["project_contact"]));
             db('customer_supplier')->update($param);
             return jsonSuccess();
         }

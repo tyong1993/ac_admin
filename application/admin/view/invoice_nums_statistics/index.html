@@ -1,0 +1,135 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <!--<legend>搜索信息</legend>-->
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目单位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="customer_name" autocomplete="off" value="{$customer_name}" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">发票号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="num" autocomplete="off" value="{$num}" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">签约单位</label>
+                            <div class="layui-input-inline">
+                                <select name="g_c_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $group_companys as $group_company}
+                                    <option value="{$group_company.id}" {if $g_c_id == $group_company.id}selected{/if}>{$group_company.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">按年份筛选</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        {foreach $res as $val}
+        <table class="layui-table" lay-size="sm">
+            <colgroup>
+                <col width="80">
+                <col width="100">
+                <col width="150">
+                <col width="150">
+                <col width="200">
+                <col width="120">
+                <col width="100">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>开票日期</th>
+                <th>项目单位</th>
+                <th>合同名称</th>
+                <th>发票号码</th>
+                <th>金额</th>
+                <th>状态</th>
+                <th>备注</th>
+                <th>回款状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $val["data"] as $v}
+            <tr>
+                <td>{$v["id"]}</td>
+                <td>{$v["invoice_time"]}</td>
+                <td>{$v["customer_name"]}</td>
+                <td>{$v["contract_name"]}</td>
+                <td>{$v["num"]}</td>
+                <td align="right">{$v["amount_format"]}</td>
+                <td>{$v["status_name"]}</td>
+                <td>{$v["remark"]}</td>
+                <td>{$v["colletion_status"]|raw}</td>
+            </tr>
+            {/foreach}
+            <!--按月统计-->
+            <tr>
+                <td></td>
+                <td>{$val["name"]}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="right">{$val["all_amount"]}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        {/foreach}
+    </div>
+</div>
+<script>
+    layui.use(['jquery','form'], function () {
+        $ = layui.jquery;
+        form = layui.form;
+        /**
+         * 搜索
+         */
+        // form.on('submit(data-search-btn)', function (data) {
+        //     var where = data.field;
+        //     alert(JSON.stringify(where));
+        // });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_select_by_year'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'year'
+        });
+    });
+
+</script>
+
+</body>
+</html>

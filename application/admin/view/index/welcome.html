@@ -44,25 +44,25 @@
                                                         <h5>合同金额</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["contract_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="layui-col-xs3">
-                                            <div class="panel layui-bg-number">
-                                                <div class="panel-body">
-                                                    <div class="panel-title">
-                                                        <h5>完结金额</h5>
-                                                    </div>
-                                                    <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
-                                                        <!--<small>当前分类总记录数</small>-->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!--<div class="layui-col-xs3">-->
+                                            <!--<div class="panel layui-bg-number">-->
+                                                <!--<div class="panel-body">-->
+                                                    <!--<div class="panel-title">-->
+                                                        <!--<h5>完结金额</h5>-->
+                                                    <!--</div>-->
+                                                    <!--<div class="panel-content">-->
+                                                        <!--<h1 class="no-margins">1314</h1>-->
+                                                        <!--&lt;!&ndash;<small>当前分类总记录数</small>&ndash;&gt;-->
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -70,7 +70,7 @@
                                                         <h5>已收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["collected_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -83,12 +83,14 @@
                                                         <h5>待收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{:amount_format($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -96,7 +98,7 @@
                                                         <h5>外包金额</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["outsourcing_pay_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -109,7 +111,7 @@
                                                         <h5>报销费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["reimbursement_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -122,7 +124,7 @@
                                                         <h5>商务费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["business_pay_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -135,7 +137,7 @@
                                                         <h5>奖金费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$summary_statistic["reward_pay_amount_format"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -306,11 +308,34 @@
                                     <div class="layui-row layui-col-space10 layuimini-qiuck">
                                         <div class="layui-col-xs1 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('41').click()">
-                                                <i class="fa fa-wrench"></i>
+                                                <i class="layui-icon layui-icon-list"></i>
                                                 <cite>项目收支</cite>
                                             </a>
                                         </div>
-
+                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                            <a href="javascript:parent.document.getElementById('43').click()">
+                                                <i class="layui-icon layui-icon-engine"></i>
+                                                <cite>月度汇总</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                            <a href="javascript:parent.document.getElementById('42').click()">
+                                                <i class="layui-icon layui-icon-survey"></i>
+                                                <cite>开票明细</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                            <a href="javascript:parent.document.getElementById('44').click()">
+                                                <i class="layui-icon layui-icon-templeate-1"></i>
+                                                <cite>商务汇总</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                            <a href="javascript:parent.document.getElementById('46').click()">
+                                                <i class="layui-icon layui-icon-form"></i>
+                                                <cite>利润表</cite>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

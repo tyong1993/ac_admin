@@ -20,11 +20,30 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">比例%</label>
+        <label class="layui-form-label">预验收时间</label>
         <div class="layui-input-block">
-            <input type="text" name="ratio" autocomplete="off" placeholder="请输入收款比例1-100" value="" class="layui-input">
+            <input type="text" name="expect_check_time" value="" class="layui-input" id="date_time_expect_check_time" autocomplete="off">
         </div>
     </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">预开票时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="expect_invoice_time" value="" class="layui-input" id="date_time_expect_invoice_time" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">预收款时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="expect_colletion_time" value="" class="layui-input" id="date_time_expect_colletion_time" autocomplete="off">
+        </div>
+    </div>
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">比例%</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="text" name="ratio" autocomplete="off" placeholder="请输入收款比例1-100" value="" class="layui-input">-->
+        <!--</div>-->
+    <!--</div>-->
+
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
@@ -51,6 +70,46 @@
                 }
             }, 'json');
             return false;
+        });
+
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_expect_check_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_expect_invoice_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_expect_colletion_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
         });
 
     });

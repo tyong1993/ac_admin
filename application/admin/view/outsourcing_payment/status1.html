@@ -8,7 +8,7 @@
 <div class="layui-form layuimini-form">
     <input name="id" value="{$row['id']}" style="display: none"/>
     <input name="periods" value="{$row['periods']}" style="display: none"/>
-    <input name="all_pay_amount" value="{$row['pay_amount']}" style="display: none"/>
+    <input name="all_pay_amount" value="{$row['all_pay_amount']}" style="display: none"/>
     <input name="contract_id" value="{$contract['id']}" style="display: none"/>
     <input name="contract_name" value="{$contract['contract_name']}" style="display: none"/>
     <input name="is_contain_tax" value="{$contract['is_contain_tax']}" style="display: none"/>
@@ -16,17 +16,17 @@
     <div class="layui-form-item">
         <label class="layui-form-label">付款金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount" autocomplete="off" placeholder="请输入付款金额" class="layui-input">
+            <input type="text" name="pay_amount" value="{$row['all_pay_amount']}" autocomplete="off" placeholder="请输入付款金额" class="layui-input">
         </div>
     </div>
     <input style="display: none" id="payee" name="payee"/>
     <div class="layui-form-item">
-        <label class="layui-form-label">收款人</label>
+        <label class="layui-form-label">账户名</label>
         <div class="layui-input-block">
             <select lay-filter="payee_select" name="">
-                <option value="">请选择收款人</option>
+                <option value="">请选择账户名</option>
                 {foreach $accounts as $account}
-                <option value="{$account['payee']}|-|{$account['bank_name']}|-|{$account['bank_account']}">{$account["payee"]}</option>
+                <option value="{$account['payee']}|-|{$account['bank_name']}|-|{$account['bank_account']}|-|{$account['branch']}">{$account["payee"]}</option>
                 {/foreach}
             </select>
         </div>
@@ -38,15 +38,21 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">账号</label>
+        <label class="layui-form-label">银行账号</label>
         <div class="layui-input-block">
             <input type="text" name="bank_account" id="bank_account" autocomplete="off" placeholder="请输入账号" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">分行</label>
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
+            <input type="text" name="branch" id="branch" autocomplete="off" placeholder="请输入分行" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_1">确认</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
         </div>
     </div>
 </div>
@@ -62,8 +68,8 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_2">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_2">确认</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_2">取消</button>
         </div>
     </div>
 </div>
@@ -128,15 +134,18 @@
             var payee = "";
             var bank_name = "";
             var bank_account = "";
+            var branch = "";
             if(val){
                 var arr=val.split('|-|');
                 payee = arr[0];
                 bank_name = arr[1];
                 bank_account = arr[2];
+                branch = arr[3];
             }
             $("#payee").val(payee);
             $("#bank_name").val(bank_name);
             $("#bank_account").val(bank_account);
+            $("#branch").val(branch);
         });
 
     });

@@ -1,0 +1,152 @@
+{include file="common/header" /}
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <!--<legend>搜索信息</legend>-->
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目单位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="customer_name" autocomplete="off" value="{$customer_name}" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">签约单位</label>
+                            <div class="layui-input-inline">
+                                <select name="g_c_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $group_companys as $group_company}
+                                    <option value="{$group_company.id}" {if $g_c_id == $group_company.id}selected{/if}>{$group_company.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">按年份筛选</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        {foreach $res as $val}
+        <table class="layui-table" lay-size="sm">
+            <colgroup>
+                <col width="80">
+                <col width="100">
+                <col width="120">
+                <col width="120">
+                <col width="150">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>回款日期</th>
+                <th>项目单位</th>
+                <th>签约单位</th>
+                <th>合同名称</th>
+                <th>合同金额</th>
+                <th>期数</th>
+                <th>分期金额</th>
+                <th>收款金额</th>
+                <th>外包费用</th>
+                <th>报销费用</th>
+                <th>商务费用</th>
+                <th>奖金费用</th>
+                <th>盈余</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $val["data"] as $v}
+            <tr>
+                <td>{$v["id"]}</td>
+                <td>{$v["colletion_time"]}</td>
+                <td>{$v["customer_name"]}</td>
+                <td>{$v["group_company_name"]}</td>
+                <td>{$v["contract_name"]}</td>
+                <td align="right">{$v["contract_amount_format"]}</td>
+                <td>{$v["periods"]}</td>
+                <td align="right">{$v["collection_amount_format"]}</td>
+                <td align="right">{$v["invoice_amount_format"]}</td>
+                <td align="right">{$v["outsourcing_pay_amount_format"]}</td>
+                <td align="right">{$v["reimbursement_amount_format"]}</td>
+                <td align="right">{$v["business_pay_amount_format"]}</td>
+                <td align="right">{$v["reward_pay_amount_format"]}</td>
+                <td align="right">{$v["surplus_format"]}</td>
+            </tr>
+            {/foreach}
+            <!--按月统计-->
+            <tr>
+                <td></td>
+                <td>{$val["name"]}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <!--<td align="right">{//$val["statistics"]["contract_amount_format"]}</td>-->
+                <td></td>
+                <td align="right">{$val["statistics"]["collection_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["invoice_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["outsourcing_pay_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["reimbursement_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["business_pay_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["reward_pay_amount_format"]}</td>
+                <td align="right">{$val["statistics"]["surplus_format"]}</td>
+            </tr>
+            </tbody>
+        </table>
+        {/foreach}
+    </div>
+</div>
+<script>
+    layui.use(['jquery','form'], function () {
+        $ = layui.jquery;
+        form = layui.form;
+        /**
+         * 搜索
+         */
+        // form.on('submit(data-search-btn)', function (data) {
+        //     var where = data.field;
+        //     alert(JSON.stringify(where));
+        // });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_select_by_year'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'year'
+        });
+    });
+
+</script>
+
+</body>
+</html>

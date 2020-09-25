@@ -9,6 +9,12 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
+                            <label class="layui-form-label">合同名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="contract_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <label class="layui-form-label">申请人</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="sq_people" autocomplete="off" class="layui-input">
@@ -44,6 +50,7 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
         </script>
 
     </div>
@@ -61,24 +68,25 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
-                {field: 'id', width: 80, title: 'ID', fixed: 'left'},
-                {field: 'create_time', width: 150, title: '申请日期'},
-                {field: 'contract_name', width: 200, title: '合同名称'},
-                {field: 'periods', width: 150, title: '期数'},
-                {field: 'payee', width: 150, title: '收款人'},
-                {field: 'sq_people', width: 150, title: '申请人'},
-                {field: 'pay_amount', width: 150, title: '申请金额'},
-                {field: 'tax_rate', width: 150, title: '税率%'},
-                {field: 'surplus_amount', width: 150, title: '余额'},
-                {field: 'invoice_time', width: 150, title: '收票时间'},
-                {field: 'pay_time', width: 150, title: '付款时间'},
-                {field: 'invoice_status', width: 100, title: '收票状态',templet:'#invoiceStatusTpl', fixed: 'right'},
-                {field: 'pay_status', width: 100, title: '付款状态',templet:'#colletionStatusTpl', fixed: 'right'}
+                {field: 'id', width: 50, title: 'ID', fixed: 'left'},
+                {field: 'create_time', width: 100, title: '申请日期'},
+                {field: 'contract_name', width: 150, title: '合同名称'},
+                {field: 'periods', width: 80, title: '期数'},
+                {field: 'payee', width: 80, title: '收款人'},
+                {field: 'sq_people', width: 80, title: '申请人'},
+                {field: 'pay_amount', width: 120, align: "right", title: '付款金额'},
+                // {field: 'surplus_amount', width: 150, title: '余额'},
+                {field: 'invoice_time', width: 100, title: '收票时间'},
+                {field: 'pay_time', width: 100, title: '付款时间'},
+                {field: 'invoice_status', width: 80, title: '收票状态',templet:'#invoiceStatusTpl', fixed: 'right'},
+                {field: 'pay_status', width: 80, title: '付款状态',templet:'#colletionStatusTpl', fixed: 'right'},
+                {title: '操作', minWidth: 100, toolbar: '#currentTableBar', align: "left", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true,
-            skin: 'line'
+            skin: 'row,line',
+            size:"sm"
         });
 
         /**
@@ -100,6 +108,15 @@
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'export') {
                 layTool.alert("开发中..................")
+            }
+        });
+        /**
+         * 单一操作
+         */
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
             }
         });
 

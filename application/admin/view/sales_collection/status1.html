@@ -12,11 +12,10 @@
     <input name="contract_id" value="{$contract['id']}" style="display: none"/>
     <input name="contract_name" value="{$contract['contract_name']}" style="display: none"/>
     <input name="is_contain_tax" value="{$contract['is_contain_tax']}" style="display: none"/>
-    <input name="tax_rate" value="{$contract['tax_rate']}" style="display: none"/>
     <div class="layui-form-item">
         <label class="layui-form-label">开票金额</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_amount" autocomplete="off" placeholder="请输入开票金额" class="layui-input">
+            <input type="text" name="invoice_amount" value="{$row['collection_amount']}" autocomplete="off" placeholder="请输入开票金额" class="layui-input">
         </div>
     </div>
     <input style="display: none" id="title" name="title"/>
@@ -63,8 +62,8 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_1">确认</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_1">取消</button>
         </div>
     </div>
 </div>
@@ -80,8 +79,8 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_2">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn_2">确认</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancel_2">取消</button>
         </div>
     </div>
 </div>

@@ -20,7 +20,7 @@ class SystemNodeController extends BaseController
      */
     function index(){
         if($this->request->isAjax()){
-            $list=db('system_node')->select();
+            $list=db('system_node')->order("sort desc,id asc")->select();
             return json(["code"=>0,"msg"=>"success","count"=>count($list),"data"=>$list]);
         }
         return $this->fetch();

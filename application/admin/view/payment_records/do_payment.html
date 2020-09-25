@@ -11,44 +11,50 @@
     <div class="layui-form-item">
         <label class="layui-form-label">合同名称</label>
         <div class="layui-input-block">
-            <input type="text" name="contract_name" autocomplete="off" placeholder="请输入合同名称" value="{$row['contract_name']}" class="layui-input">
+            <input type="text" name="contract_name" readonly autocomplete="off" placeholder="请输入合同名称" value="{$row['contract_name']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">收款人</label>
+        <label class="layui-form-label">账户名</label>
         <div class="layui-input-block">
-            <input type="text" name="payee" autocomplete="off" placeholder="请输入收款人" value="{$row['payee']}" class="layui-input">
+            <input type="text" name="payee" readonly autocomplete="off" placeholder="请输入账户名" value="{$row['payee']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">开户行</label>
         <div class="layui-input-block">
-            <input type="text" name="bank_name" autocomplete="off" placeholder="请输入开户行" value="{$row['bank_name']}" class="layui-input">
+            <input type="text" name="bank_name" readonly autocomplete="off" placeholder="请输入开户行" value="{$row['bank_name']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">账号</label>
+        <label class="layui-form-label">银行账号</label>
         <div class="layui-input-block">
-            <input type="text" name="bank_account" autocomplete="off" placeholder="请输入账号" value="{$row['bank_account']}" class="layui-input">
+            <input type="text" name="bank_account" readonly autocomplete="off" placeholder="请输入银行账号" value="{$row['bank_account']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">发票号</label>
+        <label class="layui-form-label">分行</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_num" autocomplete="off" placeholder="请输入发票号" value="{$row['invoice_num']}" class="layui-input">
+            <input type="text" name="branch" readonly autocomplete="off" placeholder="请输入分行" value="{$row['branch']}" class="layui-input">
         </div>
     </div>
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">发票号</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="text" name="invoice_num" autocomplete="off" placeholder="请输入发票号" value="{//$row['invoice_num']}" class="layui-input">-->
+        <!--</div>-->
+    <!--</div>-->
     <div class="layui-form-item">
         <label class="layui-form-label">金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount" autocomplete="off" placeholder="请输入金额" value="{$row['pay_amount']}" class="layui-input">
+            <input type="text" name="pay_amount" readonly autocomplete="off" placeholder="请输入金额" value="{$row['pay_amount']}" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancelBtn">取消</button>
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">付款</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="cancelBtn">取消</button>
         </div>
     </div>
 </div>

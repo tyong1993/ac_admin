@@ -34,9 +34,9 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">当前收款金额</label>
+        <label class="layui-form-label">计划收款金额</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="number" name="collection_amount" autocomplete="off" placeholder="请输入当前收款金额" value="{$row['collection_amount']}" class="layui-input">
+            <input type="text" lay-verify="number" readonly name="collection_amount" autocomplete="off" placeholder="请输入计划收款金额" value="{$row['collection_amount']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -48,7 +48,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label">应付金额</label>
         <div class="layui-input-block">
-            <input type="text" name="pay_amount_need" readonly autocomplete="off" placeholder="" value="{$row['pay_amount_need']}" class="layui-input">
+            <input type="text" name="pay_amount_need" autocomplete="off" placeholder="" value="{$row['pay_amount_need']}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -73,9 +73,10 @@
     <div class="layui-form-item">
         <label class="layui-form-label">商务联系人</label>
         <div class="layui-input-block">
-            <input type="text" name="business_contact" autocomplete="off" placeholder="请输入商务联系人" value="{$row['business_contact']}" class="layui-input">
+            <input type="text" name="business_contact" readonly autocomplete="off" placeholder="商务联系人" value="{$row['business_contact']}" class="layui-input">
         </div>
     </div>
+
     <div class="layui-form-item">
         <label class="layui-form-label">付款说明</label>
         <div class="layui-input-block">
@@ -85,6 +86,9 @@
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            {if $now_periods["colletion_status"] == 1 and $row["pay_status"] == 0}
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="confirmPay">确认付款</button>
+            {/if}
         </div>
     </div>
 </div>
@@ -94,8 +98,25 @@
         var form = layui.form,
             $ = layui.$;
 
-        //监听提交
+        //监听保存提交
         form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('edit')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+        //监听付款提交
+        form.on('submit(confirmPay)', function (data) {
+            data.field.pay_status = 1;
             $.post("{:url('edit')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
@@ -149,13 +170,17 @@
             $("input[name='collection_amount']").val(collection_amount);
             doCompute();
         });
+        //监听计划收款金额
+        $("input[name='collection_amount']").bind('input propertychange', function() {
+            doCompute();
+        });
         //监听付款比例
         $("input[name='pay_ratio']").bind('input propertychange', function() {
             doCompute();
         });
-        //监听收款金额
-        $("input[name='collection_amount']").bind('input propertychange', function() {
-            doCompute();
+        //监听应付金额
+        $("input[name='pay_amount_need']").bind('input propertychange', function() {
+            doCompute("pay_amount_need");
         });
         //监听是否扣税
         form.on('radio(is_need_tax)',function () {
@@ -166,29 +191,60 @@
             doCompute();
         });
         //数据关联计算
-        var doCompute = function () {
+        var doCompute = function (source = null) {
             //收款金额
             var collection_amount = $("input[name='collection_amount']").val();
-            //付款比例
-            var pay_ratio = $("input[name='pay_ratio']").val();
-            if(!pay_ratio){
-                pay_ratio = 0;
+            if(!collection_amount){
+                collection_amount = 0;
             }
-            //应付金额
-            var pay_amount_need = accDiv(accMul(collection_amount,pay_ratio),100);
-            $("input[name='pay_amount_need']").val(pay_amount_need);
+            if(source == "pay_amount_need"){
+                //应付金额
+                var pay_amount_need = $("input[name='pay_amount_need']").val();
+                if(!pay_amount_need){
+                    pay_amount_need = 0;
+                }
+                //付款比例
+                if(!collection_amount){
+                    var pay_ratio = 0;
+                }else{
+                    var pay_ratio = accMul(accDiv(pay_amount_need,collection_amount),100).toFixed(2);
+                }
+                $("input[name='pay_ratio']").val(pay_ratio);
+            }else{
+                //付款比例
+                var pay_ratio = $("input[name='pay_ratio']").val();
+                if(!pay_ratio){
+                    pay_ratio = 0;
+                }
+                //应付金额
+                var pay_amount_need = accDiv(accMul(collection_amount,pay_ratio),100);
+                $("input[name='pay_amount_need']").val(pay_amount_need);
+            }
             //是否扣税
             var is_need_tax = $("input[name='is_need_tax']:checked").val();
             //扣税比例
             var tax_rate = $("input[name='tax_rate']").val();
-            if(!parseInt(is_need_tax) || !parseInt(tax_rate)){
+            if(!parseInt(is_need_tax) || !tax_rate){
                 tax_rate = 0;
             }
             //实付金额
             var pay_amount_true = accAdd(pay_amount_need,-(accMul(pay_amount_need,tax_rate)/100));
             $("input[name='pay_amount_true']").val(pay_amount_true);
         }
-
+        //关联计算数据变化提醒
+        var relationComputeChangeAlert = function () {
+            var old_collection_amount = {$row["collection_amount"]};
+            var now_collection_amount = {$now_periods["collection_amount"]};
+            if(old_collection_amount != now_collection_amount){
+                var alert_str = "计划收款金额有变,原:"+old_collection_amount+">>>现:"+now_collection_amount+"<br>点击'确定'可重新进行计算!";
+                layTool.confirm(alert_str,function (index) {
+                    $("input[name='collection_amount']").val(now_collection_amount);
+                    doCompute();
+                    layer.close(index);
+                })
+            }
+        };
+        relationComputeChangeAlert();
     });
 
 </script>

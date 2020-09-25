@@ -20,6 +20,8 @@ class OutsourcingContractVilldate extends Validate
         'tax_rate'   => 'require',
         'company_identifier'   => 'require',
         'sales_contract_id'   => 'require',
+        'c_s_id'   => 'require',
+        'g_c_id'   => 'require',
     ];
 
     protected $message  =   [
@@ -28,5 +30,7 @@ class OutsourcingContractVilldate extends Validate
         'tax_rate.require' => '税率必填',
         'company_identifier.require' => '公司合同编号必填',
         'sales_contract_id.require' => '请先关联销售合同',
+        'c_s_id.require' => '供应商单位必选',
+        'g_c_id.require' => '签约单位必选',
     ];
 }
