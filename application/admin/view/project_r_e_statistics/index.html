@@ -9,6 +9,15 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
+                            <label class="layui-form-label">汇总方式</label>
+                            <div class="layui-input-inline">
+                                <select name="statistic_field" lay-search>
+                                    <option value="colletion_time" {if $statistic_field =="colletion_time"}selected{/if}>回款日期</option>
+                                    <option value="invoice_time" {if $statistic_field =="invoice_time"}selected{/if}>开票日期</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <label class="layui-form-label">项目单位</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="customer_name" autocomplete="off" value="{$customer_name}" class="layui-input">
@@ -59,7 +68,12 @@
             <thead>
             <tr>
                 <th>ID</th>
+                {if $statistic_field == "colletion_time"}
                 <th>回款日期</th>
+                {/if}
+                {if $statistic_field == "invoice_time"}
+                <th>开票日期</th>
+                {/if}
                 <th>项目单位</th>
                 <th>签约单位</th>
                 <th>合同名称</th>
@@ -78,7 +92,7 @@
             {foreach $val["data"] as $v}
             <tr>
                 <td>{$v["id"]}</td>
-                <td>{$v["colletion_time"]}</td>
+                <td>{$v[$statistic_field]}</td>
                 <td>{$v["customer_name"]}</td>
                 <td>{$v["group_company_name"]}</td>
                 <td>{$v["contract_name"]}</td>

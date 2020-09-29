@@ -14,6 +14,8 @@ use app\admin\villdate\OutsourcingContractVilldate;
  */
 class OutsourcingContractController extends BaseController
 {
+    protected $table = "outsourcing_contract";
+    protected $table_name = "外包合同";
     /**
      * 列表
      */
@@ -76,7 +78,10 @@ class OutsourcingContractController extends BaseController
                 return jsonFail("公司合同编号已存在,请修改后再提交");
             }
             $this->dataWriteHandle($param);
-            db('outsourcing_contract')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         //公司合同编号
@@ -99,7 +104,10 @@ class OutsourcingContractController extends BaseController
                 return jsonFail("公司合同编号已存在,请修改后再提交");
             }
             $this->dataWriteHandle($param);
-            db('outsourcing_contract')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -129,7 +137,13 @@ class OutsourcingContractController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('outsourcing_contract')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**

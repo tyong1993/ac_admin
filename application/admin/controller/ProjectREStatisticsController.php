@@ -20,6 +20,7 @@ class ProjectREStatisticsController extends BaseController
         $customer_name = $this->request->param("customer_name");
         $select_by_year = $this->request->param("select_by_year");
         $g_c_id = $this->request->param("g_c_id");
+        $statistic_field = $this->request->param("statistic_field")?:"colletion_time";
         if(!$select_by_year){
             $select_by_year = date("Y");
         }
@@ -50,7 +51,7 @@ class ProjectREStatisticsController extends BaseController
             ->group('collection_id')
             ->buildSql();
         $db = db('sales_contract a');
-        $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.company_identifier,b.*,c.colletion_time,c.invoice_amount,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
+        $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.company_identifier,b.*,c.colletion_time,c.invoice_time,c.invoice_amount,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
             ->leftJoin("sales_collection b","b.contract_id = a.id")
             ->leftJoin("invoice_records c","b.id = c.collection_id")
             ->leftJoin([$subsql_outsourcing_payment=>"d"],"b.id = d.collection_id")
@@ -58,8 +59,8 @@ class ProjectREStatisticsController extends BaseController
             ->leftJoin([$subsql_expend_business=>"f"],"b.id = f.collection_id")
             ->leftJoin([$subsql_expend_reward=>"g"],"b.id = g.collection_id")
             ->where("colletion_status","eq",1)
-            ->where("colletion_time","egt",$year_start)
-            ->where("colletion_time","lt",$year_end)
+            ->where($statistic_field,"egt",$year_start)
+            ->where($statistic_field,"lt",$year_end)
         ;
         if(!empty($customer_name)){
             $db->where("a.customer_name","like","%$customer_name%");
@@ -67,6 +68,8 @@ class ProjectREStatisticsController extends BaseController
         if(!empty($g_c_id)){
             $db->where("a.g_c_id","eq",$g_c_id);
         }
+        //数据权限
+        $db = self::dataPower($db,"a.b_l_id");
         $res = $db->order("a.id desc,b.id asc")->select();
         //组装数据结构
         $data = [];$init_start = $year_start;
@@ -90,8 +93,9 @@ class ProjectREStatisticsController extends BaseController
         }
         foreach ($res as $val){
             foreach ($data as &$dat){
-                if($val["colletion_time"]>=$dat["month_start"] && $val["colletion_time"]<$dat["month_end"]){
+                if($val[$statistic_field]>=$dat["month_start"] && $val[$statistic_field]<$dat["month_end"]){
                     $val["colletion_time"] = date("Y-m-d",$val["colletion_time"]);
+                    $val["invoice_time"] = date("Y-m-d",$val["invoice_time"]);
                     $val["outsourcing_pay_amount"] = $val["outsourcing_pay_amount"]?$val["outsourcing_pay_amount"]:'0.00';
                     $val["reimbursement_amount"] = $val["reimbursement_amount"]?$val["reimbursement_amount"]:'0.00';
                     $val["business_pay_amount"] = $val["business_pay_amount"]?$val["business_pay_amount"]:'0.00';
@@ -131,6 +135,7 @@ class ProjectREStatisticsController extends BaseController
         $this->assign("res",$data);
         $this->assign("customer_name",$customer_name);
         $this->assign("select_by_year",$select_by_year);
+        $this->assign("statistic_field",$statistic_field);
         //签约单位数据
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);

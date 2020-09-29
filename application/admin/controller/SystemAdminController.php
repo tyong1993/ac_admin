@@ -14,6 +14,8 @@ use app\common\exception\ServiceException;
 
 class SystemAdminController extends BaseController
 {
+    protected $table = "system_admin";
+    protected $table_name = "用户";
     /**
      * 列表
      */
@@ -30,6 +32,8 @@ class SystemAdminController extends BaseController
             $res = $db->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
+                $val["role_name"] = db("system_role")->where("id","in",explode(",",$val["role_ids"]))->column("role_name");
+                $val["role_name"] = implode(",",$val["role_name"]);
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -48,7 +52,10 @@ class SystemAdminController extends BaseController
             $param["salt"] = createRandomStr();
             $param["password"] = createPassword($param["password"],$param["salt"]);
             $param["create_time"] = time();
-            db('system_admin')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         $this->assign2AddAndEdit();
@@ -66,7 +73,11 @@ class SystemAdminController extends BaseController
                 unset($param["password"]);
              }
             unset($param["re_password"]);
-            db('system_admin')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
+            cache('cleanable_cache',[]);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -89,7 +100,14 @@ class SystemAdminController extends BaseController
         if(in_array(1,$id_arr)){
             return jsonFail("超级管理员不可以删除");
         }
-        db('system_admin')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
+        cache('cleanable_cache',[]);
         return jsonSuccess();
     }
     /**
@@ -98,8 +116,7 @@ class SystemAdminController extends BaseController
     function updatePassword(){
         if($this->request->isAjax()){
             $param=$this->request->post();
-            $db=db('system_admin');
-            $admin = $db->find(session("admin_id"));
+            $admin = self::$login_admin;
             if(!checkPassword($param["password"],$admin["password"],$admin["salt"])){
                 return jsonFail("原密码错误");
             }

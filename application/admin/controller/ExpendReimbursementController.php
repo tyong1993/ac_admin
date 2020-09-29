@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\BaseModel;
 use app\admin\villdate\ExpendReimbursementVilldate;
 
 /**
@@ -14,18 +15,20 @@ use app\admin\villdate\ExpendReimbursementVilldate;
  */
 class ExpendReimbursementController extends BaseController
 {
+    protected $table = "expend_reimbursement";
+    protected $table_name = "报销支出";
     /**
      * 列表
      */
     function index(){
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
-            $bx_people=$this->request->param("bx_people");
+            $bx_people_id=$this->request->param("bx_people_id");
             $contract_name=$this->request->param("contract_name");
             $type=$this->request->param("type");
             $db=db('expend_reimbursement');
-            if(!empty($bx_people)){
-                $db->where("bx_people","like","%$bx_people%");
+            if(!empty($bx_people_id)){
+                $db->where("bx_people_id","eq",$bx_people_id);
             }
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
@@ -41,6 +44,7 @@ class ExpendReimbursementController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("bx_peoples",BaseModel::getAdmins());
         return $this->fetch();
     }
 
@@ -53,15 +57,17 @@ class ExpendReimbursementController extends BaseController
             $this->validate($param,ExpendReimbursementVilldate::class);
             $param["create_time"] = time();
             $param["bx_people"] = db("system_admin")->where(["id"=>$param["bx_people_id"]])->value("name")?:"";
-            db('expend_reimbursement')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
         //报销人数据
-        $res = db('system_admin')->where("status","eq",1)->where("id","neq",1)->select();
-        $this->assign("bx_peoples",$res);
+        $this->assign("bx_peoples",BaseModel::getAdmins());
         return $this->fetch();
     }
     /**
@@ -72,7 +78,10 @@ class ExpendReimbursementController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendReimbursementVilldate::class);
             $param["bx_people"] = db("system_admin")->where(["id"=>$param["bx_people_id"]])->value("name")?:"";
-            db('expend_reimbursement')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -82,8 +91,7 @@ class ExpendReimbursementController extends BaseController
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
         //报销人数据
-        $res = db('system_admin')->where("status","eq",1)->where("id","neq",1)->select();
-        $this->assign("bx_peoples",$res);
+        $this->assign("bx_peoples",BaseModel::getAdmins());
         //收款期数数据
         $res = db('sales_collection')->where(["contract_id"=>$row["contract_id"]])->order("id desc")->select();
         $this->assign("sales_collections",$res);
@@ -99,7 +107,13 @@ class ExpendReimbursementController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('expend_reimbursement')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**

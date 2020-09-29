@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 
 
+use app\admin\model\BaseModel;
 use app\admin\model\SystemAdminModel;
 use app\admin\model\SystemNodeModel;
 use think\Db;
@@ -31,12 +32,14 @@ class IndexController extends BaseController
         );
         //汇总
         $summary_statistic = $this->welcomeSummary();
-
+        //待办
+        $todo = $this->welcomeTodo();
         $this->assign(
             [
                 "tp_version"=>App::version(),
                 "mysql_version"=>mysqli_get_server_info($conn),
                 "summary_statistic"=>$summary_statistic,
+                "todo"=>$todo
             ]
         );
         return $this->fetch();
@@ -48,7 +51,7 @@ class IndexController extends BaseController
     private function welcomeSummary(){
         $select_by_year = $this->request->param("select_by_year");
         //默认查询当年数据
-        if($select_by_year === null){
+        if(empty($select_by_year)){
             $select_by_year = date("Y");
         }
         //外包支出子查询
@@ -103,7 +106,29 @@ class IndexController extends BaseController
      * 首页待办数据
      */
     private function welcomeTodo(){
+        $box = new \stdClass();
+        //待验收
+        $box->sales_need_check = db("sales_collection")->where(["status"=>0])->count();
+        //可开票
+        $box->sales_can_invoice = db("sales_collection")->where(["status"=>1])->count();
+        //待开票
+        $box->sales_wait_invoice = db("invoice_records")->where(["invoice_status"=>0])->count();
+        //待收款
+        $box->sales_wait_collection = db("invoice_records")->where(["colletion_status"=>0])->count();
 
+        //待验收
+        $box->out_need_check = db("outsourcing_payment")->where(["status"=>0])->count();
+        //可付款
+        $box->out_can_pay = db("outsourcing_payment")->where(["status"=>1])->count();
+        //待收票
+        $box->out_wait_invoice = db("payment_records")->where(["invoice_status"=>0])->count();
+        //待付款
+        $box->out_wait_pay = db("payment_records")->where(["pay_status"=>0])->count();
+
+        $box->expend_reimbursement = db("expend_reimbursement")->where(["pay_status"=>0])->count();
+        $box->expend_business = db("expend_business")->where(["pay_status"=>0])->count();
+        $box->expend_reward = db("expend_reward")->where(["pay_status"=>0])->count();
+        return json_decode(json_encode($box),true);
     }
     /**
      * 初始化数据
@@ -143,6 +168,16 @@ class IndexController extends BaseController
             }
             session("admin_id",$admin["id"]);
             session("admin_username",$admin["username"]);
+            //登录日志
+            db("system_log_login")->insert(
+                [
+                    "admin_id"=>$admin["id"],
+                    "name"=>$admin["name"],
+                    "username"=>$admin["username"],
+                    "ip"=>$this->request->ip(),
+                    "create_time"=>time()
+                ]
+            );
             return jsonSuccess();
         }
         return $this->fetch();

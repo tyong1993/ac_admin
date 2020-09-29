@@ -9,20 +9,9 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">销售合同名称</label>
+                            <label class="layui-form-label">用户名</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="contract_name" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">奖金领取人</label>
-                            <div class="layui-input-inline">
-                                <select name="receiver_id" lay-search>
-                                    <option value="">全部</option>
-                                    {foreach $receivers as $receiver}
-                                    <option value="{$receiver.id}">{$receiver.name}</option>
-                                    {/foreach}
-                                </select>
+                                <input type="text" name="username" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -36,15 +25,14 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 新增奖金支出 </button>
             </div>
         </script>
 
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+            <!--<a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>-->
+            <!--<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
         </script>
 
     </div>
@@ -62,27 +50,17 @@
             defaultToolbar: [],
             cols: [[
                 {type: "checkbox", width: 50},
-                {field: 'id', width: 50, title: 'ID'},
-                {field: 'contract_name', width: 150, title: '销售合同'},
-                {field: 'contract_amount', width: 120, align: "right", title: '合同金额'},
-                {field: 'periods', width: 80, title: '期数'},
-                {field: 'collection_amount', width: 120, align: "right", title: '当前收款金额'},
-                {field: 'deduct_reimbursement', width: 100, align: "right", title: '扣除报销'},
-                {field: 'deduct_outsource', width: 100, align: "right", title: '扣除外包'},
-                {field: 'deduct_business', width: 100, align: "right", title: '扣除商务'},
-                {field: 'surplus_amount', width: 100, align: "right", title: '剩余金额'},
-                {field: 'pay_ratio', width: 70, title: '付款%'},
-                {field: 'pay_amount', width: 100, align: "right", title: '应付金额'},
-                {field: 'pay_status', width: 80, title: '付款状态'},
-                {field: 'receiver', width: 80, title: '领取人'},
-                {field: 'create_time', width: 150, title: '创建时间'},
-                {title: '操作', minWidth: 100, toolbar: '#currentTableBar', align: "left"}
+                {field: 'id', width: 80, title: 'ID'},
+                {field: 'name', title: '姓名'},
+                {field: 'username', title: '用户名'},
+                {field: 'ip', title: '登录ip'},
+                {field: 'create_time', title: '登录时间'},
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true,
             skin: 'row,line',
-            size:"sm"
+            // size:"sm"
         });
 
         /**

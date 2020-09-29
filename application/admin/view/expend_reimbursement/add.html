@@ -7,55 +7,61 @@
 <body>
 <div class="layui-form layuimini-form">
     <div class="layui-form-item">
-        <label class="layui-form-label">关联销售合同</label>
-        <input style="display: none" id="sales_contract_id" name="contract_id"/>
-        <input style="display: none" id="sales_contract_name" name="contract_name"/>
-        <div class="layui-input-block">
-            <select lay-filter="sales_contract_select" name="" lay-search>
-                <option value="">请选择销售合同</option>
-                {foreach $sales_contracts as $contract}
-                <option value="{$contract['id']}|-|{$contract['contract_name']}">{$contract['contract_name']}</option>
-                {/foreach}
-            </select>
+        <div class="layui-inline">
+            <label class="layui-form-label">关联销售合同</label>
+            <input style="display: none" id="sales_contract_id" name="contract_id"/>
+            <input style="display: none" id="sales_contract_name" name="contract_name"/>
+            <div class="layui-input-inline">
+                <select lay-filter="sales_contract_select" name="" lay-search>
+                    <option value="">请选择销售合同</option>
+                    {foreach $sales_contracts as $contract}
+                    <option value="{$contract['id']}|-|{$contract['contract_name']}">{$contract['contract_name']}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">关联收款期数</label>
-        <input style="display: none" id="collection_id" name="collection_id"/>
-        <input style="display: none" id="periods" name="periods"/>
-        <div class="layui-input-block">
-            <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
+        <div class="layui-inline">
+            <label class="layui-form-label">关联收款期数</label>
+            <input style="display: none" id="collection_id" name="collection_id"/>
+            <input style="display: none" id="periods" name="periods"/>
+            <div class="layui-input-inline">
+                <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
 
-            </select>
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">费用类型</label>
-        <div class="layui-input-block">
-            <input type="text" name="type" autocomplete="off" placeholder="请输入费用类型" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">费用类型</label>
+            <div class="layui-input-inline">
+                <input type="text" name="type" autocomplete="off" placeholder="请输入费用类型" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">报销人</label>
+            <div class="layui-input-inline">
+                <select name="bx_people_id" lay-search>
+                    <option value="">请选择报销人</option>
+                    {foreach $bx_peoples as $bx_people}
+                    <option value="{$bx_people.id}"{if $bx_people['id'] == session("admin_id")}selected{/if}>{$bx_people.name}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">报销人</label>
-        <div class="layui-input-block">
-            <select name="bx_people_id" lay-search>
-                <option value="">请选择报销人</option>
-                {foreach $bx_peoples as $bx_people}
-                <option value="{$bx_people.id}"{if $bx_people['id'] == session("admin_id")}selected{/if}>{$bx_people.name}</option>
-                {/foreach}
-            </select>
+        <div class="layui-inline">
+            <label class="layui-form-label">部门</label>
+            <div class="layui-input-inline">
+                <input type="text" name="department" autocomplete="off" placeholder="请输入部门" value="" class="layui-input">
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">部门</label>
-        <div class="layui-input-block">
-            <input type="text" name="department" autocomplete="off" placeholder="请输入部门" value="" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">报销金额</label>
-        <div class="layui-input-block">
-            <input type="text" name="amount" autocomplete="off" placeholder="请输入报销金额" value="" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">报销金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="amount" autocomplete="off" placeholder="请输入报销金额" value="" class="layui-input">
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
@@ -65,7 +71,7 @@
             <input type="radio" name="pay_status" value="0" title="未付款">
         </div>
     </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md8">
         <label class="layui-form-label">费用说明</label>
         <div class="layui-input-block">
             <input type="text" name="remark" autocomplete="off" placeholder="请输入费用说明" value="" class="layui-input">
@@ -73,7 +79,7 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            <button class="layui-btn layui-btn-normal submit-button-security" lay-submit lay-filter="saveBtn">确认保存</button>
         </div>
     </div>
 </div>
@@ -84,6 +90,7 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
+            $('.submit-button-security').addClass("layui-btn-disabled");$('.submit-button-security').attr('disabled', 'disabled');
             $.post("{:url('add')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
@@ -94,6 +101,7 @@
                     }, 200);
                 } else {
                     layTool.alert(res.msg,2)
+                    $('.submit-button-security').removeClass("layui-btn-disabled");$('.submit-button-security').removeAttr('disabled');
                 }
             }, 'json');
             return false;

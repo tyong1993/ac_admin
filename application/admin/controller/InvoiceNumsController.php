@@ -14,6 +14,8 @@ use app\admin\villdate\InvoiceNumsVilldate;
  */
 class InvoiceNumsController extends BaseController
 {
+    protected $table = "invoice_nums";
+    protected $table_name = "发票";
     /**
      * 列表
      */
@@ -51,7 +53,10 @@ class InvoiceNumsController extends BaseController
                 return jsonFail("发票号已存在");
             }
             $param["create_time"] = time();
-            db('invoice_nums')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         $i_r_id = $this->request->param("i_r_id");
@@ -69,7 +74,10 @@ class InvoiceNumsController extends BaseController
             if(db('invoice_nums')->where(["num"=>$param["num"]])->where("id","neq",$param["id"])->count()){
                 return jsonFail("发票号已存在");
             }
-            db('invoice_nums')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -87,7 +95,13 @@ class InvoiceNumsController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('invoice_nums')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
 }

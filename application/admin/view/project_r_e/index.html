@@ -97,8 +97,12 @@
                 {field: 'collection_amount_format', width: 120, align: "right", title: '分期金额'},
                 {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用'},
                 {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用'},
-                {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
-                {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
+                {if checkAuth("projectRE_business_expend")}
+                    {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
+                {/if}
+                {if checkAuth("projectRE_reward_expend")}
+                    {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
+                {/if}
                 {field: 'surplus_format', width: 120, align: "right", title: '盈余'},
                 {field: 'customer_identifier', width: 150, title: '客户合同编号'},
                 {field: 'company_identifier', width: 150, title: '爱车合同编号'},

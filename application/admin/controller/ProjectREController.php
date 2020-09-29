@@ -87,6 +87,8 @@ class ProjectREController extends BaseController
             if(!empty($g_c_id)){
                 $db->where("a.g_c_id","eq",$g_c_id);
             }
+            //数据权限
+            $db = self::dataPower($db,"a.b_l_id");
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
             //数据分页查询,处理

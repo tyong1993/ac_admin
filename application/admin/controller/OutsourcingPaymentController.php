@@ -16,6 +16,8 @@ use think\Db;
  */
 class OutsourcingPaymentController extends BaseController
 {
+    protected $table = "outsourcing_payment";
+    protected $table_name = "付款计划";
     /**
      * 列表
      */
@@ -57,7 +59,10 @@ class OutsourcingPaymentController extends BaseController
             $param=$this->request->post();
             $this->validate($param,OutsourcingPaymentVilldate::class);
             $param["sales_periods"] = db('sales_collection')->where("id","eq",$param["sales_collection_id"])->value("periods");
-            db('outsourcing_payment')->strict(false)->insert($param);
+            $id=db($this->table)->strict(false)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         $contract_id = $this->request->param("contract_id");
@@ -89,7 +94,10 @@ class OutsourcingPaymentController extends BaseController
             $param["sales_periods"] = db('sales_collection')->where("id","eq",$param["sales_collection_id"])->value("periods");
             $param["check_time"] = !empty($param["check_time"])?strtotime($param["check_time"]):0;
             $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
-            db('outsourcing_payment')->strict(false)->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->strict(false)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -116,7 +124,13 @@ class OutsourcingPaymentController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('outsourcing_payment')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**
@@ -128,7 +142,9 @@ class OutsourcingPaymentController extends BaseController
             //可开票
             $param["status"] = 1;
             $param["check_time"] = time();
-            db('outsourcing_payment')->update($param);
+            if(db('outsourcing_payment')->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"验收");
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -152,7 +168,7 @@ class OutsourcingPaymentController extends BaseController
             $outsourcing_payment["payed"] = $param["pay_amount"];
             $res1 = Db::name('outsourcing_payment')->update($outsourcing_payment);
             //添加待付款记录
-            $admin = SystemAdminModel::find(session("admin_id"));
+            $admin = self::$login_admin;
             $data["contract_id"] = $param["contract_id"];
             $data["payment_id"] = $param["id"];
             $data["contract_name"] = $param["contract_name"];
@@ -170,6 +186,7 @@ class OutsourcingPaymentController extends BaseController
                 Db::rollback();
                 return jsonFail("申请付款失败");
             }
+            self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"申请付款");
             Db::commit();
             return jsonSuccess();
         }

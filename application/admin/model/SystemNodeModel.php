@@ -9,6 +9,8 @@
 namespace app\admin\model;
 
 
+use app\admin\controller\BaseController;
+
 class SystemNodeModel extends BaseModel
 {
     /**
@@ -119,9 +121,9 @@ class SystemNodeModel extends BaseModel
      * 获取管理员的权限节点标识
      */
     public static function getAdminAuthTags(){
-        $adminAuthTags=cleanableCache("admin_auth_tags");
+        $admin = BaseController::$login_admin;
+        $adminAuthTags=cleanableCache("admin_auth_tags_".$admin["id"]);
         if($adminAuthTags === null){
-            $admin = SystemAdminModel::find(session("admin_id"));
             if(empty($admin["role_ids"])){
                 $adminAuthTags=[];
             }else{
@@ -133,7 +135,7 @@ class SystemNodeModel extends BaseModel
                     $adminAuthTags=array_map("strtolower",$res);;
                 }
             }
-            cleanableCache("admin_auth_tags",$adminAuthTags);
+            cleanableCache("admin_auth_tags_".$admin["id"],$adminAuthTags);
         }
         return $adminAuthTags;
     }

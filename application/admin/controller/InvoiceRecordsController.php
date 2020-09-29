@@ -83,6 +83,7 @@ class InvoiceRecordsController extends BaseController
                 Db::rollback();
                 return jsonFail("开票失败");
             }
+            self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"确认开票");
             Db::commit();
             return jsonSuccess();
         }
@@ -103,7 +104,9 @@ class InvoiceRecordsController extends BaseController
             $param=$this->request->post();
             $param["colletion_status"] = 1;
             $param["colletion_time"] = time();
-            db('invoice_records')->update($param);
+            if(db('invoice_records')->update($param)){
+                self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"确认收款");
+            };
             return jsonSuccess();
         }
     }

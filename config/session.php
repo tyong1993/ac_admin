@@ -24,5 +24,5 @@ return [
     // 是否自动开启 SESSION
     'auto_start'     => true,
     //有效期
-    'expire'         => 3600*5
+    'expire'         => 3600*24*7
 ];

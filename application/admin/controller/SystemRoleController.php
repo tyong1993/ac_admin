@@ -14,6 +14,8 @@ use think\Db;
 
 class SystemRoleController extends BaseController
 {
+    protected $table = "system_role";
+    protected $table_name = "权限角色";
     /**
      * 列表
      */
@@ -38,7 +40,10 @@ class SystemRoleController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,SystemRoleVilldate::class);
-            db('system_role')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         $this->assign2AddAndEdit();
@@ -51,7 +56,11 @@ class SystemRoleController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,SystemRoleVilldate::class);
-            db('system_role')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
+            cache('cleanable_cache',[]);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -72,9 +81,16 @@ class SystemRoleController extends BaseController
         }
         //删除角色同时删除角色权限数据
         Db::startTrans();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+            }
+        }
         Db::name('system_role_node')->where("role_id","in",$id_arr)->delete();
         Db::name('system_role')->where("id","in",$id_arr)->delete();
         Db::commit();
+        cache('cleanable_cache',[]);
         return jsonSuccess();
     }
     /**
@@ -106,6 +122,7 @@ class SystemRoleController extends BaseController
                 $db->where("role_id","=",$param["role_id"])->where("node_id","in",$needDelNodes)->delete();
             }
             $db->commit();
+            cache('cleanable_cache',[]);
             return jsonSuccess();
         }
         $id=$this->request->param('id');

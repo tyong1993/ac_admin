@@ -38,7 +38,7 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            <button class="layui-btn layui-btn-normal submit-button-security" lay-submit lay-filter="saveBtn">确认保存</button>
         </div>
     </div>
 </div>
@@ -49,6 +49,7 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
+            $('.submit-button-security').addClass("layui-btn-disabled");$('.submit-button-security').attr('disabled', 'disabled');
             $.post("{:url('add')}", data.field, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
@@ -59,6 +60,7 @@
                     }, 200);
                 } else {
                     layTool.alert(res.msg,2)
+                    $('.submit-button-security').removeClass("layui-btn-disabled");$('.submit-button-security').removeAttr('disabled');
                 }
             }, 'json');
             return false;

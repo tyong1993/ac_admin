@@ -9,9 +9,14 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">联系人</label>
+                            <label class="layui-form-label">领取人</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="business_contact" autocomplete="off" value="{$business_contact}" class="layui-input">
+                                <select name="receiver_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $receivers as $receiver}
+                                    <option value="{$receiver.id}" {if $receiver.id == $receiver_id}selected{/if}>{$receiver.name}</option>
+                                    {/foreach}
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -47,7 +52,7 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>联系人</th>
+                <th>领取人</th>
                 <th>合同名称</th>
                 <th>收款期数</th>
                 <th>分期金额</th>
@@ -59,11 +64,11 @@
             {foreach $val["data"] as $v}
             <tr>
                 <td>{$v["id"]}</td>
-                <td>{$v["business_contact"]}</td>
+                <td>{$v["receiver"]}</td>
                 <td>{$v["contract_name"]}</td>
                 <td>{$v["periods"]}</td>
                 <td align="right">{:amount_format($v["collection_amount"])}</td>
-                <td align="right">{:amount_format($v["pay_amount_true"])}</td>
+                <td align="right">{:amount_format($v["pay_amount"])}</td>
                 <td>{$v["pay_status"]|raw}</td>
             </tr>
             {/foreach}
@@ -74,7 +79,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td align="right">{:amount_format($val["pay_amount_true"])}</td>
+                <td align="right">{:amount_format($val["pay_amount"])}</td>
                 <td></td>
             </tr>
             </tbody>

@@ -16,6 +16,8 @@ use think\Db;
  */
 class SalesCollectionController extends BaseController
 {
+    protected $table = "sales_collection";
+    protected $table_name = "收款计划";
     /**
      * 列表
      */
@@ -60,7 +62,10 @@ class SalesCollectionController extends BaseController
             $param["expect_check_time"] = !empty($param["expect_check_time"])?strtotime($param["expect_check_time"]):0;
             $param["expect_invoice_time"] = !empty($param["expect_invoice_time"])?strtotime($param["expect_invoice_time"]):0;
             $param["expect_colletion_time"] = !empty($param["expect_colletion_time"])?strtotime($param["expect_colletion_time"]):0;
-            db('sales_collection')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         $contract_id = $this->request->param("contract_id");
@@ -86,7 +91,10 @@ class SalesCollectionController extends BaseController
             $param["expect_invoice_time"] = !empty($param["expect_invoice_time"])?strtotime($param["expect_invoice_time"]):0;
             $param["expect_colletion_time"] = !empty($param["expect_colletion_time"])?strtotime($param["expect_colletion_time"]):0;
             $param["check_time"] = !empty($param["check_time"])?strtotime($param["check_time"]):0;
-            db('sales_collection')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -108,7 +116,13 @@ class SalesCollectionController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('sales_collection')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**
@@ -120,7 +134,9 @@ class SalesCollectionController extends BaseController
             //可开票
             $param["status"] = 1;
             $param["check_time"] = time();
-            db('sales_collection')->update($param);
+            if(db('sales_collection')->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"验收");
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -144,7 +160,7 @@ class SalesCollectionController extends BaseController
             $sales_collection["collected"] = $param["invoice_amount"];
             $res1 = Db::name('sales_collection')->update($sales_collection);
             //添加待开票记录
-            $admin = SystemAdminModel::find(session("admin_id"));
+            $admin = self::$login_admin;
             $data["contract_id"] = $param["contract_id"];
             $data["collection_id"] = $param["id"];
             $data["contract_name"] = $param["contract_name"];
@@ -164,6 +180,7 @@ class SalesCollectionController extends BaseController
                 Db::rollback();
                 return jsonFail("申请开票失败");
             }
+            self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"申请开票");
             Db::commit();
             return jsonSuccess();
         }

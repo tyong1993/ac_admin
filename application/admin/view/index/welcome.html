@@ -9,7 +9,7 @@
     .layuimini-qiuck-module {text-align:center;margin-top: 10px}
     .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
     .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
-    .welcome-module {width:100%;height:210px;}
+    .welcome-module {width:100%;}
     .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
     .panel-body {padding:10px}
     .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
@@ -31,8 +31,9 @@
             <div class="layui-col-md12">
                 <div class="layui-row layui-col-space15">
                     <div class="layui-col-md8">
+                        {if checkAuth("index_summary")}
                         <!--汇总信息-->
-                        <div class="layui-card" style="height: 220px">
+                        <div class="layui-card">
                             <div class="layui-card-header">汇总</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
@@ -50,19 +51,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--<div class="layui-col-xs3">-->
-                                            <!--<div class="panel layui-bg-number">-->
-                                                <!--<div class="panel-body">-->
-                                                    <!--<div class="panel-title">-->
-                                                        <!--<h5>完结金额</h5>-->
-                                                    <!--</div>-->
-                                                    <!--<div class="panel-content">-->
-                                                        <!--<h1 class="no-margins">1314</h1>-->
-                                                        <!--&lt;!&ndash;<small>当前分类总记录数</small>&ndash;&gt;-->
-                                                    <!--</div>-->
-                                                <!--</div>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -147,8 +135,10 @@
                                 </div>
                             </div>
                         </div>
+                        {/if}
+                        {if checkAuth("index_todo")}
                         <!--待办事项-->
-                        <div class="layui-card" style="height: 300px">
+                        <div class="layui-card">
                             <div class="layui-card-header">待办</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
@@ -160,7 +150,7 @@
                                                         <h5>待验收</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["sales_need_check"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -173,7 +163,7 @@
                                                         <h5>可开票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["sales_can_invoice"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -186,7 +176,7 @@
                                                         <h5>待开票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["sales_wait_invoice"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -199,12 +189,14 @@
                                                         <h5>待收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["sales_wait_collection"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -212,7 +204,7 @@
                                                         <h5>待验收</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["out_need_check"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -225,7 +217,7 @@
                                                         <h5>可付款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["out_can_pay"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -238,7 +230,7 @@
                                                         <h5>待收票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["out_wait_invoice"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -251,12 +243,14 @@
                                                         <h5>待付款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["out_wait_pay"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -264,7 +258,7 @@
                                                         <h5>报销支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["expend_reimbursement"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -277,7 +271,7 @@
                                                         <h5>商务支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["expend_business"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -290,7 +284,7 @@
                                                         <h5>奖金支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">1314</h1>
+                                                        <h1 class="no-margins">{$todo["expend_reward"]}</h1>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -300,37 +294,45 @@
                                 </div>
                             </div>
                         </div>
+                        {/if}
+                        {if checkAuth("index_statistics")}
                         <!--报表快捷入口-->
                         <div class="layui-card">
-                            <div class="layui-card-header">报表</div>
+                            <div class="layui-card-header">快捷入口</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
                                     <div class="layui-row layui-col-space10 layuimini-qiuck">
-                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('41').click()">
                                                 <i class="layui-icon layui-icon-list"></i>
                                                 <cite>项目收支</cite>
                                             </a>
                                         </div>
-                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('43').click()">
                                                 <i class="layui-icon layui-icon-engine"></i>
                                                 <cite>月度汇总</cite>
                                             </a>
                                         </div>
-                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('42').click()">
                                                 <i class="layui-icon layui-icon-survey"></i>
                                                 <cite>开票明细</cite>
                                             </a>
                                         </div>
-                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('44').click()">
                                                 <i class="layui-icon layui-icon-templeate-1"></i>
                                                 <cite>商务汇总</cite>
                                             </a>
                                         </div>
-                                        <div class="layui-col-xs1 layuimini-qiuck-module">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:parent.document.getElementById('45').click()">
+                                                <i class="layui-icon layui-icon-dollar"></i>
+                                                <cite>奖金汇总</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('46').click()">
                                                 <i class="layui-icon layui-icon-form"></i>
                                                 <cite>利润表</cite>
@@ -340,6 +342,7 @@
                                 </div>
                             </div>
                         </div>
+                        {/if}
                     </div>
                     <!--软件信息-->
                     <div class="layui-col-md4">
@@ -394,7 +397,7 @@
                             </div>
                         </div>
                         <div class="layui-card">
-                            <div class="layui-card-header"><i class="fa fa-fire icon"></i>版本信息</div>
+                            <div class="layui-card-header"><i class="fa fa-fire icon"></i>前端框架</div>
                             <div class="layui-card-body layui-text">
                                 <table class="layui-table">
                                     <colgroup>
@@ -409,12 +412,8 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>当前版本</td>
+                                        <td>版本</td>
                                         <td>v2.0.0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>主要特色</td>
-                                        <td>零门槛 / 响应式 / 清爽 / 极简</td>
                                     </tr>
                                     <tr>
                                         <td>演示地址</td>

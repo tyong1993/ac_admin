@@ -19,46 +19,48 @@ class BusinessSummaryController extends BaseController
      * 列表
      */
     function index(){
-        if($this->request->isAjax()){
-            $limit=$this->request->param("limit");
-            $business_contact=$this->request->param("business_contact");
-            $contract_name=$this->request->param("contract_name");
-            //合同收款金额子查询
-            $subsql_invoice_records = db("invoice_records")
-                ->field('contract_id,sum(if(colletion_status = 1,invoice_amount,0)) colletion_amount')
-                ->group('contract_id')
-                ->buildSql();
-            //合同商务金额子查询
-            $subsql_expend_business = db("expend_business")
-                ->field('contract_id,sum(pay_amount_true) all_need_pay_amount,sum(if(pay_status = 1,0,pay_amount_true)) all_unpay_amount')
-                ->group('contract_id')
-                ->buildSql();
-
-            $db = db('sales_contract a');
-            $db = $db->field("a.id,a.contract_name,a.contract_amount,a.business_contact,b.colletion_amount,c.all_need_pay_amount,c.all_unpay_amount")
-                ->fetchSql(false)
-                ->leftJoin([$subsql_invoice_records=>"b"],"a.id = b.contract_id")
-                ->leftJoin([$subsql_expend_business=>"c"],"a.id = c.contract_id")
-            ;
-            if(!empty($business_contact)){
-                $db->where("business_contact","like","%$business_contact%");
-            }
-            if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
-            }
-            $res = $db->order("a.id desc")->paginate($limit)->toArray();
-            foreach ($res["data"] as &$val){
-                $val["contract_amount"] = amount_format($val["contract_amount"]);
-                $val["colletion_amount"] = amount_format($val["colletion_amount"]?$val["colletion_amount"]:'0.00');
-                $val["all_need_pay_amount"] = amount_format($val["all_need_pay_amount"]?$val["all_need_pay_amount"]:'0.00');
-                $val["all_unpay_amount"] = amount_format($val["all_unpay_amount"]?$val["all_unpay_amount"]:'0.00');
-                $val["all_payed_amount"] = amount_format($val["all_need_pay_amount"]-$val["all_unpay_amount"]);
-            }
-            return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
+        $business_contact = $this->request->param("business_contact");
+        $contract_name = $this->request->param("contract_name");
+        $select_by_year = $this->request->param("select_by_year");
+        if(!$select_by_year){
+            $select_by_year = date("Y");
         }
+        $select_by_time=$select_by_year."-01-01 00:00:00";
+        //年初时间戳
+        $year_start=strtotime($select_by_time);
+        //年末时间戳
+        $year_end=strtotime("+1 year",$year_start);
+
+        $db=db('expend_business a')->field("a.*,b.b_staff_id,b.business_contact")
+            ->leftJoin("sales_contract b","b.id = a.contract_id")
+            ->where("a.create_time","egt",$year_start)
+            ->where("a.create_time","lt",$year_end);
+        if(!empty($business_contact)){
+            $db->where("b.business_contact","like","%$business_contact%");
+        }
+        if(!empty($contract_name)){
+            $db->where("b.contract_name","like","%$contract_name%");
+        }
+        $res = $db->select();
+        $data = [];
+        foreach ($res as $val){
+            if(!isset($data[$val["b_staff_id"]])){
+                $data[$val["b_staff_id"]] = [
+                    "business_contact"=>$val["business_contact"],
+                    "pay_amount_true"=>0,
+                    "data"=>[]
+                ];
+            }
+            $val["pay_status"] = $val["pay_status"]?"<span style='color: blue'>已付款</span>":"<span style='color: red'>未付款</span>";
+            $data[$val["b_staff_id"]]["data"][]=$val;
+            $data[$val["b_staff_id"]]["pay_amount_true"]+=$val["pay_amount_true"];
+        }
+        $this->assign("res",$data);
+        $this->assign("business_contact",$business_contact);
+        $this->assign("contract_name",$contract_name);
+        $this->assign("select_by_year",$select_by_year);
         return $this->fetch();
     }
-
     /**
      * 添加
      */

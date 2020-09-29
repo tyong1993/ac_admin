@@ -16,6 +16,8 @@ use app\common\exception\ServiceException;
  */
 class CustomerSupplierStaffController extends BaseController
 {
+    protected $table = "customer_supplier_staff";
+    protected $table_name = "联系人";
     /**
      * 列表
      */
@@ -24,7 +26,7 @@ class CustomerSupplierStaffController extends BaseController
             $limit=$this->request->param("limit");
             $name=$this->request->param("name");
             $company_name=$this->request->param("company_name");
-            $db=db('customer_supplier_staff');
+            $db=db($this->table);
             if(!empty($name)){
                 $db->where("name","like","%$name%");
             }
@@ -62,7 +64,10 @@ class CustomerSupplierStaffController extends BaseController
             unset($param["customer_suppliers"]);
             $this->validate($param,CustomerSupplierStaffVilldate::class);
             $param["create_time"] = time();
-            $id = db('customer_supplier_staff')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             $data = [];
             foreach ($submit_ids as $key=>$val){
                 $data[]=["staff_id" =>$id,"c_s_id"=>$val];
@@ -105,7 +110,10 @@ class CustomerSupplierStaffController extends BaseController
             }
             $db->commit();
             unset($param["customer_suppliers"]);
-            db('customer_supplier_staff')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -126,7 +134,13 @@ class CustomerSupplierStaffController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('customer_supplier_staff')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
 

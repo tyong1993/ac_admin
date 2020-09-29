@@ -14,6 +14,8 @@ use app\admin\villdate\ExpendBusinessVilldate;
  */
 class ExpendBusinessController extends BaseController
 {
+    protected $table = "expend_business";
+    protected $table_name = "商务支出";
     /**
      * 列表
      */
@@ -51,8 +53,10 @@ class ExpendBusinessController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendBusinessVilldate::class);
             $param["create_time"] = time();
-
-            db('expend_business')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         //销售合同数据
@@ -67,7 +71,10 @@ class ExpendBusinessController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,ExpendBusinessVilldate::class);
-            db('expend_business')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -94,7 +101,13 @@ class ExpendBusinessController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('expend_business')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**

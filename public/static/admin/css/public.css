@@ -25,15 +25,13 @@ body {
     right: 5px;
 }
 
-.layuimini-form > .layui-form-item > .layui-form-label {
-    width: 120px !important;
-}
-
-.layuimini-form > .layui-form-item > .layui-input-block {
-    margin-left: 150px !important;
-}
-.layui-form-item .layui-inline label{
-    width: 120px;
+@media screen and (min-width: 768px){
+    .layui-form-label {
+        width: 120px !important;
+    }
+    .layui-input-block {
+        margin-left: 150px !important;
+    }
 }
 .layuimini-form > .layui-form-item > .layui-input-block > tip {
     display: inline-block;

@@ -15,6 +15,8 @@ use think\Db;
 
 class SystemNodeController extends BaseController
 {
+    protected $table = "system_node";
+    protected $table_name = "权限节点";
     /**
      * 列表
      */
@@ -33,7 +35,11 @@ class SystemNodeController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,SystemNodeVilldate::class);
-            db('system_node')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
+            cache('cleanable_cache',[]);
             return jsonSuccess();
         }
         $pid=$this->request->param('pid');
@@ -49,7 +55,11 @@ class SystemNodeController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,"app\admin\\villdate\SystemNodeVilldate");
-            db('system_node')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
+            cache('cleanable_cache',[]);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -69,9 +79,14 @@ class SystemNodeController extends BaseController
         }
         //删除节点同时删除节点权限数据
         Db::startTrans();
+        $row = db($this->table)->find($id);
+        if(!empty($row)){
+            self::actionLog(3,$this->table,$this->table_name,$id,$row);
+        }
         Db::name('system_role_node')->where("node_id","=",$id)->delete();
         Db::name('system_node')->delete($id);
         Db::commit();
+        cache('cleanable_cache',[]);
         return jsonSuccess();
     }
     /**

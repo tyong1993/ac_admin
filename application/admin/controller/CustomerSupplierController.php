@@ -16,6 +16,8 @@ use app\admin\villdate\CustomerSupplierVilldate;
  */
 class CustomerSupplierController extends BaseController
 {
+    protected $table = "customer_supplier";
+    protected $table_name = "客户/供应商";
     /**
      * 列表
      */
@@ -23,7 +25,7 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $company_name=$this->request->param("company_name");
-            $db=db('customer_supplier');
+            $db=db($this->table);
             if(!empty($company_name)){
                 $db->where("company_name","like","%$company_name%");
             }
@@ -50,11 +52,11 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,CustomerSupplierVilldate::class);
-//            //联系人处理
-//            $param["business_contact"] = str_replace(" ","",str_replace("，",",",$param["business_contact"]));
-//            $param["project_contact"] = str_replace(" ","",str_replace("，",",",$param["project_contact"]));
             $param["create_time"] = time();
-            db('customer_supplier')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         return $this->fetch();
@@ -66,10 +68,10 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,CustomerSupplierVilldate::class);
-//            //联系人处理
-//            $param["business_contact"] = str_replace(" ","",str_replace("，",",",$param["business_contact"]));
-//            $param["project_contact"] = str_replace(" ","",str_replace("，",",",$param["project_contact"]));
-            db('customer_supplier')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -87,7 +89,13 @@ class CustomerSupplierController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('customer_supplier')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
 }

@@ -14,6 +14,8 @@ use app\admin\villdate\SalesContractVilldate;
  */
 class SalesContractController extends BaseController
 {
+    protected $table = "sales_contract";
+    protected $table_name = "销售合同";
     /**
      * 列表
      */
@@ -45,6 +47,8 @@ class SalesContractController extends BaseController
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
             }
+            //数据权限
+            $db = self::dataPower($db,"b_l_id");
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -75,7 +79,10 @@ class SalesContractController extends BaseController
             }
             $param["create_time"] = time();
             $this->dataWriteHandle($param);
-            db('sales_contract')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         //公司合同编号
@@ -98,7 +105,10 @@ class SalesContractController extends BaseController
                 return jsonFail("公司合同编号已存在,请修改后再提交");
             }
             $this->dataWriteHandle($param);
-            db('sales_contract')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -128,7 +138,13 @@ class SalesContractController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('sales_contract')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**

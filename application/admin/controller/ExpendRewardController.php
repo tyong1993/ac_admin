@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\BaseModel;
 use app\admin\villdate\ExpendRewardVilldate;
 
 /**
@@ -14,17 +15,19 @@ use app\admin\villdate\ExpendRewardVilldate;
  */
 class ExpendRewardController extends BaseController
 {
+    protected $table = "expend_reward";
+    protected $table_name = "奖金支出";
     /**
      * 列表
      */
     function index(){
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
-            $receiver=$this->request->param("receiver");
+            $receiver_id=$this->request->param("receiver_id");
             $contract_name=$this->request->param("contract_name");
             $db=db('expend_reward');
-            if(!empty($receiver)){
-                $db->where("receiver","like","%$receiver%");
+            if(!empty($receiver_id)){
+                $db->where("receiver_id","eq",$receiver_id);
             }
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
@@ -43,6 +46,7 @@ class ExpendRewardController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("receivers",BaseModel::getAdmins());
         return $this->fetch();
     }
 
@@ -55,15 +59,17 @@ class ExpendRewardController extends BaseController
             $this->validate($param,ExpendRewardVilldate::class);
             $param["create_time"] = time();
             $param["receiver"] = db("system_admin")->where(["id"=>$param["receiver_id"]])->value("name")?:"";
-            db('expend_reward')->insert($param);
+            $id=db($this->table)->insert($param,false,true);
+            if($id){
+                self::actionLog(1,$this->table,$this->table_name,$id);
+            }
             return jsonSuccess();
         }
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
         //奖金领取人数据
-        $res = db('system_admin')->where("status","eq",1)->where("id","neq",1)->select();
-        $this->assign("receivers",$res);
+        $this->assign("receivers",BaseModel::getAdmins());
         return $this->fetch();
     }
     /**
@@ -74,7 +80,10 @@ class ExpendRewardController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendRewardVilldate::class);
             $param["receiver"] = db("system_admin")->where(["id"=>$param["receiver_id"]])->value("name")?:"";
-            db('expend_reward')->update($param);
+            $row = db($this->table)->find($param["id"]);
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
             return jsonSuccess();
         }
         $id=$this->request->param('id');
@@ -84,8 +93,7 @@ class ExpendRewardController extends BaseController
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
         //奖金领取人数据
-        $res = db('system_admin')->where("status","eq",1)->where("id","neq",1)->select();
-        $this->assign("receivers",$res);
+        $this->assign("receivers",BaseModel::getAdmins());
         //收款期数数据
         $res = db('sales_collection')->where(["contract_id"=>$row["contract_id"]])->order("id desc")->select();
         $this->assign("sales_collections",$res);
@@ -104,7 +112,13 @@ class ExpendRewardController extends BaseController
         if(empty($id_arr)){
             return jsonFail("未找到需要删除的对象");
         }
-        db('expend_reward')->where("id","in",$id_arr)->delete();
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                db($this->table)->where("id","eq",$id)->delete();
+            }
+        }
         return jsonSuccess();
     }
     /**

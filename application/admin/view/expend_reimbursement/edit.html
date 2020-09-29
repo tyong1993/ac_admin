@@ -8,58 +8,64 @@
 <div class="layui-form layuimini-form">
     <input style="display: none" name="id" value="{$row['id']}"/>
     <div class="layui-form-item">
-        <label class="layui-form-label">关联销售合同</label>
-        <input style="display: none" id="sales_contract_id" name="contract_id" value="{$row['contract_id']}"/>
-        <input style="display: none" id="sales_contract_name" name="contract_name" value="{$row['contract_name']}"/>
-        <div class="layui-input-block">
-            <select lay-filter="sales_contract_select" name="" lay-search>
-                <option value="">请选择销售合同</option>
-                {foreach $sales_contracts as $contract}
-                <option value="{$contract['id']}|-|{$contract['contract_name']}" {if $row["contract_id"] == $contract['id']}selected{/if}>{$contract['contract_name']}</option>
-                {/foreach}
-            </select>
+        <div class="layui-inline">
+            <label class="layui-form-label">关联销售合同</label>
+            <input style="display: none" id="sales_contract_id" name="contract_id" value="{$row['contract_id']}"/>
+            <input style="display: none" id="sales_contract_name" name="contract_name" value="{$row['contract_name']}"/>
+            <div class="layui-input-inline">
+                <select lay-filter="sales_contract_select" name="" lay-search>
+                    <option value="">请选择销售合同</option>
+                    {foreach $sales_contracts as $contract}
+                    <option value="{$contract['id']}|-|{$contract['contract_name']}" {if $row["contract_id"] == $contract['id']}selected{/if}>{$contract['contract_name']}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">关联收款期数</label>
+            <input style="display: none" id="collection_id" name="collection_id" value="{$row['collection_id']}"/>
+            <input style="display: none" id="periods" name="periods" value="{$row['periods']}"/>
+            <div class="layui-input-inline">
+                <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
+                    <option value="">请选择收款期数</option>
+                    {foreach sales_collections as $collection}
+                    <option value="{$collection['id']}|-|{$collection['periods']}" {if $row["collection_id"] == $collection['id']}selected{/if}>{$collection['periods']}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">关联收款期数</label>
-        <input style="display: none" id="collection_id" name="collection_id" value="{$row['collection_id']}"/>
-        <input style="display: none" id="periods" name="periods" value="{$row['periods']}"/>
-        <div class="layui-input-block">
-            <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
-                <option value="">请选择收款期数</option>
-                {foreach sales_collections as $collection}
-                <option value="{$collection['id']}|-|{$collection['periods']}" {if $row["collection_id"] == $collection['id']}selected{/if}>{$collection['periods']}</option>
-                {/foreach}
-            </select>
+        <div class="layui-inline">
+            <label class="layui-form-label">费用类型</label>
+            <div class="layui-input-inline">
+                <input type="text" name="type" autocomplete="off" placeholder="请输入费用类型" value="{$row['type']}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">报销人</label>
+            <div class="layui-input-inline">
+                <select name="bx_people_id" lay-search>
+                    <option value="">请选择报销人</option>
+                    {foreach $bx_peoples as $bx_people}
+                    <option value="{$bx_people.id}" {if $bx_people['id'] == $row["bx_people_id"]}selected{/if}>{$bx_people.name}</option>
+                    {/foreach}
+                </select>
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">费用类型</label>
-        <div class="layui-input-block">
-            <input type="text" name="type" autocomplete="off" placeholder="请输入费用类型" value="{$row['type']}" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">部门</label>
+            <div class="layui-input-inline">
+                <input type="text" name="department" autocomplete="off" placeholder="请输入部门" value="{$row['department']}" class="layui-input">
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">报销人</label>
-        <div class="layui-input-block">
-            <select name="bx_people_id" lay-search>
-                <option value="">请选择报销人</option>
-                {foreach $bx_peoples as $bx_people}
-                <option value="{$bx_people.id}" {if $bx_people['id'] == $row["bx_people_id"]}selected{/if}>{$bx_people.name}</option>
-                {/foreach}
-            </select>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">部门</label>
-        <div class="layui-input-block">
-            <input type="text" name="department" autocomplete="off" placeholder="请输入部门" value="{$row['department']}" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">报销金额</label>
-        <div class="layui-input-block">
-            <input type="text" name="amount" autocomplete="off" placeholder="请输入报销金额" value="{$row['amount']}" class="layui-input">
+        <div class="layui-inline">
+            <label class="layui-form-label">报销金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="amount" autocomplete="off" placeholder="请输入报销金额" value="{$row['amount']}" class="layui-input">
+            </div>
         </div>
     </div>
     <div class="layui-form-item">
@@ -69,7 +75,7 @@
             <input type="radio" name="pay_status" value="0" title="未付款" {if $row["pay_status"] == 0}checked{/if}>
         </div>
     </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item layui-col-md8">
         <label class="layui-form-label">费用说明</label>
         <div class="layui-input-block">
             <input type="text" name="remark" autocomplete="off" placeholder="请输入费用说明" value="{$row['remark']}" class="layui-input">

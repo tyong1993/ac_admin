@@ -80,6 +80,7 @@ class PaymentRecordsController extends BaseController
                 Db::rollback();
                 return jsonFail("付款失败");
             }
+            self::actionLog(2,"payment_records","付款管理",$param["id"],null,"确认付款");
             Db::commit();
             return jsonSuccess();
         }
@@ -96,7 +97,9 @@ class PaymentRecordsController extends BaseController
             $param=$this->request->post();
             $param["invoice_status"] = 1;
             $param["invoice_time"] = time();
-            db('payment_records')->update($param);
+            if(db('payment_records')->update($param)){
+                self::actionLog(2,"payment_records","付款管理",$param["id"],null,"确认收票");
+            };
             return jsonSuccess();
         }
     }
