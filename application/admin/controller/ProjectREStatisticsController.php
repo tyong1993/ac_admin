@@ -94,8 +94,8 @@ class ProjectREStatisticsController extends BaseController
         foreach ($res as $val){
             foreach ($data as &$dat){
                 if($val[$statistic_field]>=$dat["month_start"] && $val[$statistic_field]<$dat["month_end"]){
-                    $val["colletion_time"] = date("Y-m-d",$val["colletion_time"]);
-                    $val["invoice_time"] = date("Y-m-d",$val["invoice_time"]);
+                    $val["colletion_time"] = $val["colletion_time"]?date("Y-m-d",$val["colletion_time"]):"---";
+                    $val["invoice_time"] = $val["invoice_time"]?date("Y-m-d",$val["invoice_time"]):"---";
                     $val["outsourcing_pay_amount"] = $val["outsourcing_pay_amount"]?$val["outsourcing_pay_amount"]:'0.00';
                     $val["reimbursement_amount"] = $val["reimbursement_amount"]?$val["reimbursement_amount"]:'0.00';
                     $val["business_pay_amount"] = $val["business_pay_amount"]?$val["business_pay_amount"]:'0.00';

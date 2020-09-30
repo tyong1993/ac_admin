@@ -29,6 +29,14 @@
         .captcha {width:60%;display:inline-block;}
         .captcha-img {display:inline-block;width:34%;float:right;}
         .captcha-img img {height:34px;border:1px solid #e6e6e6;height:36px;width:100%;}
+        /**去除input框自动填充样式*/
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-transition-delay: 111111s;
+            -webkit-transition: color 11111s ease-out, background-color 111111s ease-out;
+        }
     </style>
 </head>
 <body>

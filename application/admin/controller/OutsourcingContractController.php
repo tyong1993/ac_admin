@@ -27,6 +27,7 @@ class OutsourcingContractController extends BaseController
             $project_leader=$this->request->param("project_leader");
             $sign_date=$this->request->param("sign_date");
             $g_c_id=$this->request->param("g_c_id");
+            $is_stamp_tax=$this->request->param("is_stamp_tax");
             $db=db('outsourcing_contract');
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
@@ -47,13 +48,17 @@ class OutsourcingContractController extends BaseController
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
             }
+            if(!empty($is_stamp_tax)){
+                $db->where("is_stamp_tax","eq",$is_stamp_tax-1);
+            }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                $val["sign_date"] = date("Y-m-d",$val["sign_date"]);
-                $val["start_time"] = date("Y-m-d",$val["start_time"]);
-                $val["end_time"] = date("Y-m-d",$val["end_time"]);
+                $val["sign_date"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
+                $val["start_time"] = $val["start_time"]?date("Y-m-d",$val["start_time"]):"---";
+                $val["end_time"] = $val["end_time"]?date("Y-m-d",$val["end_time"]):"---";
                 $val["tax_rate"] = $val["is_contain_tax"]?"---":$val["tax_rate"];
+                $val["is_stamp_tax"] = $val["is_stamp_tax"]?"有":"无";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
                 $val["all_amount"] = amount_format($val["all_amount"]);
             }
@@ -112,9 +117,9 @@ class OutsourcingContractController extends BaseController
         }
         $id=$this->request->param('id');
         $row=db("outsourcing_contract")->find($id);
-        $row["sign_date"] = date("Y-m-d",$row["sign_date"]);
-        $row["start_time"] = date("Y-m-d",$row["start_time"]);
-        $row["end_time"] = date("Y-m-d",$row["end_time"]);
+        $row["sign_date"] = $row["sign_date"]?date("Y-m-d",$row["sign_date"]):"";
+        $row["start_time"] = $row["start_time"]?date("Y-m-d",$row["start_time"]):"";
+        $row["end_time"] = $row["end_time"]?date("Y-m-d",$row["end_time"]):"";
         $this->assign("row",$row);
         //联系人可选项
         $staff_ids = db("customer_supplier_staff_tocs")->where("c_s_id","=",$row["c_s_id"])->column("staff_id");
@@ -125,6 +130,22 @@ class OutsourcingContractController extends BaseController
         $this->assign("business_contacts",$business_contacts);
         $this->assign("project_contacts",$project_contacts);
         $this->assign2AddAndEdit();
+        return $this->fetch();
+    }
+    /**
+     * 印花税
+     */
+    function stampTax(){
+        if($this->request->isAjax()){
+            $param=$this->request->post();
+            if(db($this->table)->update($param)){
+                self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"印花税");
+            }
+            return jsonSuccess();
+        }
+        $id=$this->request->param('id');
+        $row=db("outsourcing_contract")->find($id);
+        $this->assign("row",$row);
         return $this->fetch();
     }
     /**

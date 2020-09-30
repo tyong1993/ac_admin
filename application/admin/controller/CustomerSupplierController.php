@@ -25,9 +25,13 @@ class CustomerSupplierController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $company_name=$this->request->param("company_name");
+            $type=$this->request->param("type");
             $db=db($this->table);
             if(!empty($company_name)){
                 $db->where("company_name","like","%$company_name%");
+            }
+            if(!empty($type)){
+                $db->where("type","in",[$type,3]);
             }
             $res = $db->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){

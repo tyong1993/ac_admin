@@ -105,6 +105,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {if checkAuth("index_summary_business")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -118,6 +119,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("index_summary_reward")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -131,6 +134,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {/if}
                                     </div>
                                 </div>
                             </div>
@@ -264,6 +268,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {if checkAuth("index_todo_business")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -277,6 +282,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("index_todo_reward")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
@@ -290,54 +297,67 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {/if}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {/if}
-                        {if checkAuth("index_statistics")}
+                        {if checkAuth("statistics")}
                         <!--报表快捷入口-->
                         <div class="layui-card">
-                            <div class="layui-card-header">快捷入口</div>
+                            <div class="layui-card-header">报表</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
                                     <div class="layui-row layui-col-space10 layuimini-qiuck">
+                                        {if checkAuth("projectRE/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('41').click()">
                                                 <i class="layui-icon layui-icon-list"></i>
                                                 <cite>项目收支</cite>
                                             </a>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("ProjectREStatistics/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('43').click()">
                                                 <i class="layui-icon layui-icon-engine"></i>
                                                 <cite>月度汇总</cite>
                                             </a>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("InvoiceNumsStatistics/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('42').click()">
                                                 <i class="layui-icon layui-icon-survey"></i>
                                                 <cite>开票明细</cite>
                                             </a>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("BusinessSummary/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('44').click()">
                                                 <i class="layui-icon layui-icon-templeate-1"></i>
                                                 <cite>商务汇总</cite>
                                             </a>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("RewardSummary/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('45').click()">
                                                 <i class="layui-icon layui-icon-dollar"></i>
                                                 <cite>奖金汇总</cite>
                                             </a>
                                         </div>
+                                        {/if}
+                                        {if checkAuth("IncomeStatement/index")}
                                         <div class="layui-col-xs3 layuimini-qiuck-module">
                                             <a href="javascript:parent.document.getElementById('46').click()">
                                                 <i class="layui-icon layui-icon-form"></i>
                                                 <cite>利润表</cite>
                                             </a>
                                         </div>
+                                        {/if}
                                     </div>
                                 </div>
                             </div>

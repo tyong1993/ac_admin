@@ -65,7 +65,7 @@ class InvoiceNumsStatisticsController extends BaseController
         foreach ($res as $val){
             foreach ($data as &$dat){
                 if($val["invoice_time"]>=$dat["month_start"] && $val["invoice_time"]<$dat["month_end"]){
-                    $val["invoice_time"] = date("Y-m-d",$val["invoice_time"]);
+                    $val["invoice_time"] = $val["invoice_time"]?date("Y-m-d",$val["invoice_time"]):"";
                     $val["amount_format"] = amount_format($val["amount"]);
                     $val["status_name"] = $val["status"]?"正常":"已作废";
                     $val["colletion_status"] = $val["colletion_status"]?"<span style='color:blue;'>已回款</span>":"<span style='color:red;'>未回款</span>";

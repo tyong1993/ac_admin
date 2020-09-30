@@ -44,6 +44,16 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">印花税</label>
+                            <div class="layui-input-inline">
+                                <select name="is_stamp_tax" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2">有</option>
+                                    <option value="1">无</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -62,6 +72,7 @@
 
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="payment">付款计划</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="stamp_tax">印花税</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -88,6 +99,7 @@
                 {field: 'sales_contract_name', width: 150, title: '对应销售合同'},
                 {field: 'contract_amount', width: 120, align: "right", title: '合同金额'},
                 {field: 'tax_rate', width: 120, title: '税率'},
+                {field: 'is_stamp_tax', width: 80, title: '印花税'},
                 {field: 'all_amount', width: 120, align: "right", title: '总金额'},
                 {field: 'payment_days', width: 100, title: '账期'},
                 {field: 'sign_date', width: 100, title: '签订日期'},
@@ -99,7 +111,7 @@
                 {field: 'sales_company_identifier', width: 150, title: '销售合同编号'},
                 {field: 'supplier_identifier', width: 150, title: '供应商合同编号'},
                 {field: 'create_time', width: 150, title: '创建时间'},
-                {title: '操作', minWidth: 200, toolbar: '#currentTableBar', align: "center",fixed: 'right'}
+                {title: '操作', minWidth: 250, toolbar: '#currentTableBar', align: "center",fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -153,6 +165,8 @@
                 })
             }else if (obj.event === 'payment') {
                 layTool.open('{:url("OutsourcingPayment/index","",false)}/id/'+data.id,'付款计划');
+            }else if (obj.event === 'stamp_tax') {
+                layTool.open('{:url("stampTax","",false)}/id/'+data.id,'印花税','50%','50%');
             }
         });
         //执行删除操作

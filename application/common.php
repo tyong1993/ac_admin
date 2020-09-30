@@ -123,7 +123,7 @@ function amount_format($amount){
     }
     $temp = [];
     do{
-        $unit = substr($left,-4);
+        $unit = substr($left,-3);
         $left = substr($left,0,-(strlen($unit)));
         $temp[]=$left?",".$unit:$unit;
     }while($left);

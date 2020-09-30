@@ -109,10 +109,10 @@ class ProjectREController extends BaseController
                 $val["contract_amount_format"] = amount_format($val["contract_amount"]);
                 $val["collection_amount_format"] = amount_format($val["collection_amount"]);
                 $val["surplus_format"] = amount_format($val["surplus"]);
-                $val["expect_check_time_format"] = date("Y-m-d",$val["expect_check_time"]);
-                $val["expect_invoice_time_format"] = date("Y-m-d",$val["expect_invoice_time"]);
-                $val["expect_colletion_time_format"] = date("Y-m-d",$val["expect_colletion_time"]);
-                $val["sign_date_format"] = date("Y-m-d",$val["sign_date"]);
+                $val["expect_check_time_format"] = $val["expect_check_time"]?date("Y-m-d",$val["expect_check_time"]):"---";
+                $val["expect_invoice_time_format"] = $val["expect_invoice_time"]?date("Y-m-d",$val["expect_invoice_time"]):"---";
+                $val["expect_colletion_time_format"] = $val["expect_colletion_time"]?date("Y-m-d",$val["expect_colletion_time"]):"---";
+                $val["sign_date_format"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
                 //状态颜色处理
                 if($val["colletion_status_name"] == "已收款"){
                     $val["colletion_status_name"] = "<span style='color: blue'>{$val["colletion_status_name"]}</span>";

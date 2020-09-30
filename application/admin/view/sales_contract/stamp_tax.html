@@ -1,0 +1,133 @@
+{include file="common/header" /}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+<div class="layui-form layuimini-form">
+    <input name="id" value="{$row['id']}" style="display: none"/>
+    <div class="layui-inline">
+        <label class="layui-form-label">是否有印花税</label>
+        <div class="layui-input-inline">
+            <input type="radio" name="is_stamp_tax" value="1" title="有" {if $row["is_stamp_tax"] == 1}checked{/if}>
+            <input type="radio" name="is_stamp_tax" value="0" title="无" {if $row["is_stamp_tax"] == 0}checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.post("{:url('stampTax')}", data.field, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layui.table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+            return false;
+        });
+
+        //客户单位选择
+        form.on('select(customer_select)', function(obj){
+            var val = obj.value;
+            var customer_name = "";
+            var business_contact = "";
+            var project_contact = "";
+            var c_s_id = 0;
+            if(val){
+                var arr=val.split('|-|');
+                customer_name = arr[0];
+                business_contact = arr[1];
+                project_contact = arr[2];
+                c_s_id = arr[3];
+            }
+            $("#customer_name").val(customer_name);
+            $("#c_s_id").val(c_s_id);
+            //商务联系人
+            business_contact_array=[];
+            if(business_contact){
+                business_contact_array=business_contact.split(",");
+            }
+            var business_contact_options = "";
+            business_contact_options += '<option value="">请选择商务联系人</option>';
+            for (var i=0;i<business_contact_array.length ;i++ )
+            {
+                var temp = business_contact_array[i].split("|--|");
+                business_contact_options += '<option value="'+temp[0]+'">'+temp[1]+'</option>';
+            }
+            $("#business_contact_select").html(business_contact_options);
+            //项目联系人
+            project_contact_array=[];
+            if(project_contact){
+                project_contact_array=project_contact.split(",");
+            }
+            var project_contact_options = "";
+            project_contact_options += '<option value="">请选择项目联系人</option>';
+            for (var i=0;i<project_contact_array.length ;i++ )
+            {
+                var temp = project_contact_array[i].split("|--|");
+                project_contact_options += '<option value="'+temp[0]+'">'+temp[1]+'</option>';
+            }
+            $("#project_contact_select").html(project_contact_options);
+            form.render();
+        });
+    });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_sign_date'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_start_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_end_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+        });
+    });
+</script>
+</body>
+</html>

@@ -56,8 +56,8 @@ class PaymentRecordsController extends BaseController
         }
         $id=$this->request->param('id');
         $row=db("payment_records")->find($id);
-        $row["invoice_time"] = date("Y-m-d",$row["invoice_time"]);
-        $row["pay_time"] = date("Y-m-d",$row["pay_time"]);
+        $row["invoice_time"] = $row["invoice_time"]?date("Y-m-d",$row["invoice_time"]):"";
+        $row["pay_time"] = $row["pay_time"]?date("Y-m-d",$row["pay_time"]):"";
         $this->assign("row",$row);
         return $this->fetch();
     }

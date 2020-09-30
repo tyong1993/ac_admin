@@ -15,6 +15,16 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">身份标识</label>
+                            <div class="layui-input-inline">
+                                <select name="type" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="1">客户</option>
+                                    <option value="2">供应商</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -54,17 +64,17 @@
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 50, title: 'ID'},
-                {field: 'company_name', title: '公司名称'},
-                {field: 'company_region', title: '地区'},
+                {field: 'company_name', width: 200, title: '公司名称'},
+                {field: 'type_name', width: 100, title: '身份标识'},
+                {field: 'company_region', width: 100, title: '省份'},
                 {field: 'company_address', title: '地址'},
                 {field: 'business_profile', title: '业务简介'},
                 // {field: 'business_contact', title: '商务联系人'},
                 // {field: 'project_contact', title: '项目联系人'},
-                {field: 'type_name', title: '身份标识'},
                 // {field: 'company_belong', title: '所属公司'},
                 {field: 'remarks', title: '备注'},
-                {field: 'create_time', title: '创建时间'},
-                {title: '操作', minWidth: 300, toolbar: '#currentTableBar', align: "center"}
+                {field: 'create_time', width: 150, title: '创建时间'},
+                {title: '操作', minWidth: 300, toolbar: '#currentTableBar', align: "left"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
