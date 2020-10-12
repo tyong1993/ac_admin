@@ -45,8 +45,8 @@ class SalesCollectionController extends BaseController
             $val["uncollection_amount_format"] = amount_format($val["collection_amount"]-$val["collected"]);
             $others["skjehj"] += $val["collection_amount"];
         }
-        $others["skjehj"] = amount_format($others["skjehj"]);
-        $others["htje"] = amount_format($others["htje"]);
+        $others["skjehj_format"] = amount_format($others["skjehj"]);
+        $others["htje_format"] = amount_format($others["htje"]);
         $this->assign("res",$res);
         $this->assign("others",$others);
         return $this->fetch();

@@ -9,7 +9,7 @@
 namespace app\admin\controller;
 
 /**
- * 开票统计
+ * 开票明细
  */
 class InvoiceNumsStatisticsController extends BaseController
 {

@@ -52,7 +52,7 @@ class ProjectREController extends BaseController
                 ->group('collection_id')
                 ->buildSql();
             $db = db('sales_contract a');
-            $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.company_identifier,b.*,c.colletion_status,c.invoice_status,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
+            $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.customer_identifier,a.company_identifier,b.*,c.colletion_status,c.invoice_status,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
                 ->leftJoin("sales_collection b","b.contract_id = a.id")
                 ->leftJoin("invoice_records c","b.id = c.collection_id")
                 ->leftJoin([$subsql_outsourcing_payment=>"d"],"b.id = d.collection_id")

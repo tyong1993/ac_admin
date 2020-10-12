@@ -45,7 +45,7 @@
                 <td>{$row["tax_rate"]}</td>
                 <td align="right">{$row["all_pay_amount_format"]}</td>
                 <td align="right">{$row["unpay_amount"]}</td>
-                <td>{:round(($row["all_pay_amount"]/$others["htzje"])/100,2)}</td>
+                <td>{:round(($row["all_pay_amount"]/$others["htzje"])*100,2)}</td>
                 <td>{$row["check_time"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
                 <td>
@@ -57,7 +57,7 @@
             </tbody>
         </table>
         <div style="padding-left: 30%;">
-            <span {if $others["skzjehj"] != $others["htzje"]}style="color: red"{/if}>总付款金额合计:{$others["skzjehj"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje"]}</span>
+            <span {if $others["skzjehj"] != $others["htzje"]}style="color: red"{/if}>总付款金额合计:{$others["skzjehj_format"]}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span>合同总金额:{$others["htzje_format"]}</span>
         </div>
     </div>
 </div>

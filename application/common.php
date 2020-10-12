@@ -133,3 +133,4 @@ function amount_format($amount){
     }
     return $left.".".$right;
 }
+
