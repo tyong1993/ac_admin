@@ -6,7 +6,7 @@
         <fieldset class="table-search-fieldset">
             <!--<legend>搜索信息</legend>-->
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" lay-filter="data-search" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">合同名称</label>
@@ -107,8 +107,15 @@
          * 全局操作
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
+            //导出表格
             if (obj.event === 'export') {
-                layTool.alert("开发中..................")
+                var search_field = form.val('data-search');
+                var addr = "{:url('export','',false)}"+"?";
+                for(var key in search_field){
+                    addr=addr+key+"="+search_field[key]+"&"
+                }
+                addr=addr+"action=export";
+                window.location.href = addr;
             }
         });
         /**

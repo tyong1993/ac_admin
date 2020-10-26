@@ -30,10 +30,16 @@ class IndexController extends BaseController
             config('database.password'),
             config('database.database')
         );
+        $select_by_year = $this->request->param("select_by_year");
+        //默认查询当年数据
+        if(empty($select_by_year)){
+            $select_by_year = date("Y");
+        }
+        $this->assign("select_by_year",$select_by_year);
         //汇总
-        $summary_statistic = $this->welcomeSummary();
+        $summary_statistic = $this->welcomeSummary($select_by_year);
         //待办
-        $todo = $this->welcomeTodo();
+        $todo = $this->welcomeTodo($select_by_year);
         $this->assign(
             [
                 "tp_version"=>App::version(),
@@ -48,12 +54,7 @@ class IndexController extends BaseController
     /**
      * 首页汇总数据
      */
-    private function welcomeSummary(){
-        $select_by_year = $this->request->param("select_by_year");
-        //默认查询当年数据
-        if(empty($select_by_year)){
-            $select_by_year = date("Y");
-        }
+    private function welcomeSummary($select_by_year){
         //外包支出子查询
         $subsql_outsourcing_payment = db("outsourcing_payment")
             ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
@@ -97,7 +98,7 @@ class IndexController extends BaseController
         $sql = $db->buildSql();
         $summary_statistic = Db::table($sql." a")->field("sum(contract_amount) contract_amount,sum(collection_amount) collection_amount,sum(collected_amount) collected_amount,sum(outsourcing_pay_amount) outsourcing_pay_amount,sum(reimbursement_amount) reimbursement_amount,sum(business_pay_amount) business_pay_amount,sum(reward_pay_amount) reward_pay_amount")->find();
         foreach ($summary_statistic as $key=>$val){
-            $summary_statistic[$key."_format"] = amount_format($val?:0);
+            $summary_statistic[$key."_format"] = round($val/10000,2)."万";
         }
         return $summary_statistic;
     }
@@ -105,7 +106,7 @@ class IndexController extends BaseController
     /**
      * 首页待办数据
      */
-    private function welcomeTodo(){
+    private function welcomeTodo($select_by_year){
         $box = new \stdClass();
         //待验收
         $box->sales_need_check = db("sales_collection")->where(["status"=>0])->count();

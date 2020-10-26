@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 use app\admin\villdate\InvoiceRecordsVilldate;
+use app\common\tools\excel\ExcelTool;
 use think\Db;
 
 /**
@@ -40,6 +41,43 @@ class InvoiceRecordsController extends BaseController
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
         return $this->fetch();
+    }
+    /**
+     * 导出
+     */
+    function export(){
+        $sq_people=$this->request->param("sq_people");
+        $contract_name=$this->request->param("contract_name");
+        $db=db('invoice_records');
+        if(!empty($sq_people)){
+            $db->where("sq_people","like","%$sq_people%");
+        }
+        if(!empty($contract_name)){
+            $db->where("contract_name","like","%$contract_name%");
+        }
+        $res = $db->order("id desc")->select();
+        foreach ($res as &$val){
+            $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
+            $val["invoice_time"] = !empty($val["invoice_time"])?date("Y-m-d",$val["invoice_time"]):"---";
+            $val["colletion_time"] = !empty($val["colletion_time"])?date("Y-m-d",$val["colletion_time"]):"---";
+            $val["invoice_amount"] = amount_format($val["invoice_amount"]);
+            $val["invoice_status"] = $val["invoice_status"]?"已开票":"未开票";
+            $val["colletion_status"] = $val["invoice_status"]?"已收款":"未收款";
+        }
+        $cellName = [
+            ["id","ID",10],
+            ["create_time","申请日期",15],
+            ["contract_name","合同名称",50],
+            ["periods","期数",10],
+            ["title","抬头",40],
+            ["sq_people","申请人",15],
+            ["invoice_amount","收款金额",15],
+            ["invoice_time","开票时间",15],
+            ["colletion_time","收款时间",15],
+            ["invoice_status","开票状态",10],
+            ["colletion_status","收款状态",10],
+        ];
+        ExcelTool::export2Excel(date("YmdHis"),$cellName,$res);
     }
     /**
      * 编辑
