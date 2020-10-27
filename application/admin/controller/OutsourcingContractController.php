@@ -20,12 +20,16 @@ class OutsourcingContractController extends BaseController
      * 列表
      */
     function index(){
+        $select_by_year=$this->request->param("select_by_year");
+        //默认查询当年数据
+        if($select_by_year === null){
+            $select_by_year = date("Y");
+        }
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $contract_name=$this->request->param("contract_name");
             $supplier_name=$this->request->param("supplier_name");
             $project_leader=$this->request->param("project_leader");
-            $sign_date=$this->request->param("sign_date");
             $g_c_id=$this->request->param("g_c_id");
             $is_stamp_tax=$this->request->param("is_stamp_tax");
             $db=db('outsourcing_contract');
@@ -38,12 +42,14 @@ class OutsourcingContractController extends BaseController
             if(!empty($project_leader)){
                 $db->where("project_leader","like","%$project_leader%");
             }
-            if(!empty($sign_date)){
-                $sign_date_s_e = explode("~",$sign_date);
-                $sign_date_start = strtotime($sign_date_s_e[0]);
-                $sign_date_end = strtotime($sign_date_s_e[1]);
-                $db->where("sign_date","egt",$sign_date_start);
-                $db->where("sign_date","elt",$sign_date_end);
+            if(!empty($select_by_year)){
+                $select_by_time=$select_by_year."-01-01 00:00:00";
+                //年初时间戳
+                $year_start=strtotime($select_by_time);
+                //年末时间戳
+                $year_end=strtotime("+1 year",$year_start);
+                $db->where("sign_date","egt",$year_start);
+                $db->where("sign_date","elt",$year_end);
             }
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
@@ -64,6 +70,7 @@ class OutsourcingContractController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("select_by_year",$select_by_year);
         //签约单位数据
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);

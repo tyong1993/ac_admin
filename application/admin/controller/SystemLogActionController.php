@@ -23,9 +23,21 @@ class SystemLogActionController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $username=$this->request->param("username");
+            $table_name=$this->request->param("table_name");
+            $object_id=$this->request->param("object_id");
+            $type=$this->request->param("type");
             $db=db('system_log_action');
             if(!empty($username)){
-                $db->where("admin_username","like","%$username%");
+                $db->where("admin_username","eq","$username");
+            }
+            if(!empty($type)){
+                $db->where("type","eq","$type");
+            }
+            if(!empty($table_name)){
+                $db->where("table_name","eq","$table_name");
+            }
+            if(!empty($object_id)){
+                $db->where("object_id","eq","$object_id");
             }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
@@ -39,6 +51,7 @@ class SystemLogActionController extends BaseController
                 if($val["type"] == 3){
                     $val["type"] = "删除";
                 }
+                $val["data"] = json_encode(json_decode($val["data"]),JSON_UNESCAPED_UNICODE);
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }

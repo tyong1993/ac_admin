@@ -14,6 +14,12 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="remarks" autocomplete="off" placeholder="说明" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">收款金额(元)</label>
         <div class="layui-input-block">
             <input type="text" name="collection_amount" autocomplete="off" placeholder="请输入收款金额" value="" class="layui-input">
@@ -37,12 +43,6 @@
             <input type="text" name="expect_colletion_time" value="" class="layui-input" id="date_time_expect_colletion_time" autocomplete="off">
         </div>
     </div>
-    <!--<div class="layui-form-item">-->
-        <!--<label class="layui-form-label">比例%</label>-->
-        <!--<div class="layui-input-block">-->
-            <!--<input type="text" name="ratio" autocomplete="off" placeholder="请输入收款比例1-100" value="" class="layui-input">-->
-        <!--</div>-->
-    <!--</div>-->
 
     <div class="layui-form-item">
         <div class="layui-input-block">
@@ -90,6 +90,7 @@
              *      year,month,date,time,datetime 五种选择
              */
             ,type: 'date'
+            ,trigger: 'click'
         });
         laydate.render({
             /**
@@ -101,6 +102,7 @@
              *      year,month,date,time,datetime 五种选择
              */
             ,type: 'date'
+            ,trigger: 'click'
         });
         laydate.render({
             /**
@@ -112,6 +114,7 @@
              *      year,month,date,time,datetime 五种选择
              */
             ,type: 'date'
+            ,trigger: 'click'
         });
 
     });

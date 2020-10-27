@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 use app\admin\villdate\SalesContractVilldate;
+use think\Db;
 
 /**
  * 销售合同
@@ -20,15 +21,31 @@ class SalesContractController extends BaseController
      * 列表
      */
     function index(){
+        $is_collection_completed=$this->request->param("is_collection_completed");
+        $select_by_year=$this->request->param("select_by_year");
+        //默认查询当年数据
+        if($select_by_year === null){
+            $select_by_year = date("Y");
+        }
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $contract_name=$this->request->param("contract_name");
             $customer_name=$this->request->param("customer_name");
             $project_leader=$this->request->param("project_leader");
-            $sign_date=$this->request->param("sign_date");
             $g_c_id=$this->request->param("g_c_id");
             $is_stamp_tax=$this->request->param("is_stamp_tax");
-            $db=db('sales_contract');
+            $is_collection_completed=$this->request->param("is_collection_completed");
+            //收款情况子查询
+            $subsql_invoice_records = db("invoice_records")
+                ->field('contract_id,if(invoice_status,invoice_amount,0) invoiced_amount,if(colletion_status,invoice_amount,0) collected_amount')
+                ->buildSql();
+            $subsql_invoice_records = Db::table($subsql_invoice_records." a")
+                ->field('contract_id,sum(invoiced_amount) invoiced_amount_0,sum(collected_amount) collected_amount_0')
+                ->group('contract_id')
+                ->buildSql();
+            $db=db('sales_contract a')
+                ->field("a.*,IFNULL(b.invoiced_amount_0,0) invoiced_amount,IFNULL(b.collected_amount_0,0) colleted_amount")
+                ->leftJoin([$subsql_invoice_records=>"b"],"a.id = b.contract_id");
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
             }
@@ -38,18 +55,27 @@ class SalesContractController extends BaseController
             if(!empty($project_leader)){
                 $db->where("project_leader","like","%$project_leader%");
             }
-            if(!empty($sign_date)){
-                $sign_date_s_e = explode("~",$sign_date);
-                $sign_date_start = strtotime($sign_date_s_e[0]);
-                $sign_date_end = strtotime($sign_date_s_e[1]);
-                $db->where("sign_date","egt",$sign_date_start);
-                $db->where("sign_date","elt",$sign_date_end);
+            if(!empty($select_by_year)){
+                $select_by_time=$select_by_year."-01-01 00:00:00";
+                //年初时间戳
+                $year_start=strtotime($select_by_time);
+                //年末时间戳
+                $year_end=strtotime("+1 year",$year_start);
+                $db->where("sign_date","egt",$year_start);
+                $db->where("sign_date","elt",$year_end);
             }
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
             }
             if(!empty($is_stamp_tax)){
                 $db->where("is_stamp_tax","eq",$is_stamp_tax-1);
+            }
+            if(!empty($is_collection_completed)){
+                if($is_collection_completed == 2){
+                    $db->where("contract_amount = collected_amount_0");
+                }else{
+                    $db->where("contract_amount != collected_amount_0");
+                }
             }
             //数据权限
             $db = self::dataPower($db,"b_l_id");
@@ -62,9 +88,23 @@ class SalesContractController extends BaseController
                 $val["is_contain_tax"] = $val["is_contain_tax"]?"含税":"不含税";
                 $val["is_stamp_tax"] = $val["is_stamp_tax"]?"有":"无";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
+                $val["invoiced_amount"] = amount_format($val["invoiced_amount"]);
+                $val["colleted_amount"] = amount_format($val["colleted_amount"]);
+                $val["colletions_amount"] = amount_format(SalesCollectionController::getCollectionsAmounts($val["id"]));
+                if($val["invoiced_amount"] != $val["contract_amount"]){
+                    $val["invoiced_amount"] = "<span style='color: red'>".$val["invoiced_amount"]."</span>";
+                }
+                if($val["colleted_amount"] != $val["contract_amount"]){
+                    $val["colleted_amount"] = "<span style='color: red'>".$val["colleted_amount"]."</span>";
+                }
+                if($val["colletions_amount"] != $val["contract_amount"]){
+                    $val["colletions_amount"] = "<span style='color: red'>".$val["colletions_amount"]."</span>";
+                }
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("is_collection_completed",$is_collection_completed);
+        $this->assign("select_by_year",$select_by_year);
         //签约单位数据
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);

@@ -20,6 +20,8 @@ class InvoiceRecordsController extends BaseController
      * 列表
      */
     function index(){
+        $invoice_status=$this->request->param("invoice_status");
+        $colletion_status=$this->request->param("colletion_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $sq_people=$this->request->param("sq_people");
@@ -31,6 +33,12 @@ class InvoiceRecordsController extends BaseController
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
             }
+            if(!empty($invoice_status)){
+                $db->where("invoice_status","eq",$invoice_status-1);
+            }
+            if(!empty($colletion_status)){
+                $db->where("colletion_status","eq",$colletion_status-1);
+            }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -40,6 +48,8 @@ class InvoiceRecordsController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("invoice_status",$invoice_status);
+        $this->assign("colletion_status",$colletion_status);
         return $this->fetch();
     }
     /**
@@ -130,7 +140,7 @@ class InvoiceRecordsController extends BaseController
         $this->assign("row",$row);
         //发票号金额
         $row=db("invoice_nums")->where("i_r_id","eq",$id)->column("amount");
-        $invoice_num_amounts = array_sum($row);
+        $invoice_num_amounts = number_format(array_sum($row),2,'.',"");
         $this->assign("invoice_num_amounts",$invoice_num_amounts);
         return $this->fetch();
     }
@@ -147,6 +157,22 @@ class InvoiceRecordsController extends BaseController
             };
             return jsonSuccess();
         }
+    }
+    /**
+     * 获取合同开票收款金额
+     * $ic:invoiced/colleted
+     */
+    public static function getICAmount($contract_id,$ic){
+        $db = db("invoice_records")
+            ->where("contract_id","eq",$contract_id);
+        if($ic == "invoiced"){
+            $db = $db->where("invoice_status","=",1);
+        }
+        if($ic == "colleted"){
+            $db = $db->where("colletion_status","=",1);
+        }
+        $res = $db->column("invoice_amount");
+        return array_sum($res);
     }
 
 }

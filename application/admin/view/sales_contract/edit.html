@@ -22,7 +22,7 @@
                 <select lay-filter="customer_select" name="" lay-search>
                     <option value="">请选择客户单位</option>
                     {foreach $customers as $customer}
-                    <option value="{$customer['company_name']}|-|{$customer['business_contact']}|-|{$customer['project_contact']}" {if $customer['id'] == $row["c_s_id"]}selected{/if}>{$customer['company_name']}</option>
+                    <option value="{$customer['company_name']}|-|{$customer['business_contact']}|-|{$customer['project_contact']}|-|{$customer['id']}" {if $customer['id'] == $row["c_s_id"]}selected{/if}>{$customer['company_name']}</option>
                     {/foreach}
                 </select>
             </div>

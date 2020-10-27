@@ -113,6 +113,7 @@ function cleanableCache($key,$data=null){
  * 金额格式处理
  */
 function amount_format($amount){
+    return number_format($amount,2);
     $right = "00";
     if(strpos($amount,".") !== false){
         $l_f = explode(".",$amount);

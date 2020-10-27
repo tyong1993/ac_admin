@@ -52,7 +52,7 @@ class ProjectREStatisticsController extends BaseController
             ->buildSql();
         $db = db('sales_contract a');
         $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.company_identifier,b.*,c.colletion_time,c.invoice_time,c.invoice_amount,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
-            ->leftJoin("sales_collection b","b.contract_id = a.id")
+            ->rightJoin("sales_collection b","b.contract_id = a.id")
             ->leftJoin("invoice_records c","b.id = c.collection_id")
             ->leftJoin([$subsql_outsourcing_payment=>"d"],"b.id = d.collection_id")
             ->leftJoin([$subsql_expend_reimbursement=>"e"],"b.id = e.collection_id")

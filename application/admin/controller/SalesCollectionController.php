@@ -23,8 +23,9 @@ class SalesCollectionController extends BaseController
      */
     function index(){
         $contract_id = $this->request->param("id");
-        $db=db('sales_collection');
-        $db->where("contract_id","=",$contract_id);
+        $db=db('sales_collection a')->field("a.*,b.colletion_status,if(b.colletion_status = 1,invoice_amount,0) collected_amount")
+            ->leftJoin("invoice_records b","a.id = b.collection_id");
+        $db->where("a.contract_id","=",$contract_id);
         $res = $db->select();
         //合同税率
         $row = db('sales_contract')->find($contract_id);
@@ -36,13 +37,26 @@ class SalesCollectionController extends BaseController
             "is_contain_tax"=>$row["is_contain_tax"]?"含税":"不含税"
         ];
         foreach ($res as &$val){
-            $val["expect_check_time"] = $val["expect_check_time"]?date("Y-m-d",$val["expect_check_time"]):"---";
-            $val["expect_invoice_time"] = $val["expect_invoice_time"]?date("Y-m-d",$val["expect_invoice_time"]):"---";
-            $val["expect_colletion_time"] = $val["expect_colletion_time"]?date("Y-m-d",$val["expect_colletion_time"]):"---";
+            $val["expect_check_time_format"] = $val["expect_check_time"]?date("Y-m-d",$val["expect_check_time"]):"---";
+            $val["expect_invoice_time_format"] = $val["expect_invoice_time"]?date("Y-m-d",$val["expect_invoice_time"]):"---";
+            $val["expect_colletion_time_format"] = $val["expect_colletion_time"]?date("Y-m-d",$val["expect_colletion_time"]):"---";
             $val["check_time"] = $val["check_time"]?date("Y-m-d",$val["check_time"]):"---";
             $val["status_name"] = self::getStatusName($val["status"]);
+            if($val["status_name"] == "待验收" && self::isComeNowMonth($val["expect_check_time"])){
+                $val["expect_check_time_format"] = "<span style='color: red'>".$val["expect_check_time_format"]."</span>";
+            }
+            if($val["status"] != 3 && self::isComeNowMonth($val["expect_invoice_time"])){
+                $val["expect_invoice_time_format"] = "<span style='color: red'>".$val["expect_invoice_time_format"]."</span>";
+            }
+            if($val["colletion_status"]==0 && self::isComeNowMonth($val["expect_colletion_time"])){
+                $val["expect_colletion_time_format"] = "<span style='color: red'>".$val["expect_colletion_time_format"]."</span>";
+            }
+            $val["colletion_status_name"] = $val["colletion_status"]?"已收款":"<span style='color: red'>未收款</span>";
             $val["collection_amount_format"] = amount_format($val["collection_amount"]);
-            $val["uncollection_amount_format"] = amount_format($val["collection_amount"]-$val["collected"]);
+            $val["uncollection_amount_format"] = amount_format($val["collection_amount"]-$val["collected_amount"]);
+            if($val["uncollection_amount_format"] != "0.00"){
+                $val["uncollection_amount_format"] = "<span style='color: red'>".$val["uncollection_amount_format"]."</span>";
+            }
             $others["skjehj"] += $val["collection_amount"];
         }
         $others["skjehj_format"] = amount_format($others["skjehj"]);
@@ -157,7 +171,7 @@ class SalesCollectionController extends BaseController
             //申请开票
             $sales_collection["id"] = $param["id"];
             $sales_collection["status"] = 2;
-            $sales_collection["collected"] = $param["invoice_amount"];
+            //$sales_collection["collected"] = $param["invoice_amount"];
             $res1 = Db::name('sales_collection')->update($sales_collection);
             //添加待开票记录
             $admin = self::$login_admin;
@@ -254,4 +268,27 @@ class SalesCollectionController extends BaseController
         }
         return "";
     }
+    /**
+     * 是否到了当月
+     */
+    public static function isComeNowMonth($check_time){
+        if(!$check_time){
+            return false;
+        }
+        $time = strtotime(date("Y-m",$check_time));
+        if($time>time()){
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 获取合同分期金额合计
+     */
+    public static function getCollectionsAmounts($contract_id){
+        $db = db("sales_collection")
+            ->where("contract_id","eq",$contract_id);
+        $res = $db->column("collection_amount");
+        return array_sum($res);
+    }
+
 }

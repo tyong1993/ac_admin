@@ -53,7 +53,7 @@ class ProjectREController extends BaseController
                 ->buildSql();
             $db = db('sales_contract a');
             $db = $db->field("a.contract_name,a.contract_amount,a.customer_name,a.group_company_name,a.sign_date,a.customer_identifier,a.company_identifier,b.*,c.colletion_status,c.invoice_status,d.pay_amount outsourcing_pay_amount,e.amount reimbursement_amount,f.pay_amount_true business_pay_amount,g.pay_amount reward_pay_amount")
-                ->leftJoin("sales_collection b","b.contract_id = a.id")
+                ->rightJoin("sales_collection b","b.contract_id = a.id")
                 ->leftJoin("invoice_records c","b.id = c.collection_id")
                 ->leftJoin([$subsql_outsourcing_payment=>"d"],"b.id = d.collection_id")
                 ->leftJoin([$subsql_expend_reimbursement=>"e"],"b.id = e.collection_id")
@@ -115,26 +115,28 @@ class ProjectREController extends BaseController
                 $val["sign_date_format"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
                 //状态颜色处理
                 if($val["colletion_status_name"] == "已收款"){
-                    $val["colletion_status_name"] = "<span style='color: blue'>{$val["colletion_status_name"]}</span>";
+//                    $val["colletion_status_name"] = "<span style='color: green'>{$val["colletion_status_name"]}</span>";
+                    $val["colletion_status_name"] = "<span style='color: green'>{$val["colletion_status_name"]}</span>";
                 }else{
-                    if($val["expect_colletion_time"] == 0 || $val["expect_colletion_time"] > $now_time){
+                    if($val["expect_colletion_time"] == 0 || !SalesCollectionController::isComeNowMonth($val["expect_colletion_time"])){
                         $val["colletion_status_name"] = "<span style='color: green'>{$val["colletion_status_name"]}</span>";
                     }else{
                         $val["colletion_status_name"] = "<span style='color: red'>{$val["colletion_status_name"]}({$val["expect_colletion_time_format"]})</span>";
                     }
                 }
                 if($val["status_name"] == SalesCollectionController::getStatusName(3)){
-                    $val["status_name"] = "<span style='color: blue'>{$val["status_name"]}</span>";
+//                    $val["status_name"] = "<span style='color: green'>{$val["status_name"]}</span>";
+                    $val["status_name"] = "<span style='color: green'>{$val["status_name"]}</span>";
                 }
                 if($val["status_name"] == SalesCollectionController::getStatusName(0)){
-                    if($val["expect_check_time"] == 0 || $val["expect_check_time"] > $now_time){
+                    if($val["expect_check_time"] == 0 || !SalesCollectionController::isComeNowMonth($val["expect_check_time"])){
                         $val["status_name"] = "<span style='color: green'>{$val["status_name"]}</span>";
                     }else{
                         $val["status_name"] = "<span style='color: red'>{$val["status_name"]}({$val["expect_check_time_format"]})</span>";
                     }
                 }
                 if($val["status_name"] == SalesCollectionController::getStatusName(1) || $val["status_name"] == SalesCollectionController::getStatusName(2)){
-                    if($val["expect_invoice_time"] == 0 || $val["expect_invoice_time"] > $now_time){
+                    if($val["expect_invoice_time"] == 0 || !SalesCollectionController::isComeNowMonth($val["expect_invoice_time"])){
                         $val["status_name"] = "<span style='color: green'>{$val["status_name"]}</span>";
                     }else{
                         $val["status_name"] = "<span style='color: red'>{$val["status_name"]}({$val["expect_invoice_time_format"]})</span>";

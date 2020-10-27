@@ -38,9 +38,9 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <label class="layui-form-label">签订日期</label>
+                            <label class="layui-form-label">按年份筛选</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="sign_date" class="layui-input" id="date_time_sign_date" placeholder="日期范围">
+                                <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -63,7 +63,7 @@
 
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>
+                <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>-->
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 新增合同 </button>
             </div>
         </script>
@@ -196,13 +196,12 @@
             /**
              * 绑定元素
              */
-            elem: '#date_time_sign_date'
+            elem: '#date_time_select_by_year'
             /**
              * 面板类型:
              *      year,month,date,time,datetime 五种选择
              */
-            ,type: 'date'
-            ,range: '~'
+            ,type: 'year'
         });
     });
 </script>

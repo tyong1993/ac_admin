@@ -17,7 +17,7 @@
                 <col width="100">
                 <col width="100">
                 <col width="100">
-                <col width="100">
+                <col width="150">
                 <col>
             </colgroup>
             <thead>
@@ -31,7 +31,9 @@
                 <th>预开票时间</th>
                 <th>预收款时间</th>
                 <th>验收时间</th>
-                <th>状态</th>
+                <th>说明</th>
+                <th>开票状态</th>
+                <th>收款状态</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -41,13 +43,15 @@
                 <td>{$row["id"]}</td>
                 <td>{$row["periods"]}</td>
                 <td align="right">{$row["collection_amount_format"]}</td>
-                <td align="right">{$row["uncollection_amount_format"]}</td>
+                <td align="right">{$row["uncollection_amount_format"]|raw}</td>
                 <td>{:round(($row["collection_amount"]/$others["htje"])*100,2)}</td>
-                <td>{$row["expect_check_time"]}</td>
-                <td>{$row["expect_invoice_time"]}</td>
-                <td>{$row["expect_colletion_time"]}</td>
+                <td>{$row["expect_check_time_format"]|raw}</td>
+                <td>{$row["expect_invoice_time_format"]|raw}</td>
+                <td>{$row["expect_colletion_time_format"]|raw}</td>
                 <td>{$row["check_time"]}</td>
+                <td>{$row["remarks"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
+                <td>{$row["colletion_status_name"]|raw}</td>
                 <td>
                     <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="edit({$row['id']})">编辑</a>
                     <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" onclick="del({$row['id']})">删除</a>

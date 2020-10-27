@@ -21,6 +21,26 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">开票状态</label>
+                            <div class="layui-input-inline">
+                                <select name="invoice_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2" {if $invoice_status==2}selected{/if}>已开票</option>
+                                    <option value="1" {if $invoice_status==1}selected{/if}>未开票</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">收款状态</label>
+                            <div class="layui-input-inline">
+                                <select name="colletion_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2" {if $colletion_status==2}selected{/if}>已收款</option>
+                                    <option value="1" {if $colletion_status==1}selected{/if}>未收款</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -66,6 +86,7 @@
         table.render({
             elem: '#currentTableId',
             url: '{:url("index")}',
+            where:form.val("data-search"),
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[

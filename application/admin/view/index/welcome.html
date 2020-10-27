@@ -3,9 +3,6 @@
 <style>
     .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
     .icon {margin-right:10px;color:#1aa094;}
-    .icon-cray {color:#ffb800!important;}
-    .icon-blue {color:#1e9fff!important;}
-    .icon-tip {color:#ff5722!important;}
     .layuimini-qiuck-module {text-align:center;margin-top: 10px}
     .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
     .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
@@ -13,16 +10,8 @@
     .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
     .panel-body {padding:10px}
     .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
-    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
-    .layui-red {color:red}
     .main_btn > p {height:40px;}
     .layui-bg-number {background-color:#F8F8F8;}
-    .layuimini-notice:hover {background:#f6f6f6;}
-    .layuimini-notice {padding:7px 16px;clear:both;font-size:12px !important;cursor:pointer;position:relative;transition:background 0.2s ease-in-out;}
-    .layuimini-notice-title,.layuimini-notice-label {
-        padding-right: 70px !important;text-overflow:ellipsis!important;overflow:hidden!important;white-space:nowrap!important;}
-    .layuimini-notice-title {line-height:28px;font-size:14px;}
-    .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
 </style>
 <body>
 <div class="layuimini-container">
@@ -37,7 +26,7 @@
                             <div class="layui-card-header">
                                 汇总
                                 <label>&nbsp&nbsp查看年份:</label>
-                                <div class="layui-inline"> <!-- 注意：这一层元素并不是必须的 -->
+                                <div class="layui-inline" style="width: 100px">
                                     <input type="text" class="layui-input" id="select_by_year" value="{$select_by_year}">
                                 </div>
                             </div>
@@ -152,10 +141,11 @@
                             <div class="layui-card-header">待办</div>
                             <div class="layui-card-body">
                                 <div class="welcome-module">
+                                    <div>&nbsp销售合同:</div>
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(31,'?is_collection_completed=1')">
                                                     <div class="panel-title">
                                                         <h5>待验收</h5>
                                                     </div>
@@ -168,7 +158,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(31,'?is_collection_completed=1')">
                                                     <div class="panel-title">
                                                         <h5>可开票</h5>
                                                     </div>
@@ -181,7 +171,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(33,'?invoice_status=1')">
                                                     <div class="panel-title">
                                                         <h5>待开票</h5>
                                                     </div>
@@ -194,7 +184,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(33,'?colletion_status=1')">
                                                     <div class="panel-title">
                                                         <h5>待收款</h5>
                                                     </div>
@@ -206,6 +196,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div>&nbsp外包合同:</div>
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
@@ -260,6 +251,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div>&nbsp费用支出:</div>
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
@@ -484,12 +476,22 @@
     </div>
 </div>
 <script>
+    var $ = null;
     layui.use(['layer'], function () {
-        var $ = layui.jquery,
+            $ = layui.jquery,
             layer = layui.layer;
-        // layer.alert("hello word")
     });
 
+    /**
+     * 处理待办事项
+     */
+    function doToDo(id,param) {
+        $obj = parent.document.getElementById(id);
+        $href = $($obj).attr('layuimini-href');
+        $($obj).attr('layuimini-href',$href+param);
+        $obj.click();
+        $($obj).attr('layuimini-href',$href);
+    }
     layui.use('laydate', function(){
         var laydate = layui.laydate;
         laydate.render({
