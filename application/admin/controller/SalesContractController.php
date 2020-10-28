@@ -40,12 +40,18 @@ class SalesContractController extends BaseController
                 ->field('contract_id,if(invoice_status,invoice_amount,0) invoiced_amount,if(colletion_status,invoice_amount,0) collected_amount')
                 ->buildSql();
             $subsql_invoice_records = Db::table($subsql_invoice_records." a")
-                ->field('contract_id,sum(invoiced_amount) invoiced_amount_0,sum(collected_amount) collected_amount_0')
+                ->field('contract_id,sum(invoiced_amount) invoiced_amount,sum(collected_amount) collected_amount')
+                ->group('contract_id')
+                ->buildSql();
+            //分期总额子查询
+            $subsql_sales_collection = db("sales_collection")
+                ->field('contract_id,sum(collection_amount) colletions_amount')
                 ->group('contract_id')
                 ->buildSql();
             $db=db('sales_contract a')
-                ->field("a.*,IFNULL(b.invoiced_amount_0,0) invoiced_amount,IFNULL(b.collected_amount_0,0) colleted_amount")
-                ->leftJoin([$subsql_invoice_records=>"b"],"a.id = b.contract_id");
+                ->field("a.*,IFNULL(b.invoiced_amount,0) invoiced_amount,IFNULL(b.collected_amount,0) collected_amount,IFNULL(c.colletions_amount,0) colletions_amount")
+                ->leftJoin([$subsql_invoice_records=>"b"],"a.id = b.contract_id")
+                ->leftJoin([$subsql_sales_collection=>"c"],"a.id = c.contract_id");
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
             }
@@ -72,13 +78,15 @@ class SalesContractController extends BaseController
             }
             if(!empty($is_collection_completed)){
                 if($is_collection_completed == 2){
-                    $db->where("contract_amount = collected_amount_0");
+                    $db->where("contract_amount = collected_amount");
                 }else{
-                    $db->where("contract_amount != collected_amount_0");
+                    $db->where("contract_amount != collected_amount");
                 }
             }
             //数据权限
             $db = self::dataPower($db,"b_l_id");
+            //拷贝查询对象
+            $db_cope = unserialize(serialize($db));
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -89,17 +97,39 @@ class SalesContractController extends BaseController
                 $val["is_stamp_tax"] = $val["is_stamp_tax"]?"有":"无";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
                 $val["invoiced_amount"] = amount_format($val["invoiced_amount"]);
-                $val["colleted_amount"] = amount_format($val["colleted_amount"]);
-                $val["colletions_amount"] = amount_format(SalesCollectionController::getCollectionsAmounts($val["id"]));
+                $val["collected_amount"] = amount_format($val["collected_amount"]);
+                $val["colletions_amount"] = amount_format($val["colletions_amount"]);
                 if($val["invoiced_amount"] != $val["contract_amount"]){
                     $val["invoiced_amount"] = "<span style='color: red'>".$val["invoiced_amount"]."</span>";
                 }
-                if($val["colleted_amount"] != $val["contract_amount"]){
-                    $val["colleted_amount"] = "<span style='color: red'>".$val["colleted_amount"]."</span>";
+                if($val["collected_amount"] != $val["contract_amount"]){
+                    $val["collected_amount"] = "<span style='color: red'>".$val["collected_amount"]."</span>";
                 }
                 if($val["colletions_amount"] != $val["contract_amount"]){
                     $val["colletions_amount"] = "<span style='color: red'>".$val["colletions_amount"]."</span>";
                 }
+            }
+            unset($val);
+            //数据统计
+            $res_statistic = $db_cope
+                ->field("sum(contract_amount) contract_amount,sum(colletions_amount) colletions_amount,sum(invoiced_amount) invoiced_amount,sum(collected_amount) collected_amount")
+                ->find();
+            if(!empty($res["data"])){
+                $statistic = $res["data"][0];
+                foreach ($res_statistic as $key=>$val){
+                    $res_statistic[$key] = $val?:0;
+                }
+                foreach ($statistic as $key=>$v){
+                    switch ($key){
+                        case "id":$statistic[$key]="统计";break;
+                        case "contract_amount":$statistic[$key]=amount_format($res_statistic["contract_amount"]);break;
+                        case "colletions_amount":$statistic[$key]=amount_format($res_statistic["colletions_amount"]);break;
+                        case "invoiced_amount":$statistic[$key]=amount_format($res_statistic["invoiced_amount"]);break;
+                        case "collected_amount":$statistic[$key]=amount_format($res_statistic["collected_amount"]);break;
+                        default:$statistic[$key]="";
+                    }
+                }
+                $res["data"][]=$statistic;
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
