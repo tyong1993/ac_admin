@@ -63,6 +63,7 @@
                                 </select>
                             </div>
                         </div>
+                        <input style="display:none" id="disposable" name="todo" value="{$todo}"/>
                         <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
@@ -111,7 +112,7 @@
                 {field: 'colletions_amount', width: 120, align: "right", title: '分期总额'},
                 {field: 'invoiced_amount', width: 120, align: "right", title: '开票金额'},
                 {field: 'collected_amount', width: 120, align: "right", title: '收款金额'},
-                {field: 'is_contain_tax', width: 80, title: '含税'},
+                {field: 'is_contain_tax', width: 80, title: '含税否'},
                 {field: 'is_stamp_tax', width: 80, title: '印花税'},
                 {field: 'payment_days', width: 80, title: '账期'},
                 {field: 'sign_date', width: 120, title: '签订日期'},
@@ -130,7 +131,8 @@
             skin: 'row,line',
             size:"sm"
         });
-
+        //清除待办进来的标记,下一次搜索回归正常
+        $("#disposable").val(0);
         /**
          * 搜索
          */

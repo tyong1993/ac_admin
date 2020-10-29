@@ -21,6 +21,7 @@ class ExpendReimbursementController extends BaseController
      * 列表
      */
     function index(){
+        $pay_status=$this->request->param("pay_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $bx_people_id=$this->request->param("bx_people_id");
@@ -36,6 +37,9 @@ class ExpendReimbursementController extends BaseController
             if(!empty($type)){
                 $db->where("type","like","%$type%");
             }
+            if(!empty($pay_status)){
+                $db->where("pay_status","eq",$pay_status-1);
+            }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -46,6 +50,7 @@ class ExpendReimbursementController extends BaseController
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
         $this->assign("bx_peoples",BaseModel::getAdmins());
+        $this->assign("pay_status",$pay_status);
         return $this->fetch();
     }
 

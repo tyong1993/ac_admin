@@ -145,7 +145,7 @@
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body" onclick="doToDo(31,'?is_collection_completed=1&select_by_year=')">
+                                                <div class="panel-body" onclick="doToDo(31,'?todo=1&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>待验收</h5>
                                                     </div>
@@ -158,7 +158,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body" onclick="doToDo(31,'?is_collection_completed=1&select_by_year=')">
+                                                <div class="panel-body" onclick="doToDo(31,'?todo=2&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>可开票</h5>
                                                     </div>
@@ -255,7 +255,7 @@
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(37,'?pay_status=1')">
                                                     <div class="panel-title">
                                                         <h5>报销支出</h5>
                                                     </div>
@@ -269,7 +269,7 @@
                                         {if checkAuth("index_todo_business")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(38,'?pay_status=1')">
                                                     <div class="panel-title">
                                                         <h5>商务支出</h5>
                                                     </div>
@@ -284,7 +284,7 @@
                                         {if checkAuth("index_todo_reward")}
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(39,'?pay_status=1')">
                                                     <div class="panel-title">
                                                         <h5>奖金支出</h5>
                                                     </div>

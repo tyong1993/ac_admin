@@ -6,7 +6,7 @@
         <fieldset class="table-search-fieldset">
             <!--<legend>搜索信息</legend>-->
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" lay-filter="data-search" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">销售合同名称</label>
@@ -18,6 +18,16 @@
                             <label class="layui-form-label">商务联系人</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="business_contact" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">付款状态</label>
+                            <div class="layui-input-inline">
+                                <select name="pay_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2" {if $pay_status==2}selected{/if}>已付款</option>
+                                    <option value="1" {if $pay_status==1}selected{/if}>未付款</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -53,6 +63,7 @@
         table.render({
             elem: '#currentTableId',
             url: '{:url("index")}',
+            where:form.val("data-search"),
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[

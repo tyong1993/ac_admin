@@ -20,6 +20,7 @@ class ExpendBusinessController extends BaseController
      * 列表
      */
     function index(){
+        $pay_status=$this->request->param("pay_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $business_contact=$this->request->param("business_contact");
@@ -30,6 +31,9 @@ class ExpendBusinessController extends BaseController
             }
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
+            }
+            if(!empty($pay_status)){
+                $db->where("pay_status","eq",$pay_status-1);
             }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
@@ -43,6 +47,7 @@ class ExpendBusinessController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("pay_status",$pay_status);
         return $this->fetch();
     }
 

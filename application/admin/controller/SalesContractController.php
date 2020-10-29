@@ -23,6 +23,7 @@ class SalesContractController extends BaseController
     function index(){
         $is_collection_completed=$this->request->param("is_collection_completed");
         $select_by_year=$this->request->param("select_by_year");
+        $todo=$this->request->param("todo");
         //默认查询当年数据
         if($select_by_year === null){
             $select_by_year = date("Y");
@@ -83,6 +84,11 @@ class SalesContractController extends BaseController
                     $db->where("contract_amount != collected_amount");
                 }
             }
+            //待办过来的
+            if(!empty($todo)){
+                $contract_ids = db("sales_collection")->where("status","eq",$todo-1)->group("contract_id")->column("contract_id");
+                $db->where("a.id","in",$contract_ids);
+            }
             //数据权限
             $db = self::dataPower($db,"b_l_id");
             //拷贝查询对象
@@ -134,6 +140,7 @@ class SalesContractController extends BaseController
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
         $this->assign("is_collection_completed",$is_collection_completed);
+        $this->assign("todo",$todo);
         $this->assign("select_by_year",$select_by_year);
         //签约单位数据
         $res = db('group_company')->select();
