@@ -17,12 +17,13 @@ class InvoiceNumsVilldate extends Validate
     protected $rule =   [
         'i_r_id'   => 'require',
         'num'   => 'require',
-        'amount'   => 'require',
+        'amount'   => 'require|between:0,100000',
     ];
 
     protected $message  =   [
         'i_r_id.require' => '开票记录ID不能为空',
         'num.require' => '发票号必填',
         'amount.require' => '发票金额必填',
+        'amount.between' => '发票金额不能大于100000',
     ];
 }

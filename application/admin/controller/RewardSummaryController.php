@@ -22,18 +22,21 @@ class RewardSummaryController extends BaseController
         $receiver_id = $this->request->param("receiver_id");
         $contract_name = $this->request->param("contract_name");
         $select_by_year = $this->request->param("select_by_year");
-        if(!$select_by_year){
+        if($select_by_year === null){
             $select_by_year = date("Y");
         }
-        $select_by_time=$select_by_year."-01-01 00:00:00";
-        //年初时间戳
-        $year_start=strtotime($select_by_time);
-        //年末时间戳
-        $year_end=strtotime("+1 year",$year_start);
 
-        $db=db('expend_reward a')
-            ->where("a.create_time","egt",$year_start)
-            ->where("a.create_time","lt",$year_end);
+        $db=db('expend_reward a');
+        if(!empty($select_by_year)){
+            $select_by_time=$select_by_year."-01-01 00:00:00";
+            //年初时间戳
+            $year_start=strtotime($select_by_time);
+            //年末时间戳
+            $year_end=strtotime("+1 year",$year_start);
+            $db= $db->where("a.pay_time","egt",$year_start)
+                    ->where("a.pay_time","lt",$year_end);
+        }
+
         if(!empty($receiver_id)){
             $db->where("a.receiver_id","eq",$receiver_id);
         }
@@ -51,6 +54,7 @@ class RewardSummaryController extends BaseController
                 ];
             }
             $val["pay_status"] = $val["pay_status"]?"<span style='color: blue'>已付款</span>":"<span style='color: red'>未付款</span>";
+            $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             $data[$val["receiver_id"]]["data"][]=$val;
             $data[$val["receiver_id"]]["pay_amount"]+=$val["pay_amount"];
         }

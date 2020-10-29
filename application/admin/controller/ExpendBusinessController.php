@@ -35,10 +35,11 @@ class ExpendBusinessController extends BaseController
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["tax_rate"] = $val["is_need_tax"]?$val["tax_rate"]:"---";
-                $val["pay_status"] = $val["pay_status"]?"已付款":"未付款";
+                $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
                 $val["collection_amount"] = amount_format($val["collection_amount"]);
                 $val["pay_amount_need"] = amount_format($val["pay_amount_need"]);
                 $val["pay_amount_true"] = amount_format($val["pay_amount_true"]);
+                $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -53,6 +54,7 @@ class ExpendBusinessController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendBusinessVilldate::class);
             $param["create_time"] = time();
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
@@ -62,6 +64,9 @@ class ExpendBusinessController extends BaseController
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
+        //商务联系人数据
+        $business_contacts = db("customer_supplier_staff")->where("type","in",[1,3])->column("name","id");
+        $this->assign("business_contacts",$business_contacts);
         return $this->fetch();
     }
     /**
@@ -71,6 +76,7 @@ class ExpendBusinessController extends BaseController
         if($this->request->isAjax()){
             $param=$this->request->post();
             $this->validate($param,ExpendBusinessVilldate::class);
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $row = db($this->table)->find($param["id"]);
             if(db($this->table)->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
@@ -79,6 +85,7 @@ class ExpendBusinessController extends BaseController
         }
         $id=$this->request->param('id');
         $row=db("expend_business")->find($id);
+        $row["pay_time"] = !empty($row["pay_time"])?date("Y-m-d",$row["pay_time"]):"";
         $this->assign("row",$row);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
@@ -89,6 +96,9 @@ class ExpendBusinessController extends BaseController
         //该期收款情况
         $res = db('sales_collection a')->field("a.*,b.colletion_status")->leftJoin("invoice_records b","a.id = b.collection_id")->where("a.id","eq",$row["collection_id"])->find();
         $this->assign("now_periods",$res);
+        //商务联系人数据
+        $business_contacts = db("customer_supplier_staff")->where("type","in",[1,3])->column("name","id");
+        $this->assign("business_contacts",$business_contacts);
         return $this->fetch();
     }
     /**

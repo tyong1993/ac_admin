@@ -76,6 +76,12 @@
         </div>
     </div>
     <div class="layui-form-item layui-col-md8">
+        <label class="layui-form-label">付款时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_time" value="{$row['pay_time']}" class="layui-input" id="date_time_pay_time" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item layui-col-md8">
         <label class="layui-form-label">费用说明</label>
         <div class="layui-input-block">
             <input type="text" name="remark" autocomplete="off" placeholder="请输入费用说明" value="{$row['remark']}" class="layui-input">
@@ -145,7 +151,25 @@
         });
 
     });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
 
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_pay_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+            ,trigger: 'click'
+        });
+
+    });
 </script>
 </body>
 </html>

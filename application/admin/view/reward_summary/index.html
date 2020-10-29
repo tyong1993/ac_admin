@@ -47,6 +47,7 @@
                 <col width="100">
                 <col width="120">
                 <col width="120">
+                <col width="120">
                 <col>
             </colgroup>
             <thead>
@@ -58,6 +59,7 @@
                 <th>分期金额</th>
                 <th>商务金额</th>
                 <th>付款状态</th>
+                <th>付款时间</th>
             </tr>
             </thead>
             <tbody>
@@ -70,6 +72,7 @@
                 <td align="right">{:amount_format($v["collection_amount"])}</td>
                 <td align="right">{:amount_format($v["pay_amount"])}</td>
                 <td>{$v["pay_status"]|raw}</td>
+                <td>{$v["pay_time"]}</td>
             </tr>
             {/foreach}
             <!--按人统计-->
@@ -80,6 +83,7 @@
                 <td></td>
                 <td></td>
                 <td align="right">{:amount_format($val["pay_amount"])}</td>
+                <td></td>
                 <td></td>
             </tr>
             </tbody>

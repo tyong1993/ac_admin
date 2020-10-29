@@ -23,6 +23,7 @@ class ProjectREController extends BaseController
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $customer_name=$this->request->param("customer_name");
+            $contract_name=$this->request->param("contract_name");
             $select_by_year = $this->request->param("select_by_year");
             $g_c_id = $this->request->param("g_c_id");
             //默认查询当年数据
@@ -62,6 +63,9 @@ class ProjectREController extends BaseController
             ;
             if(!empty($customer_name)){
                 $db->where("a.customer_name","like","%$customer_name%");
+            }
+            if(!empty($contract_name)){
+                $db->where("a.contract_name","like","%$contract_name%");
             }
             if(!empty($status)){
                 $db->where("b.status","eq",$status-1);

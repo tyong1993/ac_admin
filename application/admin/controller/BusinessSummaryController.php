@@ -22,21 +22,24 @@ class BusinessSummaryController extends BaseController
         $business_contact = $this->request->param("business_contact");
         $contract_name = $this->request->param("contract_name");
         $select_by_year = $this->request->param("select_by_year");
-        if(!$select_by_year){
+        if($select_by_year === null){
             $select_by_year = date("Y");
         }
-        $select_by_time=$select_by_year."-01-01 00:00:00";
-        //年初时间戳
-        $year_start=strtotime($select_by_time);
-        //年末时间戳
-        $year_end=strtotime("+1 year",$year_start);
 
-        $db=db('expend_business a')->field("a.*,b.b_staff_id,b.business_contact")
-            ->leftJoin("sales_contract b","b.id = a.contract_id")
-            ->where("a.create_time","egt",$year_start)
-            ->where("a.create_time","lt",$year_end);
+        $db=db('expend_business a')->field("a.*")
+            ->leftJoin("sales_contract b","b.id = a.contract_id");
+        //不限制年份
+        if(!empty($select_by_year)){
+            $select_by_time=$select_by_year."-01-01 00:00:00";
+            //年初时间戳
+            $year_start=strtotime($select_by_time);
+            //年末时间戳
+            $year_end=strtotime("+1 year",$year_start);
+            $db = $db->where("a.pay_time","egt",$year_start)
+                     ->where("a.pay_time","lt",$year_end);
+        }
         if(!empty($business_contact)){
-            $db->where("b.business_contact","like","%$business_contact%");
+            $db->where("a.business_contact","like","%$business_contact%");
         }
         if(!empty($contract_name)){
             $db->where("b.contract_name","like","%$contract_name%");
@@ -44,16 +47,17 @@ class BusinessSummaryController extends BaseController
         $res = $db->select();
         $data = [];
         foreach ($res as $val){
-            if(!isset($data[$val["b_staff_id"]])){
-                $data[$val["b_staff_id"]] = [
+            if(!isset($data[$val["business_contact"]])){
+                $data[$val["business_contact"]] = [
                     "business_contact"=>$val["business_contact"],
                     "pay_amount_true"=>0,
                     "data"=>[]
                 ];
             }
             $val["pay_status"] = $val["pay_status"]?"<span style='color: blue'>已付款</span>":"<span style='color: red'>未付款</span>";
-            $data[$val["b_staff_id"]]["data"][]=$val;
-            $data[$val["b_staff_id"]]["pay_amount_true"]+=$val["pay_amount_true"];
+            $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
+            $data[$val["business_contact"]]["data"][]=$val;
+            $data[$val["business_contact"]]["pay_amount_true"]+=$val["pay_amount_true"];
         }
         $this->assign("res",$data);
         $this->assign("business_contact",$business_contact);

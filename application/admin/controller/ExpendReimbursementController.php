@@ -39,8 +39,9 @@ class ExpendReimbursementController extends BaseController
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                $val["pay_status"] = $val["pay_status"]?"已付款":"未付款";
+                $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
                 $val["amount"] = amount_format($val["amount"]);
+                $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -57,6 +58,7 @@ class ExpendReimbursementController extends BaseController
             $this->validate($param,ExpendReimbursementVilldate::class);
             $param["create_time"] = time();
             $param["bx_people"] = db("system_admin")->where(["id"=>$param["bx_people_id"]])->value("name")?:"";
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
@@ -78,6 +80,7 @@ class ExpendReimbursementController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendReimbursementVilldate::class);
             $param["bx_people"] = db("system_admin")->where(["id"=>$param["bx_people_id"]])->value("name")?:"";
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $row = db($this->table)->find($param["id"]);
             if(db($this->table)->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
@@ -86,6 +89,7 @@ class ExpendReimbursementController extends BaseController
         }
         $id=$this->request->param('id');
         $row=db("expend_reimbursement")->find($id);
+        $row["pay_time"] = !empty($row["pay_time"])?date("Y-m-d",$row["pay_time"]):"";
         $this->assign("row",$row);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();

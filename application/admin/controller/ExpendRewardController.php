@@ -35,7 +35,7 @@ class ExpendRewardController extends BaseController
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                $val["pay_status"] = $val["pay_status"]?"已付款":"未付款";
+                $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
                 $val["collection_amount"] = amount_format($val["collection_amount"]);
                 $val["deduct_reimbursement"] = amount_format($val["deduct_reimbursement"]);
@@ -43,6 +43,7 @@ class ExpendRewardController extends BaseController
                 $val["deduct_business"] = amount_format($val["deduct_business"]);
                 $val["surplus_amount"] = amount_format($val["surplus_amount"]);
                 $val["pay_amount"] = amount_format($val["pay_amount"]);
+                $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -58,6 +59,7 @@ class ExpendRewardController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendRewardVilldate::class);
             $param["create_time"] = time();
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $param["receiver"] = db("system_admin")->where(["id"=>$param["receiver_id"]])->value("name")?:"";
             $id=db($this->table)->insert($param,false,true);
             if($id){
@@ -80,6 +82,7 @@ class ExpendRewardController extends BaseController
             $param=$this->request->post();
             $this->validate($param,ExpendRewardVilldate::class);
             $param["receiver"] = db("system_admin")->where(["id"=>$param["receiver_id"]])->value("name")?:"";
+            $param["pay_time"] = !empty($param["pay_time"])?strtotime($param["pay_time"]):0;
             $row = db($this->table)->find($param["id"]);
             if(db($this->table)->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
@@ -88,6 +91,7 @@ class ExpendRewardController extends BaseController
         }
         $id=$this->request->param('id');
         $row=db("expend_reward")->find($id);
+        $row["pay_time"] = !empty($row["pay_time"])?date("Y-m-d",$row["pay_time"]):"";
         $this->assign("row",$row);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();

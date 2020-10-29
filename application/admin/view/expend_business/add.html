@@ -75,7 +75,18 @@
     <div class="layui-form-item layui-col-md8">
         <label class="layui-form-label">商务联系人</label>
         <div class="layui-input-block">
-            <input type="text" name="business_contact" readonly id="business_contact" autocomplete="off" placeholder="商务联系人" value="" class="layui-input">
+            <select lay-filter="" name="business_contact" lay-search>
+                <option value="">请选择商务联系人</option>
+                {foreach $business_contacts as $business_contact}
+                <option value="{$business_contact}">{$business_contact}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-col-md8">
+        <label class="layui-form-label">付款时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_time" value="" class="layui-input" id="date_time_pay_time" autocomplete="off">
         </div>
     </div>
     <div class="layui-form-item layui-col-md8">
@@ -219,7 +230,25 @@
             $("input[name='pay_amount_true']").val(pay_amount_true);
         }
     });
+    //时间日期组件
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
 
+        //执行一个laydate实例
+        laydate.render({
+            /**
+             * 绑定元素
+             */
+            elem: '#date_time_pay_time'
+            /**
+             * 面板类型:
+             *      year,month,date,time,datetime 五种选择
+             */
+            ,type: 'date'
+            ,trigger: 'click'
+        });
+
+    });
 </script>
 </body>
 </html>
