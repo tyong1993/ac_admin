@@ -50,7 +50,7 @@
                 <col width="80">
                 <col width="100">
                 <col width="150">
-                <col width="150">
+                <col width="250">
                 <col width="200">
                 <col width="120">
                 <col width="100">
@@ -78,8 +78,8 @@
                 <td>{$v["customer_name"]}</td>
                 <td>{$v["contract_name"]}</td>
                 <td>{$v["num"]}</td>
-                <td align="right">{$v["amount_format"]}</td>
-                <td>{$v["status_name"]}</td>
+                <td align="right">{$v["amount_format"]|raw}</td>
+                <td>{$v["status_name"]|raw}</td>
                 <td>{$v["remark"]}</td>
                 <td>{$v["colletion_status"]|raw}</td>
             </tr>
@@ -91,7 +91,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td align="right">{$val["all_amount"]}</td>
+                <td align="right">{$val["all_amount"]|raw}</td>
                 <td></td>
                 <td></td>
                 <td></td>

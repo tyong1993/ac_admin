@@ -28,11 +28,14 @@ class ExpendReimbursementController extends BaseController
             $contract_name=$this->request->param("contract_name");
             $type=$this->request->param("type");
             $db=db('expend_reimbursement');
+            $db = $db->alias("a")
+                ->field("a.*,b.contract_amount,b.contract_name contract_name")
+                ->leftJoin("sales_contract b","a.contract_id = b.id");
             if(!empty($bx_people_id)){
                 $db->where("bx_people_id","eq",$bx_people_id);
             }
             if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
+                $db->where("b.contract_name","like","%$contract_name%");
             }
             if(!empty($type)){
                 $db->where("type","like","%$type%");
@@ -95,6 +98,7 @@ class ExpendReimbursementController extends BaseController
         $id=$this->request->param('id');
         $row=db("expend_reimbursement")->find($id);
         $row["pay_time"] = !empty($row["pay_time"])?date("Y-m-d",$row["pay_time"]):"";
+        $row["contract_amount"] = db('sales_contract')->where("id","eq",$row["contract_id"])->value("contract_amount");
         $this->assign("row",$row);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
@@ -134,7 +138,7 @@ class ExpendReimbursementController extends BaseController
         $templete = "";
         $templete .= '<option value="">请选择收款期数</option>';
         foreach ($res as $val){
-            $templete .= '<option value="'.$val['id'].'|-|'.$val['periods'].'">'.$val['periods'].'</option>';
+            $templete .= '<option value="'.$val['id'].'|-|'.$val['periods'].'|-|'.$val['collection_amount'].'">'.$val['periods'].'</option>';
         }
         return jsonSuccess($templete);
     }

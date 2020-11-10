@@ -26,7 +26,9 @@ class RewardSummaryController extends BaseController
             $select_by_year = date("Y");
         }
 
-        $db=db('expend_reward a');
+        $db=db('expend_reward a')
+            ->field("a.*,IFNULL(c.colletion_status,0) colletion_status")
+            ->leftJoin("invoice_records c","a.collection_id = c.collection_id");
         if(!empty($select_by_year)){
             $select_by_time=$select_by_year."-01-01 00:00:00";
             //年初时间戳
@@ -53,7 +55,8 @@ class RewardSummaryController extends BaseController
                     "data"=>[]
                 ];
             }
-            $val["pay_status"] = $val["pay_status"]?"<span style='color: blue'>已付款</span>":"<span style='color: red'>未付款</span>";
+            $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
+            $val["colletion_status"] = $val["colletion_status"]?"已收款":"<span style='color: red'>未收款</span>";
             $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             $data[$val["receiver_id"]]["data"][]=$val;
             $data[$val["receiver_id"]]["pay_amount"]+=$val["pay_amount"];

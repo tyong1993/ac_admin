@@ -26,18 +26,21 @@ class InvoiceRecordsController extends BaseController
             $limit=$this->request->param("limit");
             $sq_people=$this->request->param("sq_people");
             $contract_name=$this->request->param("contract_name");
-            $db=db('invoice_records');
+            $db=db('invoice_records a');
+            $db=$db->field("a.*,b.remarks,c.contract_name contract_name")
+                ->leftJoin("sales_collection b","a.collection_id = b.id")
+                ->leftJoin("sales_contract c","a.contract_id = c.id");
             if(!empty($sq_people)){
-                $db->where("sq_people","like","%$sq_people%");
+                $db->where("a.sq_people","like","%$sq_people%");
             }
             if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
+                $db->where("c.contract_name","like","%$contract_name%");
             }
             if(!empty($invoice_status)){
-                $db->where("invoice_status","eq",$invoice_status-1);
+                $db->where("a.invoice_status","eq",$invoice_status-1);
             }
             if(!empty($colletion_status)){
-                $db->where("colletion_status","eq",$colletion_status-1);
+                $db->where("a.colletion_status","eq",$colletion_status-1);
             }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
@@ -98,14 +101,19 @@ class InvoiceRecordsController extends BaseController
             $this->validate($param,InvoiceRecordsVilldate::class);
             $param["invoice_time"] = strtotime($param["invoice_time"]);
             $param["colletion_time"] = strtotime($param["colletion_time"]);
+            db('sales_collection')->update(["id"=>$param["colletion_id"],"remarks"=>$param["colletion_remarks"]]);
+            unset($param["colletion_id"]);unset($param["colletion_remarks"]);
             db('invoice_records')->update($param);
             return jsonSuccess();
         }
         $id=$this->request->param('id');
         $row=db("invoice_records")->find($id);
         $row["invoice_time"] = $row["invoice_time"]?date("Y-m-d",$row["invoice_time"]):"";
-        $row["colletion_time"] = $row["invoice_time"]?date("Y-m-d",$row["colletion_time"]):"";
+        $row["colletion_time"] = $row["colletion_time"]?date("Y-m-d",$row["colletion_time"]):"";
+        $colletion=db("sales_collection")->find($row["collection_id"]);
+
         $this->assign("row",$row);
+        $this->assign("colletion",$colletion);
         return $this->fetch();
     }
 
@@ -139,7 +147,7 @@ class InvoiceRecordsController extends BaseController
         $row=db("invoice_records")->find($id);
         $this->assign("row",$row);
         //发票号金额
-        $row=db("invoice_nums")->where("i_r_id","eq",$id)->column("amount");
+        $row=db("invoice_nums")->where("i_r_id","eq",$id)->where("status","eq",1)->column("amount");
         $invoice_num_amounts = number_format(array_sum($row),2,'.',"");
         $this->assign("invoice_num_amounts",$invoice_num_amounts);
         return $this->fetch();

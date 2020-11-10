@@ -100,6 +100,17 @@ class IndexController extends BaseController
         foreach ($summary_statistic as $key=>$val){
             $summary_statistic[$key."_format"] = round($val/10000,2)."万";
         }
+        $db = db('sales_contract');
+        if(!empty($select_by_year)){
+            $select_by_time=$select_by_year."-01-01 00:00:00";
+            //年初时间戳
+            $year_start=strtotime($select_by_time);
+            //年末时间戳
+            $year_end=strtotime("+1 year",$year_start);
+            $db->where("sign_date","egt",$year_start);
+            $db->where("sign_date","lt",$year_end);
+        }
+        $summary_statistic["contract_nums"] = $db->count();
         return $summary_statistic;
     }
 

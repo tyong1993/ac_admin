@@ -43,8 +43,9 @@
             <colgroup>
                 <col width="50">
                 <col width="100">
-                <col width="150">
+                <col width="250">
                 <col width="100">
+                <col width="120">
                 <col width="120">
                 <col width="120">
                 <col width="120">
@@ -58,6 +59,7 @@
                 <th>收款期数</th>
                 <th>分期金额</th>
                 <th>商务金额</th>
+                <th>收款状态</th>
                 <th>付款状态</th>
                 <th>付款时间</th>
             </tr>
@@ -71,6 +73,7 @@
                 <td>{$v["periods"]}</td>
                 <td align="right">{:amount_format($v["collection_amount"])}</td>
                 <td align="right">{:amount_format($v["pay_amount"])}</td>
+                <td>{$v["colletion_status"]|raw}</td>
                 <td>{$v["pay_status"]|raw}</td>
                 <td>{$v["pay_time"]}</td>
             </tr>
@@ -82,7 +85,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td align="right">{:amount_format($val["pay_amount"])}</td>
+                <td align="right"><strong>{:amount_format($val["pay_amount"])}</strong></td>
+                <td></td>
                 <td></td>
                 <td></td>
             </tr>

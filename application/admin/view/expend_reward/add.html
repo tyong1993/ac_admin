@@ -23,7 +23,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">合同金额</label>
             <div class="layui-input-inline">
-                <input type="text" lay-verify="number" readonly id="contract_amount" name="contract_amount" autocomplete="off" placeholder="请输入合同金额" value="" class="layui-input">
+                <input type="text" lay-verify="number" readonly id="contract_amount" name="contract_amount" autocomplete="off" placeholder="" value="" class="layui-input">
             </div>
         </div>
     </div>
@@ -75,7 +75,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">付款比例%</label>
             <div class="layui-input-inline">
-                <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入付款比例" value="10" class="layui-input">
+                <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入付款比例" value="" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
@@ -100,6 +100,12 @@
                 <option value="{$receiver.id}">{$receiver.name}</option>
                 {/foreach}
             </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-col-md8">
+        <label class="layui-form-label">备注说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="remark" autocomplete="off" placeholder="备注说明" value="" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">

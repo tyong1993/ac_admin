@@ -16,9 +16,15 @@
                 <select lay-filter="sales_contract_select" name="" lay-search>
                     <option value="">请选择销售合同</option>
                     {foreach $sales_contracts as $contract}
-                    <option value="{$contract['id']}|-|{$contract['company_identifier']}|-|{$contract['contract_name']}" {if $contract['id'] == $row["sales_contract_id"]}selected{/if}>{$contract['contract_name']}</option>
+                    <option value="{$contract['id']}|-|{$contract['company_identifier']}|-|{$contract['contract_name']}|-|{$contract['contract_amount']}" {if $contract['id'] == $row["sales_contract_id"]}selected{/if}>{$contract['contract_name']}</option>
                     {/foreach}
                 </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">合同金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="" id="sales_contract_amount" readonly autocomplete="off" placeholder="" value="{$row['sales_contract_amount']}" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
@@ -257,15 +263,18 @@
             var sales_contract_id = "";
             var sales_company_identifier = "";
             var sales_contract_name = "";
+            var sales_contract_amount = "";
             if(val){
                 var arr=val.split('|-|');
                 sales_contract_id = arr[0];
                 sales_company_identifier = arr[1];
                 sales_contract_name = arr[2];
+                sales_contract_amount = arr[3];
             }
             $("#sales_contract_id").val(sales_contract_id);
             $("#sales_company_identifier").val(sales_company_identifier);
             $("#sales_contract_name").val(sales_contract_name);
+            $("#sales_contract_amount").val(sales_contract_amount);
         });
     });
     //时间日期组件

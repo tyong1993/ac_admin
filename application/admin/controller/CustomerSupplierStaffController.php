@@ -35,7 +35,7 @@ class CustomerSupplierStaffController extends BaseController
                 $staff_ids = db("customer_supplier_staff_tocs")->where("c_s_id","in",$c_s_ids)->column("staff_id");
                 $db->where("id","in",$staff_ids);
             }
-            $res = $db->paginate($limit)->toArray();
+            $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 switch ($val["type"]){

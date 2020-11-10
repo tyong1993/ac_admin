@@ -102,13 +102,13 @@ class IncomeStatementController extends BaseController
                 foreach ($statistic as $key=>$v){
                     switch ($key){
                         case "id":$statistic[$key]="统计";break;
-                        case "contract_amount_format":$statistic[$key]=amount_format($res_statistic["contract_amount"]);break;
-                        case "outsourcing_pay_amount_format":$statistic[$key]=amount_format($res_statistic["outsourcing_pay_amount"]);break;
-                        case "reimbursement_amount_format":$statistic[$key]=amount_format($res_statistic["reimbursement_amount"]);break;
-                        case "business_pay_amount_format":$statistic[$key]=amount_format($res_statistic["business_pay_amount"]);break;
-                        case "reward_pay_amount_format":$statistic[$key]=amount_format($res_statistic["reward_pay_amount"]);break;
-                        case "surplus_format":$statistic[$key]=amount_format($res_statistic["surplus"]);break;
-                        case "collected_amount_format":$statistic[$key]=amount_format($res_statistic["collected_amount"]);break;
+                        case "contract_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["contract_amount"])."</strong>";break;
+                        case "outsourcing_pay_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["outsourcing_pay_amount"])."</strong>";break;
+                        case "reimbursement_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["reimbursement_amount"])."</strong>";break;
+                        case "business_pay_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["business_pay_amount"])."</strong>";break;
+                        case "reward_pay_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["reward_pay_amount"])."</strong>";break;
+                        case "surplus_format":$statistic[$key]="<strong>".amount_format($res_statistic["surplus"])."</strong>";break;
+                        case "collected_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["collected_amount"])."</strong>";break;
                         default:$statistic[$key]="";
                     }
                 }

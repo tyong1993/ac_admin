@@ -23,12 +23,14 @@ class PaymentRecordsController extends BaseController
             $limit=$this->request->param("limit");
             $sq_people=$this->request->param("sq_people");
             $contract_name=$this->request->param("contract_name");
-            $db=db('payment_records');
+            $db=db('payment_records a');
+            $db = $db->field("a.*,b.contract_name contract_name")
+                ->leftJoin("outsourcing_contract b","a.contract_id = b.id");
             if(!empty($sq_people)){
                 $db->where("sq_people","like","%$sq_people%");
             }
             if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
+                $db->where("b.contract_name","like","%$contract_name%");
             }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){

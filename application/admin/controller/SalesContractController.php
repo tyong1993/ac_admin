@@ -69,7 +69,7 @@ class SalesContractController extends BaseController
                 //年末时间戳
                 $year_end=strtotime("+1 year",$year_start);
                 $db->where("sign_date","egt",$year_start);
-                $db->where("sign_date","elt",$year_end);
+                $db->where("sign_date","lt",$year_end);
             }
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
@@ -128,10 +128,10 @@ class SalesContractController extends BaseController
                 foreach ($statistic as $key=>$v){
                     switch ($key){
                         case "id":$statistic[$key]="统计";break;
-                        case "contract_amount":$statistic[$key]=amount_format($res_statistic["contract_amount"]);break;
-                        case "colletions_amount":$statistic[$key]=amount_format($res_statistic["colletions_amount"]);break;
-                        case "invoiced_amount":$statistic[$key]=amount_format($res_statistic["invoiced_amount"]);break;
-                        case "collected_amount":$statistic[$key]=amount_format($res_statistic["collected_amount"]);break;
+                        case "contract_amount":$statistic[$key]="<strong>".amount_format($res_statistic["contract_amount"])."</strong>";break;
+                        case "colletions_amount":$statistic[$key]="<strong>".amount_format($res_statistic["colletions_amount"])."</strong>";break;
+                        case "invoiced_amount":$statistic[$key]="<strong>".amount_format($res_statistic["invoiced_amount"])."</strong>";break;
+                        case "collected_amount":$statistic[$key]="<strong>".amount_format($res_statistic["collected_amount"])."</strong>";break;
                         default:$statistic[$key]="";
                     }
                 }

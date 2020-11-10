@@ -26,11 +26,15 @@ class ExpendBusinessController extends BaseController
             $business_contact=$this->request->param("business_contact");
             $contract_name=$this->request->param("contract_name");
             $db=db('expend_business');
+            $db = $db->alias("a")
+                ->field("a.*,IFNULL(b.colletion_status,0) colletion_status,c.contract_amount,c.contract_name contract_name")
+                ->leftJoin("invoice_records b","a.collection_id = b.collection_id")
+                ->leftJoin("sales_contract c","a.contract_id = c.id");
             if(!empty($business_contact)){
-                $db->where("business_contact","like","%$business_contact%");
+                $db->where("a.business_contact","like","%$business_contact%");
             }
             if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
+                $db->where("c.contract_name","like","%$contract_name%");
             }
             if(!empty($pay_status)){
                 $db->where("pay_status","eq",$pay_status-1);
@@ -40,6 +44,7 @@ class ExpendBusinessController extends BaseController
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["tax_rate"] = $val["is_need_tax"]?$val["tax_rate"]:"---";
                 $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
+                $val["colletion_status"] = $val["colletion_status"]?"已收款":"<span style='color: red'>未收款</span>";
                 $val["collection_amount"] = amount_format($val["collection_amount"]);
                 $val["pay_amount_need"] = amount_format($val["pay_amount_need"]);
                 $val["pay_amount_true"] = amount_format($val["pay_amount_true"]);
@@ -91,6 +96,7 @@ class ExpendBusinessController extends BaseController
         $id=$this->request->param('id');
         $row=db("expend_business")->find($id);
         $row["pay_time"] = !empty($row["pay_time"])?date("Y-m-d",$row["pay_time"]):"";
+        $row["contract_amount"] = db('sales_contract')->where("id","eq",$row["contract_id"])->value("contract_amount");
         $this->assign("row",$row);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();

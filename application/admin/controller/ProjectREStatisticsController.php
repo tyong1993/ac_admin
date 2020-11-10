@@ -58,7 +58,7 @@ class ProjectREStatisticsController extends BaseController
             ->leftJoin([$subsql_expend_reimbursement=>"e"],"b.id = e.collection_id")
             ->leftJoin([$subsql_expend_business=>"f"],"b.id = f.collection_id")
             ->leftJoin([$subsql_expend_reward=>"g"],"b.id = g.collection_id")
-            ->where("colletion_status","eq",1)
+            ->where(str_replace("time","status",$statistic_field),"eq",1)
             ->where($statistic_field,"egt",$year_start)
             ->where($statistic_field,"lt",$year_end)
         ;
@@ -122,13 +122,13 @@ class ProjectREStatisticsController extends BaseController
             if(empty($dat["data"])){
                 unset($data[$key]);
             }else{
-                $dat["statistics"]["collection_amount_format"]=amount_format(array_sum(array_column($dat["data"],"collection_amount")));
-                $dat["statistics"]["outsourcing_pay_amount_format"]=amount_format(array_sum(array_column($dat["data"],"outsourcing_pay_amount")));
-                $dat["statistics"]["reimbursement_amount_format"]=amount_format(array_sum(array_column($dat["data"],"reimbursement_amount")));
-                $dat["statistics"]["business_pay_amount_format"]=amount_format(array_sum(array_column($dat["data"],"business_pay_amount")));
-                $dat["statistics"]["reward_pay_amount_format"]=amount_format(array_sum(array_column($dat["data"],"reward_pay_amount")));
-                $dat["statistics"]["invoice_amount_format"]=amount_format(array_sum(array_column($dat["data"],"invoice_amount")));
-                $dat["statistics"]["surplus_format"]=amount_format(array_sum(array_column($dat["data"],"surplus")));
+                $dat["statistics"]["collection_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"collection_amount")))."</strong>";
+                $dat["statistics"]["outsourcing_pay_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"outsourcing_pay_amount")))."</strong>";
+                $dat["statistics"]["reimbursement_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"reimbursement_amount")))."</strong>";
+                $dat["statistics"]["business_pay_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"business_pay_amount")))."</strong>";
+                $dat["statistics"]["reward_pay_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"reward_pay_amount")))."</strong>";
+                $dat["statistics"]["invoice_amount_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"invoice_amount")))."</strong>";
+                $dat["statistics"]["surplus_format"]="<strong>".amount_format(array_sum(array_column($dat["data"],"surplus")))."</strong>";
 //                $dat["statistics"]["contract_amount_format"]=amount_format($dat["statistics"]["contract_amount"]);
             }
         }

@@ -51,9 +51,9 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">已开票金额</label>
+        <label class="layui-form-label" {if $row['invoice_amount'] != $invoice_num_amounts}style="color: red"{/if}>已开票金额</label>
         <div class="layui-input-block">
-            <input type="text" name="invoice_num_amounts" readonly autocomplete="off" placeholder="已开票金额" value="{$invoice_num_amounts}" class="layui-input">
+            <input type="text" name="invoice_num_amounts" readonly autocomplete="off" {if $row['invoice_amount'] != $invoice_num_amounts}style="color: red"{/if} placeholder="已开票金额" value="{$invoice_num_amounts}" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">

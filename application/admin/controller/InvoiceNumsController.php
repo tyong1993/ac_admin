@@ -32,7 +32,10 @@ class InvoiceNumsController extends BaseController
             $res = $db->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                $val["status"] = $val["status"]?"正常":"已作废";
+                if(!$val["status"]){
+                    $val["amount"] = "<span style='color: red'>".$val["amount"]."</span>";
+                }
+                $val["status"] = $val["status"]?"正常":"<span style='color: red'>已作废</span>";
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -77,6 +80,11 @@ class InvoiceNumsController extends BaseController
             $row = db($this->table)->find($param["id"]);
             if(db($this->table)->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
+            }
+            //发票作废
+            if($row["status"] == 1 && $param["status"] == 0){
+                //开票记录重置为未开票
+                db("invoice_records")->update(["id"=>$row["i_r_id"],"invoice_status"=>0]);
             }
             return jsonSuccess();
         }

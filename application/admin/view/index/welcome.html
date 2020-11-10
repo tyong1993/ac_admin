@@ -12,6 +12,23 @@
     .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
     .main_btn > p {height:40px;}
     .layui-bg-number {background-color:#F8F8F8;}
+    @media screen and (min-width: 768px){
+        .index-show-h5{
+            display:none;
+        }
+        .index-show-h1{
+            display:inline;
+        }
+    }
+    @media screen and (max-width: 768px){
+        .index-show-h5{
+            display:inline;
+        }
+        .index-show-h1{
+            display:none;
+        }
+    }
+
 </style>
 <body>
 <div class="layuimini-container">
@@ -37,10 +54,25 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
+                                                        <h5>合同数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["contract_nums"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["contract_nums"]}</h5>
+                                                        <!--<small>当前分类总记录数</small>-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs3">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
                                                         <h5>合同金额</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["contract_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["contract_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["contract_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -53,7 +85,8 @@
                                                         <h5>已收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["collected_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["collected_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["collected_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -66,7 +99,8 @@
                                                         <h5>待收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{:round(($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h1>
+                                                        <h1 class="no-margins index-show-h1">{:round(($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h1>
+                                                        <h5 class="no-margins index-show-h5">{:round(($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -81,7 +115,8 @@
                                                         <h5>外包金额</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["outsourcing_pay_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["outsourcing_pay_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["outsourcing_pay_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -94,7 +129,8 @@
                                                         <h5>报销费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["reimbursement_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["reimbursement_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["reimbursement_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -108,7 +144,8 @@
                                                         <h5>商务费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["business_pay_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["business_pay_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["business_pay_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -123,7 +160,8 @@
                                                         <h5>奖金费用</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$summary_statistic["reward_pay_amount_format"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$summary_statistic["reward_pay_amount_format"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$summary_statistic["reward_pay_amount_format"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -150,7 +188,8 @@
                                                         <h5>待验收</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["sales_need_check"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["sales_need_check"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["sales_need_check"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -163,7 +202,8 @@
                                                         <h5>可开票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["sales_can_invoice"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["sales_can_invoice"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["sales_can_invoice"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -176,7 +216,8 @@
                                                         <h5>待开票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["sales_wait_invoice"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["sales_wait_invoice"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["sales_wait_invoice"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -189,7 +230,8 @@
                                                         <h5>待收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["sales_wait_collection"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["sales_wait_collection"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["sales_wait_collection"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -205,7 +247,8 @@
                                                         <h5>待验收</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["out_need_check"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["out_need_check"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["out_need_check"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -218,7 +261,8 @@
                                                         <h5>可付款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["out_can_pay"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["out_can_pay"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["out_can_pay"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -231,7 +275,8 @@
                                                         <h5>待收票</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["out_wait_invoice"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["out_wait_invoice"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["out_wait_invoice"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -244,7 +289,8 @@
                                                         <h5>待付款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["out_wait_pay"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["out_wait_pay"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["out_wait_pay"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -260,7 +306,8 @@
                                                         <h5>报销支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["expend_reimbursement"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["expend_reimbursement"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["expend_reimbursement"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -274,7 +321,8 @@
                                                         <h5>商务支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["expend_business"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["expend_business"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["expend_business"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -289,7 +337,8 @@
                                                         <h5>奖金支出</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins">{$todo["expend_reward"]}</h1>
+                                                        <h1 class="no-margins index-show-h1">{$todo["expend_reward"]}</h1>
+                                                        <h5 class="no-margins index-show-h5">{$todo["expend_reward"]}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>

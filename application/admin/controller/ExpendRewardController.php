@@ -27,11 +27,15 @@ class ExpendRewardController extends BaseController
             $receiver_id=$this->request->param("receiver_id");
             $contract_name=$this->request->param("contract_name");
             $db=db('expend_reward');
+            $db = $db->alias("a")
+                ->field("a.*,IFNULL(b.colletion_status,0) colletion_status,c.contract_name contract_name")
+                ->leftJoin("invoice_records b","a.collection_id = b.collection_id")
+                ->leftJoin("sales_contract c","a.contract_id = c.id");
             if(!empty($receiver_id)){
                 $db->where("receiver_id","eq",$receiver_id);
             }
             if(!empty($contract_name)){
-                $db->where("contract_name","like","%$contract_name%");
+                $db->where("c.contract_name","like","%$contract_name%");
             }
             if(!empty($pay_status)){
                 $db->where("pay_status","eq",$pay_status-1);
@@ -40,6 +44,7 @@ class ExpendRewardController extends BaseController
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
+                $val["colletion_status"] = $val["colletion_status"]?"已收款":"<span style='color: red'>未收款</span>";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
                 $val["collection_amount"] = amount_format($val["collection_amount"]);
                 $val["deduct_reimbursement"] = amount_format($val["deduct_reimbursement"]);

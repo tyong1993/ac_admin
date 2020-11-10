@@ -67,7 +67,10 @@ class InvoiceNumsStatisticsController extends BaseController
                 if($val["invoice_time"]>=$dat["month_start"] && $val["invoice_time"]<$dat["month_end"]){
                     $val["invoice_time"] = $val["invoice_time"]?date("Y-m-d",$val["invoice_time"]):"";
                     $val["amount_format"] = amount_format($val["amount"]);
-                    $val["status_name"] = $val["status"]?"正常":"已作废";
+                    if(!$val["status"]){
+                        $val["amount_format"] = "<span style='color: red'>".$val["amount_format"]."</span>";
+                    }
+                    $val["status_name"] = $val["status"]?"正常":"<span style='color: red'>已作废</span>";
                     $val["colletion_status"] = $val["colletion_status"]?"<span style='color:blue;'>已回款</span>":"<span style='color:red;'>未回款</span>";
                     $dat["data"][]=$val;break;
                 }
@@ -84,7 +87,7 @@ class InvoiceNumsStatisticsController extends BaseController
                         $dat["all_amount"]+=$val["amount"];
                     }
                 }
-                $dat["all_amount"] = amount_format($dat["all_amount"]);
+                $dat["all_amount"] = "<strong>".amount_format($dat["all_amount"])."</strong>";
             }
         }
         $this->assign("res",$data);

@@ -49,7 +49,7 @@ class OutsourcingContractController extends BaseController
                 //年末时间戳
                 $year_end=strtotime("+1 year",$year_start);
                 $db->where("sign_date","egt",$year_start);
-                $db->where("sign_date","elt",$year_end);
+                $db->where("sign_date","lt",$year_end);
             }
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
@@ -127,6 +127,7 @@ class OutsourcingContractController extends BaseController
         $row["sign_date"] = $row["sign_date"]?date("Y-m-d",$row["sign_date"]):"";
         $row["start_time"] = $row["start_time"]?date("Y-m-d",$row["start_time"]):"";
         $row["end_time"] = $row["end_time"]?date("Y-m-d",$row["end_time"]):"";
+        $row["sales_contract_amount"] = db("sales_contract")->where("id","=",$row["sales_contract_id"])->value("contract_amount");
         $this->assign("row",$row);
         //联系人可选项
         $staff_ids = db("customer_supplier_staff_tocs")->where("c_s_id","=",$row["c_s_id"])->column("staff_id");

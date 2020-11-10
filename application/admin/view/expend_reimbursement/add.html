@@ -15,11 +15,19 @@
                 <select lay-filter="sales_contract_select" name="" lay-search>
                     <option value="">请选择销售合同</option>
                     {foreach $sales_contracts as $contract}
-                    <option value="{$contract['id']}|-|{$contract['contract_name']}">{$contract['contract_name']}</option>
+                    <option value="{$contract['id']}|-|{$contract['contract_name']}|-|{$contract['contract_amount']}">{$contract['contract_name']}</option>
                     {/foreach}
                 </select>
             </div>
         </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">合同金额</label>
+            <div class="layui-input-inline">
+                <input type="text" lay-verify="number" readonly id="contract_amount" autocomplete="off" placeholder="" value="" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-inline">
             <label class="layui-form-label">关联收款期数</label>
             <input style="display: none" id="collection_id" name="collection_id"/>
@@ -28,6 +36,12 @@
                 <select id="sales_collection_select" lay-filter="sales_collection_select" name="" lay-search>
 
                 </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">分期金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="collection_amount" readonly autocomplete="off" placeholder="" value="" class="layui-input">
             </div>
         </div>
     </div>
@@ -117,13 +131,16 @@
             var val = obj.value;
             var sales_contract_id = "";
             var sales_contract_name = "";
+            var contract_amount = 0;
             if(val){
                 var arr=val.split('|-|');
                 sales_contract_id = arr[0];
                 sales_contract_name = arr[1];
+                contract_amount = arr[2];
             }
             $("#sales_contract_id").val(sales_contract_id);
             $("#sales_contract_name").val(sales_contract_name);
+            $("#contract_amount").val(contract_amount);
             //获取收款期数
             $.get("{:url('getSalesCollections')}", {contract_id:sales_contract_id}, function (res) {
                 if(res.code == 20000) {
@@ -139,13 +156,16 @@
             var val = obj.value;
             var collection_id = "";
             var periods = "";
+            var collection_amount = 0;
             if(val){
                 var arr=val.split('|-|');
                 collection_id = arr[0];
                 periods = arr[1];
+                collection_amount = arr[2];
             }
             $("#collection_id").val(collection_id);
             $("#periods").val(periods);
+            $("input[name='collection_amount']").val(collection_amount);
         });
 
     });
