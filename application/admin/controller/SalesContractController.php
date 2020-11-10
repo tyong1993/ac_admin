@@ -30,6 +30,7 @@ class SalesContractController extends BaseController
         }
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
+            $page=$this->request->param("page")?:1;
             $contract_name=$this->request->param("contract_name");
             $customer_name=$this->request->param("customer_name");
             $project_leader=$this->request->param("project_leader");
@@ -39,6 +40,7 @@ class SalesContractController extends BaseController
             //收款情况子查询
             $subsql_invoice_records = db("invoice_records")
                 ->field('contract_id,if(invoice_status,invoice_amount,0) invoiced_amount,if(colletion_status,invoice_amount,0) collected_amount')
+
                 ->buildSql();
             $subsql_invoice_records = Db::table($subsql_invoice_records." a")
                 ->field('contract_id,sum(invoiced_amount) invoiced_amount,sum(collected_amount) collected_amount')
@@ -79,9 +81,9 @@ class SalesContractController extends BaseController
             }
             if(!empty($is_collection_completed)){
                 if($is_collection_completed == 2){
-                    $db->where("contract_amount = collected_amount");
+                    $db->having("contract_amount = collected_amount");
                 }else{
-                    $db->where("contract_amount != collected_amount");
+                    $db->having("contract_amount != collected_amount");
                 }
             }
             //待办过来的
@@ -93,8 +95,9 @@ class SalesContractController extends BaseController
             $db = self::dataPower($db,"b_l_id");
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
-            $res = $db->order("id desc")->paginate($limit)->toArray();
-            foreach ($res["data"] as &$val){
+//            $res = $db->order("id desc")->paginate($limit)->toArray();
+            $res = $db->order("id desc")->page($page,$limit)->select();
+            foreach ($res as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["sign_date"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
                 $val["start_time"] = $val["start_time"]?date("Y-m-d",$val["start_time"]):"---";
@@ -117,11 +120,12 @@ class SalesContractController extends BaseController
             }
             unset($val);
             //数据统计
-            $res_statistic = $db_cope
-                ->field("sum(contract_amount) contract_amount,sum(colletions_amount) colletions_amount,sum(invoiced_amount) invoiced_amount,sum(collected_amount) collected_amount")
+            $statistic_subsql = $db_cope->buildSql();
+            $res_statistic = Db::table($statistic_subsql." a")
+                ->field("count(id) count,sum(contract_amount) contract_amount,sum(colletions_amount) colletions_amount,sum(invoiced_amount) invoiced_amount,sum(collected_amount) collected_amount")
                 ->find();
-            if(!empty($res["data"])){
-                $statistic = $res["data"][0];
+            if(!empty($res)){
+                $statistic = $res[0];
                 foreach ($res_statistic as $key=>$val){
                     $res_statistic[$key] = $val?:0;
                 }
@@ -135,9 +139,9 @@ class SalesContractController extends BaseController
                         default:$statistic[$key]="";
                     }
                 }
-                $res["data"][]=$statistic;
+                $res[]=$statistic;
             }
-            return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
+            return json(["code"=>0,"msg"=>"success","count"=>isset($res_statistic["count"])?$res_statistic["count"]:0,"data"=>$res]);
         }
         $this->assign("is_collection_completed",$is_collection_completed);
         $this->assign("todo",$todo);

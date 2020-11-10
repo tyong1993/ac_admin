@@ -47,6 +47,7 @@ class ExpendReimbursementController extends BaseController
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
+                $val["reimbursement_status"] = $val["reimbursement_status"]?"已报销":"<span style='color: red'>未报销</span>";
                 $val["amount"] = amount_format($val["amount"]);
                 $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
             }

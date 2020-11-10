@@ -90,6 +90,13 @@
             <input type="radio" name="pay_status" value="0" title="未付款" {if $row["pay_status"] == 0}checked{/if}>
         </div>
     </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">报销状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="reimbursement_status" value="1" title="已报销" {if $row["reimbursement_status"] == 1}checked{/if}>
+            <input type="radio" name="reimbursement_status" value="0" title="未报销" {if $row["reimbursement_status"] == 0}checked{/if}>
+        </div>
+    </div>
     <div class="layui-form-item layui-col-md8">
         <label class="layui-form-label">付款时间</label>
         <div class="layui-input-block">
