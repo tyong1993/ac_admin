@@ -20,16 +20,17 @@ class ProjectREController extends BaseController
      * 列表
      */
     function index(){
+        $status=$this->request->param("status");
+        //默认查询当年数据
+        $select_by_year = $this->request->param("select_by_year");
+        if($select_by_year === null){
+            $select_by_year = date("Y");
+        }
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $customer_name=$this->request->param("customer_name");
             $contract_name=$this->request->param("contract_name");
-            $select_by_year = $this->request->param("select_by_year");
             $g_c_id = $this->request->param("g_c_id");
-            //默认查询当年数据
-            if($select_by_year === null){
-                $select_by_year = date("Y");
-            }
             $status = $this->request->param("status");
             $colletion_status = $this->request->param("colletion_status");
             //外包支出子查询
@@ -180,10 +181,11 @@ class ProjectREController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
-        $this->assign("select_by_year",date("Y"));
+        $this->assign("select_by_year",$select_by_year);
         //签约单位数据
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);
+        $this->assign("status",$status);
         return $this->fetch();
     }
 

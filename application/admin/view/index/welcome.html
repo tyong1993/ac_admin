@@ -94,13 +94,13 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body"  onclick="doToDo(31,'?is_collection_completed=1&select_by_year={$select_by_year}')">
                                                     <div class="panel-title">
                                                         <h5>待收款</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 class="no-margins index-show-h1">{:round(($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h1>
-                                                        <h5 class="no-margins index-show-h5">{:round(($summary_statistic["collection_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h5>
+                                                        <h1 class="no-margins index-show-h1">{:round(($summary_statistic["contract_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h1>
+                                                        <h5 class="no-margins index-show-h5">{:round(($summary_statistic["contract_amount"]-$summary_statistic["collected_amount"])/10000,2)."万"}</h5>
                                                         <!--<small>当前分类总记录数</small>-->
                                                     </div>
                                                 </div>
@@ -183,7 +183,7 @@
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body" onclick="doToDo(31,'?todo=1&select_by_year=')">
+                                                <div class="panel-body" onclick="doToDo(41,'?status=1&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>待验收</h5>
                                                     </div>
@@ -197,7 +197,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body" onclick="doToDo(31,'?todo=2&select_by_year=')">
+                                                <div class="panel-body" onclick="doToDo(41,'?status=2&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>可开票</h5>
                                                     </div>

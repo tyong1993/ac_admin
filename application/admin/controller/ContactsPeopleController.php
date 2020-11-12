@@ -2,47 +2,36 @@
 /**
  * Created by PhpStorm.
  * User: HW
- * Date: 2020/8/26
- * Time: 9:47
+ * Date: 2020/6/8
+ * Time: 9:48
  */
 
 namespace app\admin\controller;
-use app\admin\villdate\CustomerSupplierVilldate;
+
+use app\admin\villdate\ContactsPeopleVilldate;
+use app\common\exception\ServiceException;
 
 /**
- * Class CustomerSupplierController
- * @package app\admin\controller
- * 客户/供应商
+ * 相关人员
  */
-class CustomerSupplierController extends BaseController
+class ContactsPeopleController extends BaseController
 {
-    protected $table = "customer_supplier";
-    protected $table_name = "客户/供应商";
+    protected $table = "contacts_people";
+    protected $table_name = "相关人员";
     /**
      * 列表
      */
     function index(){
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
-            $company_name=$this->request->param("company_name");
-            $type=$this->request->param("type");
-            $db=db($this->table);
-            if(!empty($company_name)){
-                $db->where("company_name","like","%$company_name%");
+            $name=$this->request->param("name");
+            $db=db('contacts_people');
+            if(!empty($name)){
+                $db->where("name","like","%$name%");
             }
-            if(!empty($type)){
-                $db->where("type","in",[$type,3]);
-            }
-            $res = $db->order("id desc")->paginate($limit)->toArray();
+            $res = $db->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
-                switch ($val["type"]){
-                    case 1:$val["type_name"]="客户";break;
-                    case 2:$val["type_name"]="供应商";break;
-                    case 3:$val["type_name"]="客户/供应商";break;
-                    default:$val["type_name"]="无效身份";
-                }
-
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
@@ -55,7 +44,7 @@ class CustomerSupplierController extends BaseController
     function add(){
         if($this->request->isAjax()){
             $param=$this->request->post();
-            $this->validate($param,CustomerSupplierVilldate::class);
+            $this->validate($param,ContactsPeopleVilldate::class);
             $param["create_time"] = time();
             $id=db($this->table)->insert($param,false,true);
             if($id){
@@ -63,6 +52,7 @@ class CustomerSupplierController extends BaseController
             }
             return jsonSuccess();
         }
+        $this->assign2AddAndEdit();
         return $this->fetch();
     }
     /**
@@ -71,7 +61,7 @@ class CustomerSupplierController extends BaseController
     function edit(){
         if($this->request->isAjax()){
             $param=$this->request->post();
-            $this->validate($param,CustomerSupplierVilldate::class);
+            $this->validate($param,ContactsPeopleVilldate::class);
             $row = db($this->table)->find($param["id"]);
             if(db($this->table)->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$row["id"],$row);
@@ -79,8 +69,9 @@ class CustomerSupplierController extends BaseController
             return jsonSuccess();
         }
         $id=$this->request->param('id');
-        $row=db("customer_supplier")->find($id);
+        $row=db("contacts_people")->find($id);
         $this->assign("row",$row);
+        $this->assign2AddAndEdit();
         return $this->fetch();
     }
     /**
@@ -102,4 +93,12 @@ class CustomerSupplierController extends BaseController
         }
         return jsonSuccess();
     }
+
+    /**
+     * 添加和编辑需要关联的数据
+     */
+    private function assign2AddAndEdit($param=[]){
+
+    }
+
 }

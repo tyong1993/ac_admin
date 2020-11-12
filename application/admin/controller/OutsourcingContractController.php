@@ -202,6 +202,11 @@ class OutsourcingContractController extends BaseController
         $this->assign("suppliers",$res);
         //销售合同数据
         $res = db('sales_contract')->order("id desc")->select();
+        foreach ($res as &$val){
+            $val["start_time"] = date("Y-m-d",$val["start_time"]);
+            $val["end_time"] = date("Y-m-d",$val["end_time"]);
+        }
+        unset($val);
         $this->assign("sales_contracts",$res);
         //签约单位数据
         $res = db('group_company')->select();

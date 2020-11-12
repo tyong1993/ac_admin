@@ -55,14 +55,14 @@
         </script>
         <script type="text/html" id="colletionStatusTpl">
             {{#  if(d.colletion_status == 1){ }}
-            <button class="layui-btn layui-btn-success layui-btn-xs">已收款</button>
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="doUnCollection({{ d.id }})">已收款</button>
             {{#  } else { }}
             <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doCollection({{ d.id }})">未收款</button>
             {{#  } }}
         </script>
         <script type="text/html" id="invoiceStatusTpl">
             {{#  if(d.invoice_status == 1){ }}
-            <button class="layui-btn layui-btn-success layui-btn-xs">已开票</button>
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="doUnInvoice({{ d.id }})">已开票</button>
             {{#  } else { }}
             <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="doInvoice({{ d.id }})">未开票</button>
             {{#  } }}
@@ -72,6 +72,7 @@
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="invoice_nums">发票管理</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
     </div>
@@ -149,18 +150,65 @@
                 layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
             }else if(obj.event === 'invoice_nums'){
                 layTool.open('{:url("InvoiceNums/index","",false)}/i_r_id/'+data.id,'发票管理');
+            } else if (obj.event === 'delete') {
+                layTool.confirm("确定要删除该记录?",function () {
+                    doDelete(data.id);
+                })
             }
         });
 
     });
+    //执行删除操作
+    var doDelete = function (ids) {
+        $.getJSON("{:url('delete')}", {id:ids}, function (res) {
+            if(res.code == 20000) {
+                layTool.msg(res.msg);
+                setTimeout(function () {
+                    table.reload('currentTableId');
+                }, 200);
+            } else {
+                layTool.alert(res.msg,2)
+            }
+        }, 'json');
+    };
     //开票
     function doInvoice(id) {
         layTool.open('{:url("doInvoice","",false)}/id/'+id,'待开票');
+    }
+    //取消开票
+    function doUnInvoice(id) {
+        layTool.confirm("确定要取消开票?",function () {
+            $.post("{:url('doUnInvoice')}", {id:id}, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        })
     }
     //收款
     function doCollection(id) {
         layTool.confirm("确认已收款?",function () {
             $.post("{:url('doCollection')}", {id:id}, function (res) {
+                if(res.code == 20000) {
+                    layTool.msg(res.msg);
+                    setTimeout(function () {
+                        table.reload('currentTableId');
+                    }, 200);
+                } else {
+                    layTool.alert(res.msg,2)
+                }
+            }, 'json');
+        })
+    }
+    //取消收款
+    function doUnCollection(id) {
+        layTool.confirm("确定要取消收款?",function () {
+            $.post("{:url('doUnCollection')}", {id:id}, function (res) {
                 if(res.code == 20000) {
                     layTool.msg(res.msg);
                     setTimeout(function () {

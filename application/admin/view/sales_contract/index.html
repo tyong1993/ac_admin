@@ -63,7 +63,7 @@
                                 </select>
                             </div>
                         </div>
-                        <input style="display:none" id="disposable" name="todo" value="{$todo}"/>
+                        <!--<input style="display:none" id="disposable" name="todo" value="{//$todo}"/>-->
                         <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
@@ -132,7 +132,7 @@
             size:"sm"
         });
         //清除待办进来的标记,下一次搜索回归正常
-        $("#disposable").val(0);
+        // $("#disposable").val(0);
         /**
          * 搜索
          */

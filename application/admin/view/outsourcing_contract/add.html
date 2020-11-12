@@ -15,7 +15,7 @@
                 <select lay-filter="sales_contract_select" name="" lay-search>
                     <option value="">请选择销售合同</option>
                     {foreach $sales_contracts as $contract}
-                    <option value="{$contract['id']}|-|{$contract['company_identifier']}|-|{$contract['contract_name']}|-|{$contract['contract_amount']}">{$contract['contract_name']}</option>
+                    <option value="{$contract['id']}|-|{$contract['company_identifier']}|-|{$contract['contract_name']}|-|{$contract['contract_amount']}|-|{$contract['start_time']}|-|{$contract['end_time']}">{$contract['contract_name']}</option>
                     {/foreach}
                 </select>
             </div>
@@ -256,17 +256,23 @@
             var sales_company_identifier = "";
             var sales_contract_name = "";
             var sales_contract_amount = "";
+            var date_time_start_time = "";
+            var date_time_end_time = "";
             if(val){
                 var arr=val.split('|-|');
                 sales_contract_id = arr[0];
                 sales_company_identifier = arr[1];
                 sales_contract_name = arr[2];
                 sales_contract_amount = arr[3];
+                date_time_start_time = arr[4];
+                date_time_end_time = arr[5];
             }
             $("#sales_contract_id").val(sales_contract_id);
             $("#sales_company_identifier").val(sales_company_identifier);
             $("#sales_contract_name").val(sales_contract_name);
             $("#sales_contract_amount").val(sales_contract_amount);
+            $("#date_time_start_time").val(date_time_start_time);
+            $("#date_time_end_time").val(date_time_end_time);
         });
 
     });

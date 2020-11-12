@@ -20,6 +20,13 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="payment_remarks" value="{$payment["remarks"]}" class="layui-input" autocomplete="off">
+            <input type="text" name="payment_id" value="{$payment["id"]}" style="display: none" class="layui-input" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
         </div>

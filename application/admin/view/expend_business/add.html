@@ -49,7 +49,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">应付比例%</label>
             <div class="layui-input-inline">
-                <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入应付比例" value="" class="layui-input">
+                <input type="text" lay-verify="number" name="pay_ratio" autocomplete="off" placeholder="请输入应付比例" value="0" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
@@ -189,11 +189,11 @@
         });
         //监听是否扣税
         form.on('radio(is_need_tax)',function () {
-            doCompute();
+            doCompute("pay_amount_need");
         });
         //监听扣税比例
         $("input[name='tax_rate']").bind('input propertychange', function() {
-            doCompute();
+            doCompute("pay_amount_need");
         });
         //数据关联计算
         var doCompute = function (source = null) {
@@ -222,7 +222,7 @@
                     pay_ratio = 0;
                 }
                 //应付金额
-                var pay_amount_need = accDiv(accMul(collection_amount,pay_ratio),100);
+                var pay_amount_need = accDiv(accMul(collection_amount,pay_ratio),100).toFixed(2);
                 $("input[name='pay_amount_need']").val(pay_amount_need);
             }
 
@@ -234,7 +234,7 @@
                 tax_rate = 0;
             }
             //实付金额
-            var pay_amount_true = accAdd(pay_amount_need,-(accMul(pay_amount_need,tax_rate)/100));
+            var pay_amount_true = accAdd(pay_amount_need,-(accMul(pay_amount_need,tax_rate)/100)).toFixed(2);
             $("input[name='pay_amount_true']").val(pay_amount_true);
         }
     });

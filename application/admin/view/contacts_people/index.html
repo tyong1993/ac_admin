@@ -9,26 +9,9 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">合同名称</label>
+                            <label class="layui-form-label">姓名</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="contract_name" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">签约单位</label>
-                            <div class="layui-input-inline">
-                                <select name="g_c_id" lay-search>
-                                    <option value="">全部</option>
-                                    {foreach $group_companys as $group_company}
-                                    <option value="{$group_company.id}">{$group_company.name}</option>
-                                    {/foreach}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">按年份筛选</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -40,13 +23,17 @@
         </fieldset>
 
         <script type="text/html" id="toolbarDemo">
-
+            <div class="layui-btn-container">
+                <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 批量删除 </button>-->
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加人员 </button>
+            </div>
         </script>
 
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
     </div>
@@ -63,22 +50,17 @@
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
-                {field: 'id', width: 50, title: 'ID', fixed: 'left'},
-                {field: 'contract_name', width: 250, title: '合同名称'},
-                {field: 'contract_amount_format', width: 120, align: "right", title: '合同总金额'},
-                {field: 'collected_amount_format', width: 100, align: "right", title: '回款金额'},
-                {field: 'uncollected_amount_format', width: 100, align: "right", title: '未回款金额'},
-                {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用'},
-                {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用'},
-                {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
-                {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
-                {field: 'surplus_format', width: 120, align: "right", title: '盈余'}
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 80, title: 'ID'},
+                {field: 'name', title: '姓名'},
+                {field: 'create_time', title: '创建时间'},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "left"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true,
             skin: 'row,line',
-            size:"sm"
+            // size:"sm"
         });
 
         /**
@@ -124,10 +106,6 @@
                 layTool.confirm("确定要删除该记录?",function () {
                     doDelete(data.id);
                 })
-            }else if (obj.event === 'accounts') {
-                layTool.open('{:url("SupplierAccounts/index","",false)}/id/'+data.id,'账号信息');
-            }else if (obj.event === 'invoice') {
-                layTool.open('{:url("CustomersInvoice/index","",false)}/id/'+data.id,'开票信息');
             }
         });
         //执行删除操作
@@ -146,23 +124,6 @@
         //监听表格复选框选择
         table.on('checkbox(currentTableFilter)', function (obj) {
             console.log(obj)
-        });
-    });
-    //时间日期组件
-    layui.use('laydate', function(){
-        var laydate = layui.laydate;
-
-        //执行一个laydate实例
-        laydate.render({
-            /**
-             * 绑定元素
-             */
-            elem: '#date_time_select_by_year'
-            /**
-             * 面板类型:
-             *      year,month,date,time,datetime 五种选择
-             */
-            ,type: 'year'
         });
     });
 </script>

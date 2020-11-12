@@ -26,6 +26,12 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">说明</label>
+        <div class="layui-input-block">
+            <input type="text" name="remarks" autocomplete="off" placeholder="说明" value="{$row["remarks"]}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">验收时间</label>
         <div class="layui-input-block">
             <input type="text" name="check_time" value="{$row["check_time"]}" class="layui-input" id="date_time_check_time" autocomplete="off">

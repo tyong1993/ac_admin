@@ -24,8 +24,9 @@ class PaymentRecordsController extends BaseController
             $sq_people=$this->request->param("sq_people");
             $contract_name=$this->request->param("contract_name");
             $db=db('payment_records a');
-            $db = $db->field("a.*,b.contract_name contract_name")
-                ->leftJoin("outsourcing_contract b","a.contract_id = b.id");
+            $db = $db->field("a.*,b.contract_name contract_name,c.remarks")
+                ->leftJoin("outsourcing_contract b","a.contract_id = b.id")
+                ->leftJoin("outsourcing_payment c","a.payment_id = c.id");
             if(!empty($sq_people)){
                 $db->where("sq_people","like","%$sq_people%");
             }
@@ -53,6 +54,8 @@ class PaymentRecordsController extends BaseController
             $this->validate($param,PaymentRecordsVilldate::class);
             $param["invoice_time"] = strtotime($param["invoice_time"]);
             $param["pay_time"] = strtotime($param["pay_time"]);
+            db('outsourcing_payment')->update(["id"=>$param["payment_id"],"remarks"=>$param["payment_remarks"]]);
+            unset($param["payment_id"]);unset($param["payment_remarks"]);
             db('payment_records')->update($param);
             return jsonSuccess();
         }
@@ -61,6 +64,8 @@ class PaymentRecordsController extends BaseController
         $row["invoice_time"] = $row["invoice_time"]?date("Y-m-d",$row["invoice_time"]):"";
         $row["pay_time"] = $row["pay_time"]?date("Y-m-d",$row["pay_time"]):"";
         $this->assign("row",$row);
+        $payment=db("outsourcing_payment")->find($row["payment_id"]);
+        $this->assign("payment",$payment);
         return $this->fetch();
     }
     /**

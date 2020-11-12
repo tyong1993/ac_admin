@@ -6,18 +6,18 @@
         <fieldset class="table-search-fieldset">
             <!--<legend>搜索信息</legend>-->
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" lay-filter="data-search" action="" >
                     <div class="layui-form-item">
-                        <div class="layui-inline">
-                            <label class="layui-form-label">项目单位</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="customer_name" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">合同名称</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="contract_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">项目单位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="customer_name" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -36,10 +36,10 @@
                             <div class="layui-input-inline">
                                 <select name="status">
                                     <option value="0">全部</option>
-                                    <option value="1">{:app\\admin\\controller\\SalesCollectionController::getStatusName(0)}</option>
-                                    <option value="2">{:app\\admin\\controller\\SalesCollectionController::getStatusName(1)}</option>
-                                    <option value="3">{:app\\admin\\controller\\SalesCollectionController::getStatusName(2)}</option>
-                                    <option value="4">{:app\\admin\\controller\\SalesCollectionController::getStatusName(3)}</option>
+                                    <option value="1" {if $status==1}selected{/if}>{:app\\admin\\controller\\SalesCollectionController::getStatusName(0)}</option>
+                                    <option value="2" {if $status==2}selected{/if}>{:app\\admin\\controller\\SalesCollectionController::getStatusName(1)}</option>
+                                    <option value="3" {if $status==3}selected{/if}>{:app\\admin\\controller\\SalesCollectionController::getStatusName(2)}</option>
+                                    <option value="4" {if $status==4}selected{/if}>{:app\\admin\\controller\\SalesCollectionController::getStatusName(3)}</option>
                                 </select>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="collection">合同收款计划</a>
         </script>
 
     </div>
@@ -88,10 +88,12 @@
         table.render({
             elem: '#currentTableId',
             url: '{:url("index")}',
+            where:form.val("data-search"),
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
             cols: [[
                 {field: 'id', width: 50, title: 'ID', fixed: 'left'},
+                {field: 'contract_id', width: 50, title: '合同ID', fixed: 'left', hide:true},
                 {field: 'contract_name', width: 250, title: '合同名称', fixed: 'left'},
                 {field: 'customer_name', width: 120, title: '项目单位'},
                 {field: 'group_company_name', width: 80, title: '签约单位'},
@@ -115,7 +117,8 @@
                 {field: 'customer_identifier', width: 150, title: '客户合同编号'},
                 {field: 'expect_check_time_format', width: 120, align: "right", title: '预验收时间'},
                 {field: 'expect_invoice_time_format', width: 120, align: "right", title: '预开票时间'},
-                {field: 'expect_colletion_time_format', width: 120, align: "right", title: '预收款时间'}
+                {field: 'expect_colletion_time_format', width: 120, align: "right", title: '预收款时间'},
+                {title: '操作', minWidth: 120, toolbar: '#currentTableBar', align: "center",fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -161,16 +164,8 @@
          */
         table.on('tool(currentTableFilter)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') {
-                layTool.open('{:url("edit","",false)}/id/'+data.id,'编辑');
-            } else if (obj.event === 'delete') {
-                layTool.confirm("确定要删除该记录?",function () {
-                    doDelete(data.id);
-                })
-            }else if (obj.event === 'accounts') {
-                layTool.open('{:url("SupplierAccounts/index","",false)}/id/'+data.id,'账号信息');
-            }else if (obj.event === 'invoice') {
-                layTool.open('{:url("CustomersInvoice/index","",false)}/id/'+data.id,'开票信息');
+            if (obj.event === 'collection') {
+                layTool.open('{:url("SalesCollection/index","",false)}/id/'+data.contract_id,'收款计划');
             }
         });
         //执行删除操作

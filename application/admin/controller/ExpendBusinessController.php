@@ -75,7 +75,7 @@ class ExpendBusinessController extends BaseController
         $res = db('sales_contract')->order("id desc")->select();
         $this->assign("sales_contracts",$res);
         //商务联系人数据
-        $business_contacts = db("customer_supplier_staff")->where("type","in",[1,3])->column("name","id");
+        $business_contacts = db("contacts_people")->column("name","id");
         $this->assign("business_contacts",$business_contacts);
         return $this->fetch();
     }
@@ -108,7 +108,7 @@ class ExpendBusinessController extends BaseController
         $res = db('sales_collection a')->field("a.*,b.colletion_status")->leftJoin("invoice_records b","a.id = b.collection_id")->where("a.id","eq",$row["collection_id"])->find();
         $this->assign("now_periods",$res);
         //商务联系人数据
-        $business_contacts = db("customer_supplier_staff")->where("type","in",[1,3])->column("name","id");
+        $business_contacts = db("contacts_people")->column("name","id");
         $this->assign("business_contacts",$business_contacts);
         return $this->fetch();
     }

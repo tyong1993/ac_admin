@@ -16,6 +16,8 @@ use think\Db;
  */
 class InvoiceRecordsController extends BaseController
 {
+    protected $table = "invoice_records";
+    protected $table_name = "开票记录";
     /**
      * 列表
      */
@@ -167,6 +169,49 @@ class InvoiceRecordsController extends BaseController
         }
     }
     /**
+     * 取消开票
+     */
+    function doUnInvoice(){
+        if($this->request->isAjax()){
+            $param=$this->request->post();
+            $invoice_record = Db::name('invoice_records')->find($param["id"]);
+            //取消开票需要先删除发票
+            $invoice_nums = db("invoice_nums")->where(["i_r_id"=>$invoice_record["id"]])->count();
+            if($invoice_nums){
+                return jsonFail("请先删除已录入的发票记录");
+            }
+            Db::startTrans();
+            $invoice_record["invoice_status"] = 0;
+            $invoice_record["invoice_time"] = 0;
+            $res1 = Db::name('invoice_records')->update($invoice_record);
+            //修改收款计划的状态
+            $data["id"] = $invoice_record["collection_id"];
+            $data["status"] = 2;
+            $res2 = Db::name('sales_collection')->update($data);
+            if(!$res1 || !$res2){
+                Db::rollback();
+                return jsonFail("取消开票失败");
+            }
+            self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"取消开票");
+            Db::commit();
+            return jsonSuccess();
+        }
+    }
+    /**
+     * 取消收款
+     */
+    function doUnCollection(){
+        if($this->request->isAjax()){
+            $param=$this->request->post();
+            $param["colletion_status"] = 0;
+            $param["colletion_time"] = 0;
+            if(db('invoice_records')->update($param)){
+                self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"取消收款");
+            };
+            return jsonSuccess();
+        }
+    }
+    /**
      * 获取合同开票收款金额
      * $ic:invoiced/colleted
      */
@@ -181,6 +226,35 @@ class InvoiceRecordsController extends BaseController
         }
         $res = $db->column("invoice_amount");
         return array_sum($res);
+    }
+    /**
+     * 删除
+     */
+    function delete(){
+        $id=$this->request->param('id');
+        $id_arr=explode(",",$id);
+        $id_arr=array_filter($id_arr);
+        if(empty($id_arr)){
+            return jsonFail("未找到需要删除的对象");
+        }
+        foreach ($id_arr as $id){
+            $row = db($this->table)->find($id);
+            if(!empty($row)){
+                //检测记录是否可以删除,已开票,已收款不能删除
+                if($row["colletion_status"] || $row["invoice_status"]){
+                    return jsonFail("已开票或者已收款的记录不可以删除");
+                }
+                Db::startTrans();
+                //修改收款计划的状态
+                $data["id"] = $row["collection_id"];
+                $data["status"] = 1;
+                Db::name('sales_collection')->update($data);
+                self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                Db::name($this->table)->where("id","eq",$id)->delete();
+                Db::commit();
+            }
+        }
+        return jsonSuccess();
     }
 
 }

@@ -88,6 +88,7 @@ class IncomeStatementController extends BaseController
                 $val["contract_amount_format"] = amount_format($val["contract_amount"]);
                 $val["surplus_format"] = amount_format($val["surplus"]);
                 $val["collected_amount_format"] = amount_format($val["collected_amount"]);
+                $val["uncollected_amount_format"] = amount_format($val["contract_amount"]-$val["collected_amount"]);
             }
             unset($val);
             //数据统计
@@ -99,6 +100,7 @@ class IncomeStatementController extends BaseController
                     $res_statistic[$key] = $val?:0;
                 }
                 $res_statistic["surplus"] = $res_statistic["contract_amount"]-$res_statistic["outsourcing_pay_amount"]-$res_statistic["reimbursement_amount"]-$res_statistic["business_pay_amount"]-$res_statistic["reward_pay_amount"];
+                $res_statistic["uncollected_amount"] = $res_statistic["contract_amount"]-$res_statistic["collected_amount"];
                 foreach ($statistic as $key=>$v){
                     switch ($key){
                         case "id":$statistic[$key]="统计";break;
@@ -109,6 +111,7 @@ class IncomeStatementController extends BaseController
                         case "reward_pay_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["reward_pay_amount"])."</strong>";break;
                         case "surplus_format":$statistic[$key]="<strong>".amount_format($res_statistic["surplus"])."</strong>";break;
                         case "collected_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["collected_amount"])."</strong>";break;
+                        case "uncollected_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["uncollected_amount"])."</strong>";break;
                         default:$statistic[$key]="";
                     }
                 }

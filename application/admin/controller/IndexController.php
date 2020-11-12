@@ -32,7 +32,7 @@ class IndexController extends BaseController
         );
         $select_by_year = $this->request->param("select_by_year");
         //默认查询当年数据
-        if(empty($select_by_year)){
+        if($select_by_year === null){
             $select_by_year = date("Y");
         }
         $this->assign("select_by_year",$select_by_year);

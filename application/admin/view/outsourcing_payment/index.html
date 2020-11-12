@@ -17,6 +17,7 @@
                 <col width="100">
                 <col width="80">
                 <col width="100">
+                <col width="150">
                 <col width="80">
                 <col>
             </colgroup>
@@ -31,6 +32,7 @@
                 <th>未付金额(元)</th>
                 <th>付款比例%</th>
                 <th>验收时间</th>
+                <th>说明</th>
                 <th>状态</th>
                 <th>操作</th>
             </tr>
@@ -47,6 +49,7 @@
                 <td align="right">{$row["unpay_amount"]}</td>
                 <td>{:round(($row["all_pay_amount"]/$others["htzje"])*100,2)}</td>
                 <td>{$row["check_time"]}</td>
+                <td>{$row["remarks"]}</td>
                 <td><a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="change_status({$row['status']},{$row['id']})">{$row["status_name"]}</a></td>
                 <td>
                     <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" onclick="edit({$row['id']})">编辑</a>
