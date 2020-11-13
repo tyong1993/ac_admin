@@ -44,6 +44,7 @@ class OutsourcingPaymentController extends BaseController
             $val["unpay_amount"] = amount_format($val["all_pay_amount"]-$val["payed"]);
             $others["skzjehj"] += $val["all_pay_amount"];
         }
+        $others["skzjehj"] = (string)$others["skzjehj"];
         $others["htzje_format"] = amount_format($others["htzje"]);
         $others["skzjehj_format"] = amount_format($others["skzjehj"]);
         $this->assign("res",$res);

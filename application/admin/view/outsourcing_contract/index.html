@@ -54,6 +54,16 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">付款情况</label>
+                            <div class="layui-input-inline">
+                                <select name="is_pay_completed" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2">已付完</option>
+                                    <option value="1">未付完</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -101,6 +111,7 @@
                 {field: 'tax_rate', width: 120, title: '税率'},
                 {field: 'is_stamp_tax', width: 80, title: '印花税'},
                 {field: 'all_amount', width: 120, align: "right", title: '总金额'},
+                {field: 'payed_amount', width: 120, align: "right", title: '已付款'},
                 {field: 'payment_days', width: 100, title: '账期'},
                 {field: 'sign_date', width: 100, title: '签订日期'},
                 {field: 'business_contact', width: 100, title: '商务联系人'},

@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 use app\admin\villdate\OutsourcingContractVilldate;
+use think\Db;
 
 /**
  * 外包合同
@@ -27,12 +28,25 @@ class OutsourcingContractController extends BaseController
         }
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
+            $page=$this->request->param("page")?:1;
             $contract_name=$this->request->param("contract_name");
             $supplier_name=$this->request->param("supplier_name");
             $project_leader=$this->request->param("project_leader");
             $g_c_id=$this->request->param("g_c_id");
             $is_stamp_tax=$this->request->param("is_stamp_tax");
-            $db=db('outsourcing_contract');
+            $is_pay_completed=$this->request->param("is_pay_completed");
+            //付款情况子查询
+            $subsql_payment_records = db("payment_records")
+                ->field('contract_id,if(pay_status,pay_amount,0) payed_amount')
+
+                ->buildSql();
+            $subsql_payment_records = Db::table($subsql_payment_records." a")
+                ->field('contract_id,sum(payed_amount) payed_amount')
+                ->group('contract_id')
+                ->buildSql();
+            $db=db('outsourcing_contract a')
+                ->field("a.*,IFNULL(b.payed_amount,0) payed_amount")
+                ->leftJoin([$subsql_payment_records=>"b"],"a.id = b.contract_id");
             if(!empty($contract_name)){
                 $db->where("contract_name","like","%$contract_name%");
             }
@@ -57,8 +71,18 @@ class OutsourcingContractController extends BaseController
             if(!empty($is_stamp_tax)){
                 $db->where("is_stamp_tax","eq",$is_stamp_tax-1);
             }
-            $res = $db->order("id desc")->paginate($limit)->toArray();
-            foreach ($res["data"] as &$val){
+            if(!empty($is_pay_completed)){
+                if($is_pay_completed == 2){
+                    $db->having("all_amount = payed_amount");
+                }else{
+                    $db->having("all_amount != payed_amount");
+                }
+            }
+            //拷贝查询对象
+            $db_cope = unserialize(serialize($db));
+//            $res = $db->order("id desc")->paginate($limit)->toArray();
+            $res = $db->order("id desc")->page($page,$limit)->select();
+            foreach ($res as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["sign_date"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
                 $val["start_time"] = $val["start_time"]?date("Y-m-d",$val["start_time"]):"---";
@@ -67,8 +91,34 @@ class OutsourcingContractController extends BaseController
                 $val["is_stamp_tax"] = $val["is_stamp_tax"]?"有":"无";
                 $val["contract_amount"] = amount_format($val["contract_amount"]);
                 $val["all_amount"] = amount_format($val["all_amount"]);
+                $val["payed_amount"] = amount_format($val["payed_amount"]);
+                if($val["all_amount"] != $val["payed_amount"]){
+                    $val["payed_amount"] = "<span style='color: red'>".$val["payed_amount"]."</span>";
+                }
             }
-            return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
+            unset($val);
+            //数据统计
+            $statistic_subsql = $db_cope->buildSql();
+            $res_statistic = Db::table($statistic_subsql." a")
+                ->field("count(id) count,sum(contract_amount) contract_amount,sum(all_amount) all_amount,sum(payed_amount) payed_amount")
+                ->find();
+            if(!empty($res)){
+                $statistic = $res[0];
+                foreach ($res_statistic as $key=>$val){
+                    $res_statistic[$key] = $val?:0;
+                }
+                foreach ($statistic as $key=>$v){
+                    switch ($key){
+                        case "id":$statistic[$key]="统计";break;
+                        case "contract_amount":$statistic[$key]="<strong>".amount_format($res_statistic["contract_amount"])."</strong>";break;
+                        case "all_amount":$statistic[$key]="<strong>".amount_format($res_statistic["all_amount"])."</strong>";break;
+                        case "payed_amount":$statistic[$key]="<strong>".amount_format($res_statistic["payed_amount"])."</strong>";break;
+                        default:$statistic[$key]="";
+                    }
+                }
+                $res[]=$statistic;
+            }
+            return json(["code"=>0,"msg"=>"success","count"=>isset($res_statistic["count"])?$res_statistic["count"]:0,"data"=>$res]);
         }
         $this->assign("select_by_year",$select_by_year);
         //签约单位数据
