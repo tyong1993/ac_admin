@@ -242,7 +242,7 @@
                                     <div class="layui-row layui-col-space10">
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(68,'?status=1&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>待验收</h5>
                                                     </div>
@@ -256,7 +256,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(68,'?status=2&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>可付款</h5>
                                                     </div>
@@ -270,7 +270,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(35,'?invoice_status=1&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>待收票</h5>
                                                     </div>
@@ -284,7 +284,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body" onclick="doToDo(35,'?pay_status=1&select_by_year=')">
                                                     <div class="panel-title">
                                                         <h5>待付款</h5>
                                                     </div>
@@ -350,65 +350,73 @@
                             </div>
                         </div>
                         {/if}
-                        {if checkAuth("statistics")}
-                        <!--报表快捷入口-->
-                        <div class="layui-card">
-                            <div class="layui-card-header">报表</div>
-                            <div class="layui-card-body">
-                                <div class="welcome-module">
-                                    <div class="layui-row layui-col-space10 layuimini-qiuck">
-                                        {if checkAuth("projectRE/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('41').click()">
-                                                <i class="layui-icon layui-icon-list"></i>
-                                                <cite>项目收支</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                        {if checkAuth("ProjectREStatistics/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('43').click()">
-                                                <i class="layui-icon layui-icon-engine"></i>
-                                                <cite>月度汇总</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                        {if checkAuth("InvoiceNumsStatistics/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('42').click()">
-                                                <i class="layui-icon layui-icon-survey"></i>
-                                                <cite>开票明细</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                        {if checkAuth("BusinessSummary/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('44').click()">
-                                                <i class="layui-icon layui-icon-templeate-1"></i>
-                                                <cite>商务汇总</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                        {if checkAuth("RewardSummary/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('45').click()">
-                                                <i class="layui-icon layui-icon-dollar"></i>
-                                                <cite>奖金汇总</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                        {if checkAuth("IncomeStatement/index")}
-                                        <div class="layui-col-xs3 layuimini-qiuck-module">
-                                            <a href="javascript:parent.document.getElementById('46').click()">
-                                                <i class="layui-icon layui-icon-form"></i>
-                                                <cite>利润表</cite>
-                                            </a>
-                                        </div>
-                                        {/if}
-                                    </div>
+                        <div class="layui-col-md12">
+                            <div class="layui-card">
+                                <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div>
+                                <div class="layui-card-body">
+                                    <div id="echarts-records" style="width: 100%;min-height:500px"></div>
                                 </div>
                             </div>
                         </div>
+                        {if checkAuth("statistics")}
+                        <!--报表快捷入口-->
+                        <!--<div class="layui-card">-->
+                            <!--<div class="layui-card-header">报表</div>-->
+                            <!--<div class="layui-card-body">-->
+                                <!--<div class="welcome-module">-->
+                                    <!--<div class="layui-row layui-col-space10 layuimini-qiuck">-->
+                                        <!--{if checkAuth("projectRE/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('41').click()">-->
+                                                <!--<i class="layui-icon layui-icon-list"></i>-->
+                                                <!--<cite>项目收支</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                        <!--{if checkAuth("ProjectREStatistics/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('43').click()">-->
+                                                <!--<i class="layui-icon layui-icon-engine"></i>-->
+                                                <!--<cite>月度汇总</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                        <!--{if checkAuth("InvoiceNumsStatistics/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('42').click()">-->
+                                                <!--<i class="layui-icon layui-icon-survey"></i>-->
+                                                <!--<cite>开票明细</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                        <!--{if checkAuth("BusinessSummary/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('44').click()">-->
+                                                <!--<i class="layui-icon layui-icon-templeate-1"></i>-->
+                                                <!--<cite>商务汇总</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                        <!--{if checkAuth("RewardSummary/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('45').click()">-->
+                                                <!--<i class="layui-icon layui-icon-dollar"></i>-->
+                                                <!--<cite>奖金汇总</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                        <!--{if checkAuth("IncomeStatement/index")}-->
+                                        <!--<div class="layui-col-xs3 layuimini-qiuck-module">-->
+                                            <!--<a href="javascript:parent.document.getElementById('46').click()">-->
+                                                <!--<i class="layui-icon layui-icon-form"></i>-->
+                                                <!--<cite>利润表</cite>-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                        <!--{/if}-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         {/if}
                     </div>
                     <!--软件信息-->
@@ -526,9 +534,59 @@
 </div>
 <script>
     var $ = null;
-    layui.use(['layer'], function () {
-            $ = layui.jquery,
-            layer = layui.layer;
+    layui.use(['layer', 'miniTab','echarts'], function () {
+            $ = layui.jquery;
+            var layer = layui.layer,
+            echarts = layui.echarts;
+        /**
+         * 报表功能
+         */
+        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        var optionRecords = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['签合同金额','收款金额']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: {:json_encode($echarts["months"])}
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'签合同金额',
+                    type:'line',
+                    data:{:json_encode(array_values($echarts["months_contract_amount"]))}
+                },
+                {
+                    name:'收款金额',
+                    type:'line',
+                    data:{:json_encode(array_values($echarts["months_collected_amount"]))}
+                }
+            ]
+        };
+        echartsRecords.setOption(optionRecords);
+
+        // echarts 窗口缩放自适应
+        window.onresize = function(){
+            echartsRecords.resize();
+        }
     });
 
     /**

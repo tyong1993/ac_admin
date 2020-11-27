@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 use app\admin\model\BaseModel;
 use app\admin\villdate\ExpendRewardVilldate;
+use think\Db;
 
 /**
  * 奖金支出管理
@@ -26,9 +27,10 @@ class ExpendRewardController extends BaseController
             $limit=$this->request->param("limit");
             $receiver_id=$this->request->param("receiver_id");
             $contract_name=$this->request->param("contract_name");
+            $colletion_status=$this->request->param("colletion_status");
             $db=db('expend_reward');
             $db = $db->alias("a")
-                ->field("a.*,IFNULL(b.colletion_status,0) colletion_status,c.contract_name contract_name")
+                ->field("a.*,IFNULL(b.colletion_status,0) colletion_status,c.contract_name contract_name_c")
                 ->leftJoin("invoice_records b","a.collection_id = b.collection_id")
                 ->leftJoin("sales_contract c","a.contract_id = c.id");
             if(!empty($receiver_id)){
@@ -40,6 +42,11 @@ class ExpendRewardController extends BaseController
             if(!empty($pay_status)){
                 $db->where("pay_status","eq",$pay_status-1);
             }
+            if(!empty($colletion_status)){
+                $db->where("colletion_status","eq",$colletion_status-1);
+            }
+            //拷贝查询对象
+            $db_cope = unserialize(serialize($db));
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -53,6 +60,26 @@ class ExpendRewardController extends BaseController
                 $val["surplus_amount"] = amount_format($val["surplus_amount"]);
                 $val["pay_amount"] = amount_format($val["pay_amount"]);
                 $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
+            }
+            unset($val);
+            //数据统计
+            $statistic_subsql = $db_cope->buildSql();
+            $res_statistic = Db::table($statistic_subsql." a")
+                ->field("sum(pay_amount) pay_amount")
+                ->find();
+            if(!empty($res["data"])){
+                $statistic = $res["data"][0];
+                foreach ($res_statistic as $key=>$val){
+                    $res_statistic[$key] = $val?:0;
+                }
+                foreach ($statistic as $key=>$v){
+                    switch ($key){
+                        case "id":$statistic[$key]="统计";break;
+                        case "pay_amount":$statistic[$key]="<strong>".amount_format($res_statistic["pay_amount"])."</strong>";break;
+                        default:$statistic[$key]="";
+                    }
+                }
+                $res["data"][]=$statistic;
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }

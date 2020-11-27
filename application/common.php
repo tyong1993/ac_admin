@@ -134,4 +134,16 @@ function amount_format($amount){
     }
     return $left.".".$right;
 }
+/**
+ * 获取两个日期之间的月份
+ */
+function getTwoDateMonths($time_start,$time_end){
+    $time_start = strtotime(date("Y-m",$time_start));
+    $monarr = array();
+    $monarr[] = date("Y-m",$time_start);
+    while( ($time_start = strtotime('+1 month', $time_start)) <= $time_end) {
+        $monarr[] = date('Y-m', $time_start);
+    }
+    return $monarr;
+}
 

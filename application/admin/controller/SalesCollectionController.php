@@ -133,6 +133,9 @@ class SalesCollectionController extends BaseController
         foreach ($id_arr as $id){
             $row = db($this->table)->find($id);
             if(!empty($row)){
+                if($row["status"] > 1){
+                    return jsonFail("当前记录已申请开票,不能删除,请先删除开票申请记录");
+                }
                 self::actionLog(3,$this->table,$this->table_name,$id,$row);
                 db($this->table)->where("id","eq",$id)->delete();
             }

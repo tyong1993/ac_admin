@@ -38,7 +38,7 @@ class OutsourcingPaymentController extends BaseController
         foreach ($res as &$val){
             $val["tax_rate"] = $tax_rate;
             $val["check_time"] = $val["check_time"]?date("Y-m-d",$val["check_time"]):"---";
-            $val["status_name"] = $this->getStatusName($val["status"]);
+            $val["status_name"] = self::getStatusName($val["status"]);
             $val["pay_amount_format"] = amount_format($val["pay_amount"]);
             $val["all_pay_amount_format"] = amount_format($val["all_pay_amount"]);
             $val["unpay_amount"] = amount_format($val["all_pay_amount"]-$val["payed"]);
@@ -128,6 +128,9 @@ class OutsourcingPaymentController extends BaseController
         foreach ($id_arr as $id){
             $row = db($this->table)->find($id);
             if(!empty($row)){
+                if($row["status"] > 1){
+                    return jsonFail("当前记录已申请付款,不能删除,请先删除付款申请记录");
+                }
                 self::actionLog(3,$this->table,$this->table_name,$id,$row);
                 db($this->table)->where("id","eq",$id)->delete();
             }
@@ -205,7 +208,7 @@ class OutsourcingPaymentController extends BaseController
     /**
      * 获取收款计划状态名称
      */
-    private function getStatusName($status){
+    public static function getStatusName($status){
         switch ($status){
             case 0:return "待验收";
             case 1:return "可付款";

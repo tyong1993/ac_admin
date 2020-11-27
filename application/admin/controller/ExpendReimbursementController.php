@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 use app\admin\model\BaseModel;
 use app\admin\villdate\ExpendReimbursementVilldate;
+use think\Db;
 
 /**
  * 报销支出管理
@@ -29,7 +30,7 @@ class ExpendReimbursementController extends BaseController
             $type=$this->request->param("type");
             $db=db('expend_reimbursement');
             $db = $db->alias("a")
-                ->field("a.*,b.contract_amount,b.contract_name contract_name")
+                ->field("a.*,b.contract_amount,b.contract_name contract_name_c")
                 ->leftJoin("sales_contract b","a.contract_id = b.id");
             if(!empty($bx_people_id)){
                 $db->where("bx_people_id","eq",$bx_people_id);
@@ -43,6 +44,8 @@ class ExpendReimbursementController extends BaseController
             if(!empty($pay_status)){
                 $db->where("pay_status","eq",$pay_status-1);
             }
+            //拷贝查询对象
+            $db_cope = unserialize(serialize($db));
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -50,6 +53,26 @@ class ExpendReimbursementController extends BaseController
                 $val["reimbursement_status"] = $val["reimbursement_status"]?"已报销":"<span style='color: red'>未报销</span>";
                 $val["amount"] = amount_format($val["amount"]);
                 $val["pay_time"] = $val["pay_time"]?date("Y-m-d",$val["pay_time"]):"---";
+            }
+            unset($val);
+            //数据统计
+            $statistic_subsql = $db_cope->buildSql();
+            $res_statistic = Db::table($statistic_subsql." a")
+                ->field("sum(amount) amount")
+                ->find();
+            if(!empty($res["data"])){
+                $statistic = $res["data"][0];
+                foreach ($res_statistic as $key=>$val){
+                    $res_statistic[$key] = $val?:0;
+                }
+                foreach ($statistic as $key=>$v){
+                    switch ($key){
+                        case "id":$statistic[$key]="统计";break;
+                        case "amount":$statistic[$key]="<strong>".amount_format($res_statistic["amount"])."</strong>";break;
+                        default:$statistic[$key]="";
+                    }
+                }
+                $res["data"][]=$statistic;
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }

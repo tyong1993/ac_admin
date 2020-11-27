@@ -19,6 +19,8 @@ class PaymentRecordsController extends BaseController
      * 列表
      */
     function index(){
+        $invoice_status=$this->request->param("invoice_status");
+        $pay_status=$this->request->param("pay_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $sq_people=$this->request->param("sq_people");
@@ -33,6 +35,12 @@ class PaymentRecordsController extends BaseController
             if(!empty($contract_name)){
                 $db->where("b.contract_name","like","%$contract_name%");
             }
+            if(!empty($invoice_status)){
+                $db->where("a.invoice_status","eq",$invoice_status-1);
+            }
+            if(!empty($pay_status)){
+                $db->where("a.pay_status","eq",$pay_status-1);
+            }
             $res = $db->order("id desc")->paginate($limit)->toArray();
             foreach ($res["data"] as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
@@ -43,6 +51,8 @@ class PaymentRecordsController extends BaseController
             }
             return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
         }
+        $this->assign("invoice_status",$invoice_status);
+        $this->assign("pay_status",$pay_status);
         return $this->fetch();
     }
     /**

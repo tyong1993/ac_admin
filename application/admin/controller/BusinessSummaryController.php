@@ -22,6 +22,7 @@ class BusinessSummaryController extends BaseController
         $business_contact = $this->request->param("business_contact");
         $contract_name = $this->request->param("contract_name");
         $select_by_year = $this->request->param("select_by_year");
+        $pay_status = $this->request->param("pay_status");
         if($select_by_year === null){
             $select_by_year = date("Y");
         }
@@ -45,6 +46,9 @@ class BusinessSummaryController extends BaseController
         if(!empty($contract_name)){
             $db->where("b.contract_name","like","%$contract_name%");
         }
+        if(!empty($pay_status)){
+            $db->where("a.pay_status","eq",$pay_status-1);
+        }
         $res = $db->select();
         $data = [];
         foreach ($res as $val){
@@ -65,6 +69,7 @@ class BusinessSummaryController extends BaseController
         $this->assign("business_contact",$business_contact);
         $this->assign("contract_name",$contract_name);
         $this->assign("select_by_year",$select_by_year);
+        $this->assign("pay_status",$pay_status);
         return $this->fetch();
     }
     /**

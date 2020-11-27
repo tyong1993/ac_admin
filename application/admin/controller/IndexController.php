@@ -40,12 +40,15 @@ class IndexController extends BaseController
         $summary_statistic = $this->welcomeSummary($select_by_year);
         //待办
         $todo = $this->welcomeTodo($select_by_year);
+        //报表
+        $echarts = $this->welcomeEcharts($select_by_year);
         $this->assign(
             [
                 "tp_version"=>App::version(),
                 "mysql_version"=>mysqli_get_server_info($conn),
                 "summary_statistic"=>$summary_statistic,
-                "todo"=>$todo
+                "todo"=>$todo,
+                "echarts"=>$echarts
             ]
         );
         return $this->fetch();
@@ -141,6 +144,76 @@ class IndexController extends BaseController
         $box->expend_business = db("expend_business")->where(["pay_status"=>0])->count();
         $box->expend_reward = db("expend_reward")->where(["pay_status"=>0])->count();
         return json_decode(json_encode($box),true);
+    }
+
+    /**
+     * 统计报表
+     * 签合同金额,收款金额
+     */
+    private function welcomeEcharts($select_by_year){
+        if(!empty($select_by_year)){
+            $start_time = strtotime($select_by_year."-01-01");
+            $end_time = strtotime(($select_by_year+1)."-01-01")-1;
+        }else{
+            //从第一个合同签订日期至今的所有月份
+            $row = db("sales_contract")->where("sign_date","gt",0)->order("sign_date asc")->find();
+            if(empty($row)){
+                $start_time = 0;
+            }else{
+                $start_time = $row["sign_date"];
+            }
+            $end_time = time();
+        }
+        $months = getTwoDateMonths($start_time,$end_time);
+        //每个月的签合同金额
+        $months_contract_amount = [];
+        foreach ($months as $val){
+            $months_contract_amount[$val] = 0;
+        }
+        $res = db("sales_contract")
+            ->field("contract_amount,sign_date")
+            ->where("sign_date","egt",$start_time)
+            ->where("sign_date","lt",$end_time)
+            ->select();
+
+        foreach ($res as $val){
+            $sign_data = date("Y-m",$val["sign_date"]);
+            $months_contract_amount[$sign_data] += $val["contract_amount"];
+        }
+        //金额处理成万为单位
+        foreach ($months_contract_amount as &$val){
+            $val = round($val/10000,2);
+        }
+        unset($val);
+
+
+        //每个月的收款金额
+        $months_collected_amount = [];
+        foreach ($months as $val){
+            $months_collected_amount[$val] = 0;
+        }
+        //收款情况子查询
+        $res = db("invoice_records")
+            ->field("invoice_amount,colletion_time")
+            ->where("colletion_status","eq",1)
+            ->where("colletion_time","egt",$start_time)
+            ->where("colletion_time","lt",$end_time)
+            ->select();
+        foreach ($res as $val){
+            $sign_data = date("Y-m",$val["colletion_time"]);
+            $months_collected_amount[$sign_data] += $val["invoice_amount"];
+        }
+        //金额处理成万为单位
+        foreach ($months_collected_amount as &$val){
+            $val = round($val/10000,2);
+        }
+        unset($val);
+
+        return [
+            "months"=>$months,
+            "months_contract_amount"=>$months_contract_amount,
+            "months_collected_amount"=>$months_collected_amount,
+        ];
     }
     /**
      * 初始化数据

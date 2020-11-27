@@ -21,6 +21,16 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">收款状态</label>
+                            <div class="layui-input-inline">
+                                <select name="colletion_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2">已收款</option>
+                                    <option value="1">未收款</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <label class="layui-form-label">付款状态</label>
                             <div class="layui-input-inline">
                                 <select name="pay_status" lay-search>
@@ -30,6 +40,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
@@ -65,11 +76,11 @@
             url: '{:url("index")}',
             where:form.val("data-search"),
             toolbar: '#toolbarDemo',
-            defaultToolbar: [],
+            defaultToolbar: ["filter","exports","print"],
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 50, title: 'ID'},
-                {field: 'contract_name', width: 150, title: '销售合同'},
+                {field: 'contract_name_c', width: 150, title: '销售合同'},
                 {field: 'contract_amount', width: 120, align: "right", title: '合同金额'},
                 {field: 'periods', width: 80, title: '期数'},
                 {field: 'collection_amount', width: 120, align: "right", title: '分期收款金额'},

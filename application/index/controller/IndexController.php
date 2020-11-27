@@ -7,7 +7,7 @@ class IndexController
 {
     public function index(Request $request)
     {
-        return $request->controller()."/".$request->action();
+        return $request->controller() . "/" . $request->action();
     }
 
 

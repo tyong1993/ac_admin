@@ -49,11 +49,11 @@ body {
     color: #6b6b6b;
 }
 
-/**自定义滚动条样式 */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px
-}
+/*!**自定义滚动条样式 *!*/
+/*::-webkit-scrollbar {*/
+    /*width: 6px;*/
+    /*height: 6px*/
+/*}*/
 
 ::-webkit-scrollbar-track {
     background-color: transparent;

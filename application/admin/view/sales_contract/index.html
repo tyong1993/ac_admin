@@ -101,10 +101,11 @@
             url: '{:url("index")}',
             where:form.val("data-search"),
             toolbar: '#toolbarDemo',
-            defaultToolbar: [],
+            defaultToolbar: ["filter","exports","print"],
+            autoSort:false,
             cols: [[
                 {type: "checkbox", width: 50, fixed: 'left'},
-                {field: 'id', width: 50, title: 'ID', fixed: 'left'},
+                {field: 'id', sort: true, width: 50, title: 'ID', fixed: 'left'},
                 {field: 'contract_name', width: 250, title: '合同名称',fixed: 'left'},
                 {field: 'customer_name', width: 150, title: '客户单位'},
                 {field: 'group_company_name', width: 80, title: '签约单位'},
@@ -131,8 +132,15 @@
             skin: 'row,line',
             size:"sm"
         });
-        //清除待办进来的标记,下一次搜索回归正常
-        // $("#disposable").val(0);
+        //监听排序事件
+        table.on('sort(currentTableFilter)', function(obj){
+            table.reload('currentTableId', {
+                initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+                ,where: {
+                    order: obj.field+" "+obj.type //排序方式
+                }
+            });
+        });
         /**
          * 搜索
          */

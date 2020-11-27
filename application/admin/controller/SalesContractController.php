@@ -23,7 +23,6 @@ class SalesContractController extends BaseController
     function index(){
         $is_collection_completed=$this->request->param("is_collection_completed");
         $select_by_year=$this->request->param("select_by_year");
-//        $todo=$this->request->param("todo");
         //默认查询当年数据
         if($select_by_year === null){
             $select_by_year = date("Y");
@@ -86,17 +85,14 @@ class SalesContractController extends BaseController
                     $db->having("contract_amount != collected_amount");
                 }
             }
-//            //待办过来的
-//            if(!empty($todo)){
-//                $contract_ids = db("sales_collection")->where("status","eq",$todo-1)->group("contract_id")->column("contract_id");
-//                $db->where("a.id","in",$contract_ids);
-//            }
             //数据权限
             $db = self::dataPower($db,"b_l_id");
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
 //            $res = $db->order("id desc")->paginate($limit)->toArray();
-            $res = $db->order("id desc")->page($page,$limit)->select();
+            //排序
+            $order = $this->request->param("order")?:"id desc";
+            $res = $db->order($order)->page($page,$limit)->select();
             foreach ($res as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["sign_date"] = $val["sign_date"]?date("Y-m-d",$val["sign_date"]):"---";
@@ -301,4 +297,5 @@ class SalesContractController extends BaseController
         $param["project_leader"] = db("system_admin")->where(["id"=>$param["p_l_id"]])->value("name")?:"";
         return $param;
     }
+
 }
