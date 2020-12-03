@@ -61,8 +61,12 @@
                 <col width="120">
                 <col width="120">
                 <col width="120">
+                {if checkAuth("field_business")}
                 <col width="120">
+                {/if}
+                {if checkAuth("field_reward")}
                 <col width="120">
+                {/if}
                 <col>
             </colgroup>
             <thead>
@@ -83,8 +87,12 @@
                 <th>收款金额</th>
                 <th>外包费用</th>
                 <th>报销费用</th>
+                {if checkAuth("field_business")}
                 <th>商务费用</th>
+                {/if}
+                {if checkAuth("field_reward")}
                 <th>奖金费用</th>
+                {/if}
                 <th>盈余</th>
             </tr>
             </thead>
@@ -102,8 +110,12 @@
                 <td align="right">{$v["invoice_amount_format"]}</td>
                 <td align="right">{$v["outsourcing_pay_amount_format"]}</td>
                 <td align="right">{$v["reimbursement_amount_format"]}</td>
+                {if checkAuth("field_business")}
                 <td align="right">{$v["business_pay_amount_format"]}</td>
+                {/if}
+                {if checkAuth("field_reward")}
                 <td align="right">{$v["reward_pay_amount_format"]}</td>
+                {/if}
                 <td align="right">{$v["surplus_format"]}</td>
             </tr>
             {/foreach}
@@ -121,8 +133,12 @@
                 <td align="right">{$val["statistics"]["invoice_amount_format"]|raw}</td>
                 <td align="right">{$val["statistics"]["outsourcing_pay_amount_format"]|raw}</td>
                 <td align="right">{$val["statistics"]["reimbursement_amount_format"]|raw}</td>
+                {if checkAuth("field_business")}
                 <td align="right">{$val["statistics"]["business_pay_amount_format"]|raw}</td>
+                {/if}
+                {if checkAuth("field_reward")}
                 <td align="right">{$val["statistics"]["reward_pay_amount_format"]|raw}</td>
+                {/if}
                 <td align="right">{$val["statistics"]["surplus_format"]|raw}</td>
             </tr>
             </tbody>

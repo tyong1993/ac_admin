@@ -70,8 +70,12 @@
                 {field: 'uncollected_amount_format', width: 100, align: "right", title: '未回款金额'},
                 {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用'},
                 {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用'},
+                {if checkAuth("field_business")}
                 {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
+                {/if}
+                {if checkAuth("field_reward")}
                 {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
+                {/if}
                 {field: 'surplus_format', width: 120, align: "right", title: '盈余'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
