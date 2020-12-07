@@ -141,8 +141,16 @@ class IndexController extends BaseController
         $box->out_wait_pay = db("payment_records")->where(["pay_status"=>0])->count();
 
         $box->expend_reimbursement = db("expend_reimbursement")->where(["pay_status"=>0])->count();
-        $box->expend_business = db("expend_business")->where(["pay_status"=>0])->count();
-        $box->expend_reward = db("expend_reward")->where(["pay_status"=>0])->count();
+        $box->expend_business = db("expend_business a")
+            ->leftJoin("invoice_records b","a.collection_id = b.collection_id")
+            ->where("colletion_status","eq","1")
+            ->where(["pay_status"=>0])
+            ->count();
+        $box->expend_reward = db("expend_reward a")
+            ->leftJoin("invoice_records b","a.collection_id = b.collection_id")
+            ->where("colletion_status","eq","1")
+            ->where(["pay_status"=>0])
+            ->count();
         return json_decode(json_encode($box),true);
     }
 

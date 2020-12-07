@@ -97,7 +97,16 @@ class ProjectREController extends BaseController
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
             //数据分页查询,处理
-            $res = $db->order("a.id desc,b.id asc")->paginate($limit)->toArray();
+            $order_field = $this->request->param("order_field")?:"id";
+            $order_type = $this->request->param("order_type")?:"desc";
+            switch ($order_field){
+                case "id":$order_field="a.$order_field";break;
+                case "expect_check_time_format":$order_field="expect_check_time";break;
+                case "expect_invoice_time_format":$order_field="expect_invoice_time";break;
+                case "expect_colletion_time_format":$order_field="expect_colletion_time";break;
+                case "sign_date_format":$order_field="sign_date";break;
+            }
+            $res = $db->order($order_field." ".$order_type)->paginate($limit)->toArray();
             $now_time = time();
             foreach ($res["data"] as &$val){
                 $val["status_name"] = SalesCollectionController::getStatusName($val["status"]);

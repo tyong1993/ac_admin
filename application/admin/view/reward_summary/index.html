@@ -26,6 +26,26 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">收款状态</label>
+                            <div class="layui-input-inline">
+                                <select name="colletion_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2" {if $colletion_status==2}selected{/if}>已收款</option>
+                                    <option value="1" {if $colletion_status==1}selected{/if}>未收款</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">付款状态</label>
+                            <div class="layui-input-inline">
+                                <select name="pay_status" lay-search>
+                                    <option value="">全部</option>
+                                    <option value="2" {if $pay_status==2}selected{/if}>已付款</option>
+                                    <option value="1" {if $pay_status==1}selected{/if}>未付款</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <label class="layui-form-label">按年份筛选</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="select_by_year" class="layui-input" value="{$select_by_year}" id="date_time_select_by_year" autocomplete="off">

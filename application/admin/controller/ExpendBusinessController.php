@@ -22,11 +22,12 @@ class ExpendBusinessController extends BaseController
      */
     function index(){
         $pay_status=$this->request->param("pay_status");
+        $colletion_status=$this->request->param("colletion_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
+            $page=$this->request->param("page")?:1;
             $business_contact=$this->request->param("business_contact");
             $contract_name=$this->request->param("contract_name");
-            $colletion_status=$this->request->param("colletion_status");
             $db=db('expend_business');
             $db = $db->alias("a")
                 ->field("a.*,IFNULL(b.colletion_status,0) colletion_status,c.contract_amount,c.contract_name contract_name_c")
@@ -42,12 +43,12 @@ class ExpendBusinessController extends BaseController
                 $db->where("pay_status","eq",$pay_status-1);
             }
             if(!empty($colletion_status)){
-                $db->where("colletion_status","eq",$colletion_status-1);
+                $db->having("colletion_status = $colletion_status-1");
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
-            $res = $db->order("id desc")->paginate($limit)->toArray();
-            foreach ($res["data"] as &$val){
+            $res = $db->order("id desc")->page($page,$limit)->select();
+            foreach ($res as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["tax_rate"] = $val["is_need_tax"]?$val["tax_rate"]:"---";
                 $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
@@ -61,10 +62,10 @@ class ExpendBusinessController extends BaseController
             //数据统计
             $statistic_subsql = $db_cope->buildSql();
             $res_statistic = Db::table($statistic_subsql." a")
-                ->field("sum(pay_amount_true) pay_amount_true")
+                ->field("count(id) count,sum(pay_amount_true) pay_amount_true")
                 ->find();
-            if(!empty($res["data"])){
-                $statistic = $res["data"][0];
+            if(!empty($res)){
+                $statistic = $res[0];
                 foreach ($res_statistic as $key=>$val){
                     $res_statistic[$key] = $val?:0;
                 }
@@ -75,11 +76,12 @@ class ExpendBusinessController extends BaseController
                         default:$statistic[$key]="";
                     }
                 }
-                $res["data"][]=$statistic;
+                $res[]=$statistic;
             }
-            return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
+            return json(["code"=>0,"msg"=>"success","count"=>isset($res_statistic["count"])?$res_statistic["count"]:0,"data"=>$res]);
         }
         $this->assign("pay_status",$pay_status);
+        $this->assign("colletion_status",$colletion_status);
         return $this->fetch();
     }
 

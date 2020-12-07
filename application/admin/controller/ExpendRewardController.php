@@ -23,8 +23,10 @@ class ExpendRewardController extends BaseController
      */
     function index(){
         $pay_status=$this->request->param("pay_status");
+        $colletion_status=$this->request->param("colletion_status");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
+            $page=$this->request->param("page")?:1;
             $receiver_id=$this->request->param("receiver_id");
             $contract_name=$this->request->param("contract_name");
             $colletion_status=$this->request->param("colletion_status");
@@ -43,12 +45,12 @@ class ExpendRewardController extends BaseController
                 $db->where("pay_status","eq",$pay_status-1);
             }
             if(!empty($colletion_status)){
-                $db->where("colletion_status","eq",$colletion_status-1);
+                $db->having("colletion_status","eq",$colletion_status-1);
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
-            $res = $db->order("id desc")->paginate($limit)->toArray();
-            foreach ($res["data"] as &$val){
+            $res = $db->order("id desc")->page($page,$limit)->select();
+            foreach ($res as &$val){
                 $val["create_time"] = date("Y-m-d H:i",$val["create_time"]);
                 $val["pay_status"] = $val["pay_status"]?"已付款":"<span style='color: red'>未付款</span>";
                 $val["colletion_status"] = $val["colletion_status"]?"已收款":"<span style='color: red'>未收款</span>";
@@ -65,10 +67,10 @@ class ExpendRewardController extends BaseController
             //数据统计
             $statistic_subsql = $db_cope->buildSql();
             $res_statistic = Db::table($statistic_subsql." a")
-                ->field("sum(pay_amount) pay_amount")
+                ->field("count(id) count,sum(pay_amount) pay_amount")
                 ->find();
-            if(!empty($res["data"])){
-                $statistic = $res["data"][0];
+            if(!empty($res)){
+                $statistic = $res[0];
                 foreach ($res_statistic as $key=>$val){
                     $res_statistic[$key] = $val?:0;
                 }
@@ -79,12 +81,13 @@ class ExpendRewardController extends BaseController
                         default:$statistic[$key]="";
                     }
                 }
-                $res["data"][]=$statistic;
+                $res[]=$statistic;
             }
-            return json(["code"=>0,"msg"=>"success","count"=>$res["total"],"data"=>$res["data"]]);
+            return json(["code"=>0,"msg"=>"success","count"=>isset($res_statistic["count"])?$res_statistic["count"]:0,"data"=>$res]);
         }
         $this->assign("receivers",BaseModel::getAdmins());
         $this->assign("pay_status",$pay_status);
+        $this->assign("colletion_status",$colletion_status);
         return $this->fetch();
     }
 

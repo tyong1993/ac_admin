@@ -25,8 +25,8 @@
                             <div class="layui-input-inline">
                                 <select name="colletion_status" lay-search>
                                     <option value="">全部</option>
-                                    <option value="2">已收款</option>
-                                    <option value="1">未收款</option>
+                                    <option value="2" {if $colletion_status==2}selected{/if}>已收款</option>
+                                    <option value="1" {if $colletion_status==1}selected{/if}>未收款</option>
                                 </select>
                             </div>
                         </div>

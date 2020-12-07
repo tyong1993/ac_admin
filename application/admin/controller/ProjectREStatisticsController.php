@@ -70,7 +70,7 @@ class ProjectREStatisticsController extends BaseController
         }
         //数据权限
         $db = self::dataPower($db,"a.b_l_id");
-        $res = $db->order("a.id desc,b.id asc")->select();
+        $res = $db->order("$statistic_field asc")->select();
         //组装数据结构
         $data = [];$init_start = $year_start;
         for($i = 1;$i<=12;$i++){
