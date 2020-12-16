@@ -45,7 +45,7 @@ class ExpendRewardController extends BaseController
                 $db->where("pay_status","eq",$pay_status-1);
             }
             if(!empty($colletion_status)){
-                $db->having("colletion_status","eq",$colletion_status-1);
+                $db->having("colletion_status=$colletion_status-1");
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));

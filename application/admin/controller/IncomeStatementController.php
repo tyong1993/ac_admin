@@ -89,6 +89,11 @@ class IncomeStatementController extends BaseController
                 $val["surplus_format"] = amount_format($val["surplus"]);
                 $val["collected_amount_format"] = amount_format($val["collected_amount"]);
                 $val["uncollected_amount_format"] = amount_format($val["contract_amount"]-$val["collected_amount"]);
+                $val["outsourcing_pay_amount_ratio"] = $val["contract_amount"]>0?round(($val["outsourcing_pay_amount"]/$val["contract_amount"])*100,2):0;
+                $val["reimbursement_amount_ratio"] = $val["contract_amount"]>0?round(($val["reimbursement_amount"]/$val["contract_amount"])*100,2):0;
+                $val["business_pay_amount_ratio"] = $val["contract_amount"]>0?round(($val["business_pay_amount"]/$val["contract_amount"])*100,2):0;
+                $val["reward_pay_amount_ratio"] = $val["contract_amount"]>0?round(($val["reward_pay_amount"]/$val["contract_amount"])*100,2):0;
+
             }
             unset($val);
             //数据统计
@@ -112,6 +117,10 @@ class IncomeStatementController extends BaseController
                         case "surplus_format":$statistic[$key]="<strong>".amount_format($res_statistic["surplus"])."</strong>";break;
                         case "collected_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["collected_amount"])."</strong>";break;
                         case "uncollected_amount_format":$statistic[$key]="<strong>".amount_format($res_statistic["uncollected_amount"])."</strong>";break;
+                        case "outsourcing_pay_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["outsourcing_pay_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
+                        case "reimbursement_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["reimbursement_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
+                        case "business_pay_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["business_pay_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
+                        case "reward_pay_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["reward_pay_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
                         default:$statistic[$key]="";
                     }
                 }

@@ -76,7 +76,11 @@
                 {if checkAuth("field_reward")}
                 {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
                 {/if}
-                {field: 'surplus_format', width: 120, align: "right", title: '盈余'}
+                {field: 'surplus_format', width: 120, align: "right", title: '盈余'},
+                {field: 'outsourcing_pay_amount_ratio', width: 100, align: "right", title: '外包比例(%)'},
+                {field: 'reimbursement_amount_ratio', width: 100, align: "right", title: '报销比例(%)'},
+                {field: 'business_pay_amount_ratio', width: 100, align: "right", title: '商务比例(%)'},
+                {field: 'reward_pay_amount_ratio', width: 100, align: "right", title: '奖金比例(%)'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
