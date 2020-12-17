@@ -8,6 +8,8 @@
 
 namespace app\admin\controller;
 use app\admin\model\BaseModel;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\ExpendReimbursementVilldate;
 use think\Db;
 
@@ -22,7 +24,11 @@ class ExpendReimbursementController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),3);
+        NewItemWarnReadedModel::readItems(session("admin_id"),7);
         $pay_status=$this->request->param("pay_status");
+        $sales_contract_id=$this->request->param("sales_contract_id");
+        $sales_collection_id=$this->request->param("sales_collection_id");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $bx_people_id=$this->request->param("bx_people_id");
@@ -43,6 +49,12 @@ class ExpendReimbursementController extends BaseController
             }
             if(!empty($pay_status)){
                 $db->where("pay_status","eq",$pay_status-1);
+            }
+            if(!empty($sales_contract_id)){
+                $db->where("a.contract_id","eq",$sales_contract_id);
+            }
+            if(!empty($sales_collection_id)){
+                $db->where("a.collection_id","eq",$sales_collection_id);
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
@@ -78,6 +90,8 @@ class ExpendReimbursementController extends BaseController
         }
         $this->assign("bx_peoples",BaseModel::getAdmins());
         $this->assign("pay_status",$pay_status);
+        $this->assign("sales_contract_id",$sales_contract_id);
+        $this->assign("sales_collection_id",$sales_collection_id);
         return $this->fetch();
     }
 
@@ -94,6 +108,7 @@ class ExpendReimbursementController extends BaseController
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
+                NewItemWarnModel::addItem(3,$id);
             }
             return jsonSuccess();
         }

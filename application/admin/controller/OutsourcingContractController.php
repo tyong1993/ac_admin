@@ -7,6 +7,8 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\OutsourcingContractVilldate;
 use think\Db;
 
@@ -21,7 +23,10 @@ class OutsourcingContractController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),2);
+        NewItemWarnReadedModel::readItems(session("admin_id"),13);
         $select_by_year=$this->request->param("select_by_year");
+        $sales_contract_id=$this->request->param("sales_contract_id");
         //默认查询当年数据
         if($select_by_year === null){
             $select_by_year = date("Y");
@@ -67,6 +72,9 @@ class OutsourcingContractController extends BaseController
             }
             if(!empty($g_c_id)){
                 $db->where("g_c_id","eq",$g_c_id);
+            }
+            if(!empty($sales_contract_id)){
+                $db->where("sales_contract_id","eq",$sales_contract_id);
             }
             if(!empty($is_stamp_tax)){
                 $db->where("is_stamp_tax","eq",$is_stamp_tax-1);
@@ -121,9 +129,13 @@ class OutsourcingContractController extends BaseController
             return json(["code"=>0,"msg"=>"success","count"=>isset($res_statistic["count"])?$res_statistic["count"]:0,"data"=>$res]);
         }
         $this->assign("select_by_year",$select_by_year);
+        $this->assign("sales_contract_id",$sales_contract_id);
         //签约单位数据
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);
+        //销售合同数据
+        $res = db('sales_contract')->select();
+        $this->assign("sales_contracts",$res);
         return $this->fetch();
     }
 
@@ -143,6 +155,7 @@ class OutsourcingContractController extends BaseController
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
+                NewItemWarnModel::addItem(2,$id);
             }
             return jsonSuccess();
         }

@@ -54,7 +54,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>合同数量</h5>
+                                                        <h5>合同数量<span class="layui-badge" {if $warns["type_1"] == 0}style="display: none"{/if}>+{$warns["type_1"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["contract_nums"]}</h1>
@@ -82,7 +82,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>已收款</h5>
+                                                        <h5>已收款<span class="layui-badge" {if $warns["type_6"] == 0}style="display: none"{/if}>+{$warns["type_6"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["collected_amount_format"]}</h1>
@@ -112,7 +112,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>外包金额</h5>
+                                                        <h5>外包金额<span class="layui-badge" {if $warns["type_2"] == 0}style="display: none"{/if}>+{$warns["type_2"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["outsourcing_pay_amount_format"]}</h1>
@@ -126,7 +126,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>采购成本</h5>
+                                                        <h5>采购成本<span class="layui-badge" {if $warns["type_3"] == 0}style="display: none"{/if}>+{$warns["type_3"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["reimbursement_amount_format"]}</h1>
@@ -141,7 +141,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>商务费用</h5>
+                                                        <h5>商务费用<span class="layui-badge" {if $warns["type_4"] == 0}style="display: none"{/if}>+{$warns["type_4"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["business_pay_amount_format"]}</h1>
@@ -157,7 +157,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
-                                                        <h5>奖金</h5>
+                                                        <h5>奖金<span class="layui-badge" {if $warns["type_5"] == 0}style="display: none"{/if}>+{$warns["type_5"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$summary_statistic["reward_pay_amount_format"]}</h1>
@@ -199,7 +199,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(41,'?status=2&select_by_year=')">
                                                     <div class="panel-title">
-                                                        <h5>可开票</h5>
+                                                        <h5>可开票<span class="layui-badge" {if $warns["type_10"] == 0}style="display: none"{/if}>+{$warns["type_10"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["sales_can_invoice"]}</h1>
@@ -213,7 +213,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(33,'?invoice_status=1')">
                                                     <div class="panel-title">
-                                                        <h5>待开票</h5>
+                                                        <h5>待开票<span class="layui-badge" {if $warns["type_11"] == 0}style="display: none"{/if}>+{$warns["type_11"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["sales_wait_invoice"]}</h1>
@@ -227,7 +227,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(33,'?colletion_status=1')">
                                                     <div class="panel-title">
-                                                        <h5>待收款</h5>
+                                                        <h5>待收款<span class="layui-badge" {if $warns["type_12"] == 0}style="display: none"{/if}>+{$warns["type_12"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["sales_wait_collection"]}</h1>
@@ -258,7 +258,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(68,'?status=2&select_by_year=')">
                                                     <div class="panel-title">
-                                                        <h5>可付款</h5>
+                                                        <h5>可付款<span class="layui-badge" {if $warns["type_13"] == 0}style="display: none"{/if}>+{$warns["type_13"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["out_can_pay"]}</h1>
@@ -272,7 +272,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(35,'?invoice_status=1&select_by_year=')">
                                                     <div class="panel-title">
-                                                        <h5>待收票</h5>
+                                                        <h5>待收票<span class="layui-badge" {if $warns["type_14"] == 0}style="display: none"{/if}>+{$warns["type_14"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["out_wait_invoice"]}</h1>
@@ -286,7 +286,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(35,'?pay_status=1&select_by_year=')">
                                                     <div class="panel-title">
-                                                        <h5>待付款</h5>
+                                                        <h5>待付款<span class="layui-badge" {if $warns["type_15"] == 0}style="display: none"{/if}>+{$warns["type_15"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["out_wait_pay"]}</h1>
@@ -303,7 +303,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(37,'?pay_status=1')">
                                                     <div class="panel-title">
-                                                        <h5>报销支出</h5>
+                                                        <h5>报销支出<span class="layui-badge" {if $warns["type_7"] == 0}style="display: none"{/if}>+{$warns["type_7"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["expend_reimbursement"]}</h1>
@@ -318,7 +318,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(38,'?pay_status=1&colletion_status=2')">
                                                     <div class="panel-title">
-                                                        <h5>商务支出</h5>
+                                                        <h5>商务支出<span class="layui-badge" {if $warns["type_8"] == 0}style="display: none"{/if}>+{$warns["type_8"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["expend_business"]}</h1>
@@ -334,7 +334,7 @@
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body" onclick="doToDo(39,'?pay_status=1&colletion_status=2')">
                                                     <div class="panel-title">
-                                                        <h5>奖金支出</h5>
+                                                        <h5>奖金支出<span class="layui-badge" {if $warns["type_9"] == 0}style="display: none"{/if}>+{$warns["type_9"]}</span></h5>
                                                     </div>
                                                     <div class="panel-content">
                                                         <h1 class="no-margins index-show-h1">{$todo["expend_reward"]}</h1>

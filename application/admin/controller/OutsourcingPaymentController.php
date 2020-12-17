@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
 use app\admin\model\SystemAdminModel;
 use app\admin\villdate\OutsourcingPaymentVilldate;
 use think\Db;
@@ -148,6 +149,7 @@ class OutsourcingPaymentController extends BaseController
             $param["check_time"] = time();
             if(db('outsourcing_payment')->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"验收");
+                NewItemWarnModel::addItem(13,$param["id"]);
             }
             return jsonSuccess();
         }
@@ -191,6 +193,9 @@ class OutsourcingPaymentController extends BaseController
                 return jsonFail("申请付款失败");
             }
             self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"申请付款");
+            NewItemWarnModel::addItem(14,$param["id"]);
+            NewItemWarnModel::addItem(15,$param["id"]);
+            NewItemWarnModel::cancelItem(13,$param["id"]);
             Db::commit();
             return jsonSuccess();
         }

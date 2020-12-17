@@ -6,12 +6,23 @@
         <fieldset class="table-search-fieldset">
             <!--<legend>搜索信息</legend>-->
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" lay-filter="data-search" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">合同名称</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="contract_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">销售合同</label>
+                            <div class="layui-input-inline">
+                                <select name="sales_contract_id" lay-search>
+                                    <option value="">全部</option>
+                                    {foreach $sales_contracts as $sales_contract}
+                                    <option value="{$sales_contract.id}" {if $sales_contract_id == $sales_contract.id}selected{/if}>{$sales_contract.contract_name}</option>
+                                    {/foreach}
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -98,6 +109,7 @@
         table.render({
             elem: '#currentTableId',
             url: '{:url("index")}',
+            where:form.val("data-search"),
             toolbar: '#toolbarDemo',
             defaultToolbar: ["filter","exports","print"],
             cols: [[

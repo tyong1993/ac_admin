@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnReadedModel;
 use think\Db;
 
 /**
@@ -20,6 +21,7 @@ class ProjectREController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),10);
         $status=$this->request->param("status");
         //默认查询当年数据
         $select_by_year = $this->request->param("select_by_year");
@@ -35,7 +37,7 @@ class ProjectREController extends BaseController
             $colletion_status = $this->request->param("colletion_status");
             //外包支出子查询
             $subsql_outsourcing_payment = db("outsourcing_payment")
-                ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
+                ->field('sales_collection_id collection_id,sum(all_pay_amount) pay_amount')
                 ->group('sales_collection_id')
                 ->buildSql();
             //报销支出子查询

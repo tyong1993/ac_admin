@@ -7,6 +7,8 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\ExpendBusinessVilldate;
 use think\Db;
 
@@ -21,8 +23,12 @@ class ExpendBusinessController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),4);
+        NewItemWarnReadedModel::readItems(session("admin_id"),8);
         $pay_status=$this->request->param("pay_status");
         $colletion_status=$this->request->param("colletion_status");
+        $sales_contract_id=$this->request->param("sales_contract_id");
+        $sales_collection_id=$this->request->param("sales_collection_id");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $page=$this->request->param("page")?:1;
@@ -44,6 +50,12 @@ class ExpendBusinessController extends BaseController
             }
             if(!empty($colletion_status)){
                 $db->having("colletion_status = $colletion_status-1");
+            }
+            if(!empty($sales_contract_id)){
+                $db->where("a.contract_id","eq",$sales_contract_id);
+            }
+            if(!empty($sales_collection_id)){
+                $db->where("a.collection_id","eq",$sales_collection_id);
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
@@ -82,6 +94,8 @@ class ExpendBusinessController extends BaseController
         }
         $this->assign("pay_status",$pay_status);
         $this->assign("colletion_status",$colletion_status);
+        $this->assign("sales_contract_id",$sales_contract_id);
+        $this->assign("sales_collection_id",$sales_collection_id);
         return $this->fetch();
     }
 
@@ -97,6 +111,7 @@ class ExpendBusinessController extends BaseController
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
+                NewItemWarnModel::addItem(4,$id);
             }
             return jsonSuccess();
         }

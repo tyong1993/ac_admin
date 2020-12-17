@@ -7,6 +7,8 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\SalesContractVilldate;
 use think\Db;
 
@@ -21,6 +23,7 @@ class SalesContractController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),1);
         $is_collection_completed=$this->request->param("is_collection_completed");
         $select_by_year=$this->request->param("select_by_year");
         //默认查询当年数据
@@ -164,6 +167,7 @@ class SalesContractController extends BaseController
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
+                NewItemWarnModel::addItem(1,$id);
             }
             return jsonSuccess();
         }

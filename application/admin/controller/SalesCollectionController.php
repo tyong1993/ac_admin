@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
 use app\admin\model\SystemAdminModel;
 use app\admin\villdate\SalesCollectionVilldate;
 use think\Db;
@@ -153,6 +154,7 @@ class SalesCollectionController extends BaseController
             $param["check_time"] = time();
             if(db('sales_collection')->update($param)){
                 self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"验收");
+                NewItemWarnModel::addItem(10,$param["id"]);
             }
             return jsonSuccess();
         }
@@ -198,6 +200,9 @@ class SalesCollectionController extends BaseController
                 return jsonFail("申请开票失败");
             }
             self::actionLog(2,$this->table,$this->table_name,$param["id"],null,"申请开票");
+            NewItemWarnModel::addItem(11,$param["id"]);
+            NewItemWarnModel::addItem(12,$param["id"]);
+            NewItemWarnModel::cancelItem(10,$param["id"]);
             Db::commit();
             return jsonSuccess();
         }

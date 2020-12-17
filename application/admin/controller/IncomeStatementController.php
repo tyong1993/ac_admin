@@ -29,7 +29,7 @@ class IncomeStatementController extends BaseController
             }
             //外包支出子查询
             $subsql_outsourcing_payment = db("outsourcing_payment")
-                ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
+                ->field('sales_collection_id collection_id,sum(all_pay_amount) pay_amount')
                 ->group('sales_collection_id')
                 ->buildSql();
             //报销支出子查询
@@ -93,6 +93,7 @@ class IncomeStatementController extends BaseController
                 $val["reimbursement_amount_ratio"] = $val["contract_amount"]>0?round(($val["reimbursement_amount"]/$val["contract_amount"])*100,2):0;
                 $val["business_pay_amount_ratio"] = $val["contract_amount"]>0?round(($val["business_pay_amount"]/$val["contract_amount"])*100,2):0;
                 $val["reward_pay_amount_ratio"] = $val["contract_amount"]>0?round(($val["reward_pay_amount"]/$val["contract_amount"])*100,2):0;
+                $val["surplus_ratio"] = $val["contract_amount"]>0?round(($val["surplus"]/$val["contract_amount"])*100,2):0;
 
             }
             unset($val);
@@ -121,6 +122,7 @@ class IncomeStatementController extends BaseController
                         case "reimbursement_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["reimbursement_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
                         case "business_pay_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["business_pay_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
                         case "reward_pay_amount_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["reward_pay_amount"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
+                        case "surplus_ratio":$statistic[$key]="<strong>".amount_format(round(($res_statistic["surplus"]/$res_statistic["contract_amount"])*100,2))."</strong>";break;
                         default:$statistic[$key]="";
                     }
                 }

@@ -7,6 +7,8 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\InvoiceRecordsVilldate;
 use app\common\tools\excel\ExcelTool;
 use think\Db;
@@ -22,6 +24,8 @@ class InvoiceRecordsController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),11);
+        NewItemWarnReadedModel::readItems(session("admin_id"),12);
         $invoice_status=$this->request->param("invoice_status");
         $colletion_status=$this->request->param("colletion_status");
         if($this->request->isAjax()){
@@ -142,6 +146,7 @@ class InvoiceRecordsController extends BaseController
                 return jsonFail("开票失败");
             }
             self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"确认开票");
+            NewItemWarnModel::cancelItem(11,$param["collection_id"]);
             Db::commit();
             return jsonSuccess();
         }
@@ -163,7 +168,13 @@ class InvoiceRecordsController extends BaseController
             $param["colletion_status"] = 1;
             $param["colletion_time"] = time();
             if(db('invoice_records')->update($param)){
+                $row = db('invoice_records')->find($param["id"]);
                 self::actionLog(2,"invoice_records","开票管理",$param["id"],null,"确认收款");
+                NewItemWarnModel::addItem(6,$param["id"]);
+                NewItemWarnModel::addItem(7,$param["id"]);
+                NewItemWarnModel::addItem(8,$param["id"]);
+                NewItemWarnModel::addItem(9,$param["id"]);
+                NewItemWarnModel::cancelItem(12,$row["collection_id"]);
             };
             return jsonSuccess();
         }

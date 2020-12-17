@@ -7,6 +7,7 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnReadedModel;
 
 /**
  * 项目收支统计
@@ -17,6 +18,7 @@ class ProjectREStatisticsController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),6);
         $customer_name = $this->request->param("customer_name");
         $select_by_year = $this->request->param("select_by_year");
         $g_c_id = $this->request->param("g_c_id");
@@ -32,7 +34,7 @@ class ProjectREStatisticsController extends BaseController
 
         //外包支出子查询
         $subsql_outsourcing_payment = db("outsourcing_payment")
-            ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
+            ->field('sales_collection_id collection_id,sum(all_pay_amount) pay_amount')
             ->group('sales_collection_id')
             ->buildSql();
         //报销支出子查询

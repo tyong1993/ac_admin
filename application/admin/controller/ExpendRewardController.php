@@ -8,6 +8,8 @@
 
 namespace app\admin\controller;
 use app\admin\model\BaseModel;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\ExpendRewardVilldate;
 use think\Db;
 
@@ -22,8 +24,12 @@ class ExpendRewardController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),5);
+        NewItemWarnReadedModel::readItems(session("admin_id"),9);
         $pay_status=$this->request->param("pay_status");
         $colletion_status=$this->request->param("colletion_status");
+        $sales_contract_id=$this->request->param("sales_contract_id");
+        $sales_collection_id=$this->request->param("sales_collection_id");
         if($this->request->isAjax()){
             $limit=$this->request->param("limit");
             $page=$this->request->param("page")?:1;
@@ -46,6 +52,12 @@ class ExpendRewardController extends BaseController
             }
             if(!empty($colletion_status)){
                 $db->having("colletion_status=$colletion_status-1");
+            }
+            if(!empty($sales_contract_id)){
+                $db->where("a.contract_id","eq",$sales_contract_id);
+            }
+            if(!empty($sales_collection_id)){
+                $db->where("a.collection_id","eq",$sales_collection_id);
             }
             //拷贝查询对象
             $db_cope = unserialize(serialize($db));
@@ -88,6 +100,8 @@ class ExpendRewardController extends BaseController
         $this->assign("receivers",BaseModel::getAdmins());
         $this->assign("pay_status",$pay_status);
         $this->assign("colletion_status",$colletion_status);
+        $this->assign("sales_contract_id",$sales_contract_id);
+        $this->assign("sales_collection_id",$sales_collection_id);
         return $this->fetch();
     }
 
@@ -104,6 +118,7 @@ class ExpendRewardController extends BaseController
             $id=db($this->table)->insert($param,false,true);
             if($id){
                 self::actionLog(1,$this->table,$this->table_name,$id);
+                NewItemWarnModel::addItem(5,$id);
             }
             return jsonSuccess();
         }
@@ -185,7 +200,7 @@ class ExpendRewardController extends BaseController
         $collection_id = $this->request->param("collection_id");
         //外包支出子查询
         $subsql_outsourcing_payment = db("outsourcing_payment")
-            ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
+            ->field('sales_collection_id collection_id,sum(all_pay_amount) pay_amount')
             ->group('sales_collection_id')
             ->buildSql();
         //报销支出子查询

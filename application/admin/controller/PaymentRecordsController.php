@@ -7,6 +7,8 @@
  */
 
 namespace app\admin\controller;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\villdate\PaymentRecordsVilldate;
 use think\Db;
 
@@ -19,6 +21,8 @@ class PaymentRecordsController extends BaseController
      * 列表
      */
     function index(){
+        NewItemWarnReadedModel::readItems(session("admin_id"),14);
+        NewItemWarnReadedModel::readItems(session("admin_id"),15);
         $invoice_status=$this->request->param("invoice_status");
         $pay_status=$this->request->param("pay_status");
         if($this->request->isAjax()){
@@ -98,6 +102,7 @@ class PaymentRecordsController extends BaseController
                 return jsonFail("付款失败");
             }
             self::actionLog(2,"payment_records","付款管理",$param["id"],null,"确认付款");
+            NewItemWarnModel::cancelItem(15,$param["payment_id"]);
             Db::commit();
             return jsonSuccess();
         }
@@ -116,6 +121,8 @@ class PaymentRecordsController extends BaseController
             $param["invoice_time"] = time();
             if(db('payment_records')->update($param)){
                 self::actionLog(2,"payment_records","付款管理",$param["id"],null,"确认收票");
+                $row = db('payment_records')->find($param["id"]);
+                NewItemWarnModel::cancelItem(14,$row["payment_id"]);
             };
             return jsonSuccess();
         }

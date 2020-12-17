@@ -43,6 +43,20 @@
 
         </script>
 
+        <script type="text/html" id="outsourcing_pay_amount_format">
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="outsourcing_pay_amount_detail({{ d.id=="统计"?"0":d.id }})">{{ d.outsourcing_pay_amount_format }}</button>
+        </script>
+        <script type="text/html" id="reimbursement_amount_format">
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="reimbursement_amount_detail({{ d.id=="统计"?"0":d.id }})">{{ d.reimbursement_amount_format }}</button>
+        </script>
+        <script type="text/html" id="business_pay_amount_format">
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="business_pay_amount_detail({{ d.id=="统计"?"0":d.id }})">{{ d.business_pay_amount_format }}</button>
+        </script>
+        <script type="text/html" id="reward_pay_amount_format">
+            <button class="layui-btn layui-btn-success layui-btn-xs" onclick="reward_pay_amount_detail({{ d.id=="统计"?"0":d.id }})">{{ d.reward_pay_amount_format }}</button>
+        </script>
+
+
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
@@ -52,8 +66,9 @@
     </div>
 </div>
 <script>
+    var $;
     layui.use(['form', 'table'], function () {
-        var $ = layui.jquery,
+            $ = layui.jquery,
             form = layui.form,
             table = layui.table;
         //初始化表格
@@ -68,19 +83,20 @@
                 {field: 'contract_amount_format', width: 120, align: "right", title: '合同总金额'},
                 {field: 'collected_amount_format', width: 100, align: "right", title: '回款金额'},
                 {field: 'uncollected_amount_format', width: 100, align: "right", title: '未回款金额'},
-                {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用'},
-                {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用'},
+                {field: 'outsourcing_pay_amount_format', width: 100, align: "right", title: '外包费用',templet:"#outsourcing_pay_amount_format"},
+                {field: 'reimbursement_amount_format', width: 100, align: "right", title: '报销费用',templet:"#reimbursement_amount_format"},
                 {if checkAuth("field_business")}
-                {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用'},
+                {field: 'business_pay_amount_format', width: 100, align: "right", title: '商务费用',templet:"#business_pay_amount_format"},
                 {/if}
                 {if checkAuth("field_reward")}
-                {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用'},
+                {field: 'reward_pay_amount_format', width: 100, align: "right", title: '奖金费用',templet:"#reward_pay_amount_format"},
                 {/if}
                 {field: 'surplus_format', width: 120, align: "right", title: '盈余'},
                 {field: 'outsourcing_pay_amount_ratio', width: 100, align: "right", title: '外包比例(%)'},
                 {field: 'reimbursement_amount_ratio', width: 100, align: "right", title: '报销比例(%)'},
                 {field: 'business_pay_amount_ratio', width: 100, align: "right", title: '商务比例(%)'},
-                {field: 'reward_pay_amount_ratio', width: 100, align: "right", title: '奖金比例(%)'}
+                {field: 'reward_pay_amount_ratio', width: 100, align: "right", title: '奖金比例(%)'},
+                {field: 'surplus_ratio', width: 100, align: "right", title: '盈余比例(%)'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -173,6 +189,22 @@
             ,type: 'year'
         });
     });
+    function outsourcing_pay_amount_detail(id) {
+        var date_time_select_by_year = $("#date_time_select_by_year").val();
+        layTool.open('{:url("OutsourcingContract/index","",false)}/sales_contract_id/'+id+'?select_by_year='+date_time_select_by_year,'外包合同');
+    }
+    function reimbursement_amount_detail(id) {
+        var date_time_select_by_year = $("#date_time_select_by_year").val();
+        layTool.open('{:url("ExpendReimbursement/index","",false)}/sales_contract_id/'+id+'?select_by_year='+date_time_select_by_year,'报销支出');
+    }
+    function business_pay_amount_detail(id) {
+        var date_time_select_by_year = $("#date_time_select_by_year").val();
+        layTool.open('{:url("ExpendBusiness/index","",false)}/sales_contract_id/'+id+'?select_by_year='+date_time_select_by_year,'商务支出');
+    }
+    function reward_pay_amount_detail(id) {
+        var date_time_select_by_year = $("#date_time_select_by_year").val();
+        layTool.open('{:url("ExpendReward/index","",false)}/sales_contract_id/'+id+'?select_by_year='+date_time_select_by_year,'奖金支出');
+    }
 </script>
 
 </body>

@@ -10,6 +10,8 @@ namespace app\admin\controller;
 
 
 use app\admin\model\BaseModel;
+use app\admin\model\NewItemWarnModel;
+use app\admin\model\NewItemWarnReadedModel;
 use app\admin\model\SystemAdminModel;
 use app\admin\model\SystemNodeModel;
 use think\Db;
@@ -42,13 +44,16 @@ class IndexController extends BaseController
         $todo = $this->welcomeTodo($select_by_year);
         //报表
         $echarts = $this->welcomeEcharts($select_by_year);
+        //提醒项目
+        $warns = NewItemWarnModel::getNewItemWarns(session("admin_id"));
         $this->assign(
             [
                 "tp_version"=>App::version(),
                 "mysql_version"=>mysqli_get_server_info($conn),
                 "summary_statistic"=>$summary_statistic,
                 "todo"=>$todo,
-                "echarts"=>$echarts
+                "echarts"=>$echarts,
+                "warns"=>$warns
             ]
         );
         return $this->fetch();
@@ -60,7 +65,7 @@ class IndexController extends BaseController
     private function welcomeSummary($select_by_year){
         //外包支出子查询
         $subsql_outsourcing_payment = db("outsourcing_payment")
-            ->field('sales_collection_id collection_id,sum(pay_amount) pay_amount')
+            ->field('sales_collection_id collection_id,sum(all_pay_amount) pay_amount')
             ->group('sales_collection_id')
             ->buildSql();
         //报销支出子查询
