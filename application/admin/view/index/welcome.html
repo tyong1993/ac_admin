@@ -80,7 +80,7 @@
                                         </div>
                                         <div class="layui-col-xs3">
                                             <div class="panel layui-bg-number">
-                                                <div class="panel-body">
+                                                <div class="panel-body"  onclick="doToDo(43,'?go_to_bottom=1')">
                                                     <div class="panel-title">
                                                         <h5>已收款<span class="layui-badge" {if $warns["type_6"] == 0}style="display: none"{/if}>+{$warns["type_6"]}</span></h5>
                                                     </div>
@@ -609,6 +609,7 @@
             }
         });
     });
+
 </script>
 </body>
 </html>

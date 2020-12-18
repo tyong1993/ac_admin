@@ -23,6 +23,7 @@ class ProjectREStatisticsController extends BaseController
         $select_by_year = $this->request->param("select_by_year");
         $g_c_id = $this->request->param("g_c_id");
         $statistic_field = $this->request->param("statistic_field")?:"colletion_time";
+        $go_to_bottom = $this->request->param("go_to_bottom");
         if(!$select_by_year){
             $select_by_year = date("Y");
         }
@@ -142,6 +143,7 @@ class ProjectREStatisticsController extends BaseController
         $res = db('group_company')->select();
         $this->assign("group_companys",$res);
         $this->assign("g_c_id",$g_c_id);
+        $this->assign("go_to_bottom",$go_to_bottom);
         return $this->fetch();
     }
 

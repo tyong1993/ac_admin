@@ -175,7 +175,12 @@
             ,type: 'year'
         });
     });
-
+    layui.use(['jquery'], function () {
+        $ = layui.jquery;
+        if({$go_to_bottom} == 1){
+            $(window).scrollTop(300);
+        }
+    });
 </script>
 
 </body>
