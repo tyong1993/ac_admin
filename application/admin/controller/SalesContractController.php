@@ -244,6 +244,7 @@ class SalesContractController extends BaseController
             $row = db($this->table)->find($id);
             if(!empty($row)){
                 self::actionLog(3,$this->table,$this->table_name,$id,$row);
+                NewItemWarnModel::cancelItem(1,$id);
                 db($this->table)->where("id","eq",$id)->delete();
             }
         }

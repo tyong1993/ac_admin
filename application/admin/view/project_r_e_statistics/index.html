@@ -178,7 +178,7 @@
     layui.use(['jquery'], function () {
         $ = layui.jquery;
         if({$go_to_bottom} == 1){
-            $(window).scrollTop(300);
+            $(window).scrollTop($(document).height());
         }
     });
 </script>

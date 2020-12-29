@@ -15,13 +15,37 @@ class NewItemWarnModel extends BaseModel
 {
     //新增一个提醒
     public static function addItem($type,$obj_id){
-        $data = [
-            "type"=>$type,
-            "obj_id"=>$obj_id,
-            "status"=>1,
-            "create_time"=>time(),
-        ];
-        self::insert($data);
+        if(in_array($type,[7,8,9])){
+            $row = db('invoice_records')->find($obj_id);
+            if($type == 7){
+                $res = db("expend_reimbursement")->where(["collection_id"=>$row["collection_id"],"pay_status"=>0])->select();
+            }
+            if($type == 8){
+                $res = db("expend_business")->where(["collection_id"=>$row["collection_id"],"pay_status"=>0])->select();
+            }
+            if($type == 9){
+                $res = db("expend_reward")->where(["collection_id"=>$row["collection_id"],"pay_status"=>0])->select();
+            }
+            if(!empty($res)){
+                foreach ($res as $re){
+                    $data = [
+                        "type"=>$type,
+                        "obj_id"=>$re["id"],
+                        "status"=>1,
+                        "create_time"=>time(),
+                    ];
+                    self::insert($data);
+                }
+            }
+        }else{
+            $data = [
+                "type"=>$type,
+                "obj_id"=>$obj_id,
+                "status"=>1,
+                "create_time"=>time(),
+            ];
+            self::insert($data);
+        }
     }
     //取消一个提醒
     public static function cancelItem($type,$obj_id){
@@ -58,4 +82,5 @@ class NewItemWarnModel extends BaseModel
         }
         return $data;
     }
+
 }
