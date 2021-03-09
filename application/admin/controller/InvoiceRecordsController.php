@@ -255,6 +255,11 @@ class InvoiceRecordsController extends BaseController
                 if($row["colletion_status"] || $row["invoice_status"]){
                     return jsonFail("已开票或者已收款的记录不可以删除");
                 }
+                //开过发票不可以删除
+                $res = Db::name('invoice_nums')->where(["i_r_id"=>$row["id"]])->count();
+                if($res){
+                    return jsonFail("该开票申请存在发票,不可以直接删除");
+                }
                 Db::startTrans();
                 //修改收款计划的状态
                 $data["id"] = $row["collection_id"];
